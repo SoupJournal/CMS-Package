@@ -1,0 +1,22 @@
+# CMS Package
+######################
+artisan/cms/vendor/
+artisan/cms/node_modules/
+artisan/cms/composer.lock
+
+
+# Laravel 4 specific
+######################
+bootstrap/compiled.php
+app/storage/
+
+
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Trashes
+ehthumbs.db
+Thumbs.db

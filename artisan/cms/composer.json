@@ -1,0 +1,28 @@
+{
+    "name": "artisan/cms",
+    "description": "CMS for mobile and web applications",
+    "authors": [
+        {
+            "name": "Daniel Welsh",
+            "email": "x@x.x"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.1.*",
+        "doctrine/dbal": "2.4.*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations",
+            "src/controllers",
+            "src/models",
+            "src/views",
+            "src/lib"
+        ],
+        "psr-0": {
+            "Artisan\\Cms\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}

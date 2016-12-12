@@ -1,0 +1,49 @@
+
+/* TODO - move to layout.css */
+
+.top-margin-small {
+	margin-top: 30px;	
+}
+
+
+
+/***********************************/
+/**** 	 BACKGROUND COLOURS 	****/
+/***********************************/
+
+
+/* blue */
+.bg-color-1 {
+	background-color: #55AAFF;
+}
+
+
+
+/***********************************/
+/**** 			COLOURS 		****/
+/***********************************/
+
+
+/* white */
+.color-1 {
+	color: #FEFEFE;
+}
+
+
+
+/***********************************/
+/**** 			BUTTONS 		****/
+/***********************************/
+
+.cms-save-button {
+	float: right;	
+	padding: 5px 10px 5px 10px;
+	border: 2px solid grey;
+	border-radius: 10px;
+	color: #1166AA;
+	background-color: white;
+}
+
+.cms-save-button:hover {
+	text-decoration: none;	
+}
