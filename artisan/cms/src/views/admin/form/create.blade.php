@@ -14,7 +14,7 @@
 
 @section('scripts')
 
-	{{ HTML::script('packages/artisan/cms/js/cms/form/form.js') }}	
+	{{ HTML::script('packages/artisan/cms/js/cms/pages/form.js') }}	
 	
 	<?php
 	
@@ -37,8 +37,8 @@
 <?php
 
 	//get AJAX URL's
-	$tableURL = action("FormController@getTable");
-	$fieldURL = action("FormController@getField");
+	$tableURL = URL::to('cms/' . $appId . '/form/table'); //action("FormController@getTable");
+	$fieldURL = URL::to('cms/' . $appId . '/form/field'); //action("FormController@getField");
 
 	//get available databases	
 	$databaseConnections = Config::get('database.connections');
@@ -72,9 +72,9 @@
 	
 	
 		<div class="form-group">
-								
-			<h5>NAME<h5>
-			<input type="text">
+				
+			{{ Form::label('name', 'Form Name') }}
+			{{ Form::text('name', null, Array ('placeholder' => 'Form Name', 'class' => 'form-control', 'required' => '')) }}
 			
 		</div>
 	

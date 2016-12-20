@@ -22,12 +22,13 @@
 			   		
 			   		
 			   		
-			   	//echo "connection:: " . print_r($connection, true);
+			   	//echo "connection:: " . $dbConnection . "- databaseName: " . $databaseName; // print_r($connection, true);
 
 			 
 			   	
 			   		//retrieve tables list
 				   	$tables = $connection->select('SHOW TABLES');
+				   	//echo "tables: " . print_r($tables, true);
 				   	//$tables = $connection->raw("select * from information_schema.tables"); // where table_schema=\"". $databaseName ."\"");
 				   	if ($tables && count($tables)>0) {
 				   		

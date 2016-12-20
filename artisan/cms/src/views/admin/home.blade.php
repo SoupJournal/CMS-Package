@@ -43,27 +43,29 @@
 <div style="background-color: #EEEEEE">
 
 
-	{{-- select database view --}}
-	<!-- div ng-controller="FormController" ng-init='' -->
-	
-	
+	{{-- application is specified --}}
+	@if ($appId>0)
+
 		{{-- title --}}
-		<h2>Home</h2>
+		<h2>{{ $appName }}</h2>
 	
 	
 		<div class="form-group">
 
-			
-		</div>
-	
 	
 		{{-- end form group --}}
 		</div>
 		
-	<!-- /div -->
-	{{-- end controller --}}	
 
+	{{-- no application specified --}}
+	@else
 
+		{{-- title --}}
+		<h2>No Applications Available</h2>
+
+		<h4>Please contact your site administrator to gain access to available applications</h4>
+
+	@endif
 
 	<br>
 	

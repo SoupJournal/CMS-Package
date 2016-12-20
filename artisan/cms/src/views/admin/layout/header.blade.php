@@ -4,8 +4,10 @@
 	//$pageModules = array_push($pageModules, 'ui.bootstrap.dropdown');
 
   	//user is logged in
-  	$user = Auth::CMSuser()->user();
-	if ($user) {
+	if (isset($user)) {
+
+		//get list of users applications
+		$applications = CMSAccess::userApplications();
 
 ?>
 
@@ -21,6 +23,49 @@
 	
 		   	<div class="container-fluid text-center">
 				<h1 class="color-1">CMS</h1>
+		   		
+		   		
+		   		
+		   		{{-- applications menu --}}
+		   		@if ($applications)
+		   		
+		   			{{-- multiple applications --}}
+		   			@if (count($applications)>1)
+		   		
+			   		
+				   		<div class="dropdown pull-left">
+				   		
+				   		
+				   		    <span uib-dropdown on-toggle="toggled(open)">
+						      	<a href id="simple-dropdown" uib-dropdown-toggle>
+						      		@if ($appName && strlen($appName))
+						      			{{ $appName }}
+						      		@else
+						      			Applications
+						      		@endif
+						        	<span class="caret"></span>
+						      	</a>
+						      	<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="simple-dropdown">
+						      		@foreach ($applications as $appData)
+						      			@if ($appData && isset($appData->name) && isset($appData->id) && strlen($appData->name))
+								          	<li><a href="{{ URL::to('cms/' . $appData->id) }}">{{ $appData->name }}</a></li>
+								        @endif
+						          	@endforeach
+						      	</ul>
+						    </span>
+						    
+						</div>
+				
+					@elseif ($appName && strlen($appName))
+				
+						<div class="dropdown pull-left">
+							<span>{{ $appName }}</span>
+						</div>
+				
+					@endif
+				
+				@endif
+		   		
 		   		
 		   		
 		   		{{-- user menu --}}

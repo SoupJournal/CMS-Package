@@ -30,6 +30,7 @@ class CmsServiceProvider extends ServiceProvider {
 		
 		//include package helpers
 		include __DIR__.'/../../helpers/JSHelper.php';
+		include __DIR__.'/../../helpers/SQLHelper.php';
 		
 		
 //		//enable multi-auth

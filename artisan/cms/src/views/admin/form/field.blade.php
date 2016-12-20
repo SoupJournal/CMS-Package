@@ -100,7 +100,7 @@
 							
 							{{-- save button --}}
 							<div class="form-group">
-								<save-button></save-button>
+								<save-button action="saveForm"></save-button>
 							</div>
 				
 <?php

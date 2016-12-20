@@ -14,10 +14,10 @@
 
 @section('scripts')
 
-	{{ HTML::script('packages/artisan/cms/js/cms/form/form.js') }}	
+	{{ HTML::script('packages/artisan/cms/js/cms/pages/form.js') }}	
 	
 	<?php
-	
+
 		//set custom page controllers
 		array_push($pageModules, 'cms.form');
 
@@ -39,7 +39,7 @@
 	//get AJAX URL's
 	$tableURL = action("FormController@getTable");
 	$fieldURL = action("FormController@getField");
-
+	$dataURL = URL::to('cms/' . $appId . '/form/forms');
 
 	
 ?>
@@ -48,21 +48,24 @@
 
 
 	{{-- select database view --}}
-	<div ng-controller="FormController" ng-init='";'>
+	<div ng-controller="FormController" ng-init="setDataURL('{{ $dataURL }}');">
 	
 	
 		{{-- title --}}
 		<h2>Forms</h2>
-	
-	
 
 	
 	
 		<div class="form-group">
 		
 		
+			{{-- draw table --}}
+			@include('cms::cms.gui.table', array('title'=>'', 'dataFunction'=>'initFormTable'))
+
+	
+		
 			{{-- add form button --}}
-			<a href="{{ URL::to('cms/form/create') }}" class="btn btn-primary">Add Form</a>
+			<a href="{{ URL::to('cms/' . $appId . '/form/create') }}" class="btn btn-primary">Add Form</a>
 	
 
 		{{-- end form group --}}

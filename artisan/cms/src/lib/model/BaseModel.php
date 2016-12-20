@@ -5,6 +5,11 @@
 class BaseModel extends Eloquent {
 	
 	
+	//set base connection
+	//protected $connection = 'cms';
+	
+	
+	
 	
 	//==========================================================//
 	//====					DATA METHODS					====//

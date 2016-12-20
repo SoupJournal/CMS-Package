@@ -2,8 +2,17 @@
 
 	class BaseCMSController extends Controller {
 		
+		
+		//CMS database connection
+		//protected $connection = null;
+		
 
 		public function __construct() {
+			
+			
+			//initialise database connection (centralised in case CMS connection is not default)
+			//$this->connection = DB::connection();
+			
 			
 			//set global angular modules variable
 			//View::share ( 'pageModules', Array() );
@@ -14,15 +23,15 @@
 		
 		
 		
-		protected function paginateRequestQuery($countQuery, $dataQueryFunction, $params, $objectData = null) {
+		protected function paginateRequestQuery($query, $params) { //, $objectData = null) {
 			
 
 			//create response
 			$response = new StdClass;
 		
 		
-			//valid queries
-			if ($countQuery && $dataQueryFunction && strlen($countQuery)>0) {
+			//valid query
+			if ($query) {
 		
 			
 				//get parameters
@@ -36,7 +45,7 @@
 
 				
 				//process count query
-				$countData = DB::select(DB::raw($countQuery));
+				$countData = $query->count();
 				
 				
 				//process variables
@@ -67,22 +76,25 @@
 				
 				
 				//process data query
+				$dataQuery = $query;
+				if ($index>0) {
+					$dataQuery = $dataQuery->offset($index);
+				}
 				if ($limit>0) {
-					$dataQuery = $dataQueryFunction($index, $limit, $objectData);
+					$dataQuery = $dataQuery->limit($limit);;
 				}
-				else {
-					$dataQuery = $objectData;
-				}
-				$data = DB::select(DB::raw($dataQuery));
-				
+
+				//retrieve data
+				$data = $dataQuery->get();
+
 				
 				//update parameters
 				$response->current_page = $page;
 				$response->items_per_page = $limit;
 				$response->total_pages = $totalPages;
 				$response->last_page = ($totalPages>0 ? ($totalPages-1) : 0);
-				$response->data = $data;
-			
+				$response->data = $data ? $data->toArray() : null;
+							
 			
 			} //end if (valid query)
 			

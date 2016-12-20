@@ -17,6 +17,7 @@ class CreateSecurityGroupTable extends Migration {
 			$table->increments('id');
 			$table->integer('application')->references('id')->on('application');
 			$table->string('name', 255);
+			$table->string('permission', 2047);
 			$table->integer('status')->default(0);
 
 			$table->timestamps();

@@ -9,23 +9,34 @@
 	//create controller
 	module.controller('FormController', [ '$http', '$scope', 'PageService', function($http, $scope, $page) {
 		
-		//$page.printVariables();
+
+
+		//set url for form data
+		$scope.setDataURL = function(url) {
+			$scope.dataURL = url;	
+		}
 		
 		
-//		$scope.setServiceVariable = function(variableName, variable) {
-//			
-//			$page.setVariable(variableName, variable);
-//
-//		}; //end setServiceVariable()
-		
-		
+		//setup forms table
+		$scope.initFormTable = function(scope) {
+
+			//valid scope
+			if (scope) {
+				scope.dataURL = $scope.dataURL;	
+				scope.includeKeys = ['name'];
+				scope.excludeKeys = [];
+			}
+			
+		} //end initFormTable()
+
+
 		
 		
 		//handle database selection
 		$scope.selectDatabase = function() {
 			
 			//valid model
-			if ($scope.database && $scope.database.connection) {
+			//if ($scope.database && $scope.database.connection) {
 				
 				//store connection
 				$page.setVariable('connection', $scope.database.connection);
@@ -37,9 +48,11 @@
 					containerID: $scope.tableContainer
 				});
 				
-				//dbcontroller.getContent();
-				//$this->app->call([$controller, $method], $arguments);
-			}	
+			//}	
+				
+			//update table selection
+			$scope.selectTable();
+			
 				
 		} //end selectDatabase()
 		
@@ -50,7 +63,7 @@
 		$scope.selectTable = function() {
 
 			//valid model
-			if ($scope.database && $scope.database.table) {
+			//if ($scope.database && $scope.database.table) {
 				
 				//store table
 				$page.setVariable('table', $scope.database.table);
@@ -64,7 +77,7 @@
 					containerID: $scope.fieldContainer
 				});
 				
-			}
+			//}
 			
 		}; //end selectTable()
 		

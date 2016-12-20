@@ -27,7 +27,40 @@
 		} //end getCreate()	
 	
 	
+		
+		
 			
+			
+		//==========================================================//
+		//====					SERVICE METHODS					====//
+		//==========================================================//	
+		
+			
+			
+		public function getApplications() {
+			
+			
+			//build query
+			$query = CMSApp::select(['id', 'name'])->where('status', '=', 1);
+			
+			//get paginated results
+			$results = $this->paginateRequestQuery($query, $_GET);
+			
+			//return paginated query
+			return Response::json($results);
+			
+			
+		} //end getApplications()
+			
+			
+			
+		public function postApplicationid($appID = null) {
+			
+			
+		} //end postApplicationid()
+		
+		
+		
 					
 	} //end class ApplicationController
 

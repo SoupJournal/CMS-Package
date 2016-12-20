@@ -118,14 +118,14 @@
 		
 		
 	//dynamic content controller
-	module.controller('DynamicContentController', [ '$http', '$scope', '$rootScope', '$compile', function($http, $scope, $rootScope, $compile) {
+	module.controller('DynamicContentController', [ '$http', '$scope', '$compile', function($http, $scope, $compile) {
 		
 
 
 
-	//==========================================================//
-	//====					REQUEST FUNCTIONS				====//
-	//==========================================================//	
+	//----------------------------------------------------------//
+	//----					REQUEST FUNCTIONS				----//
+	//----------------------------------------------------------//
 
 
 
@@ -177,7 +177,6 @@
 						//ensure element contains some html tags
 						var innerHTML = '<div>' + response + '</div>';
 						
-						//angular.extend($scope, $rootScope);
 						
 						//compile html
 						var element = $compile(innerHTML)($scope);
@@ -220,9 +219,9 @@
 			
 
 
-	//==========================================================//
-	//====					EVENT HANDLERS					====//
-	//==========================================================//	
+	//----------------------------------------------------------//
+	//----					EVENT HANDLERS					----//
+	//----------------------------------------------------------//	
 
 
 		//respond to update events

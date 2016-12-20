@@ -14,12 +14,12 @@
 
 @section('scripts')
 
-	{{ HTML::script('packages/artisan/cms/js/cms/pages/application.js') }}
+	{{ HTML::script('packages/artisan/cms/js/cms/pages/security.js') }}
 	
 	<?php
 	
 		//set custom page controllers
-		array_push($pageModules, 'cms.application');
+		array_push($pageModules, 'cms.security');
 
 	?>
 	
@@ -37,7 +37,7 @@
 <?php
 
 	//get AJAX URL's
-	$dataURL = URL::to('cms/app/applications');
+	$dataURL = URL::to('cms/' . $appId . '/security/groups');
 
 	
 ?>
@@ -46,25 +46,23 @@
 
 
 	{{-- select database view --}}
-	<div ng-controller="ApplicationController" ng-init="setDataURL('{{ $dataURL }}');">
+	<div ng-controller="SecurityController" ng-init="setDataURL('{{ $dataURL }}');">
 	
 	
 		{{-- title --}}
-		<h2>Applications</h2>
+		<h2>Security Groups</h2>
 	
-	
-
 	
 	
 		<div class="form-group">
 		
-		
-		
-			
-		
-			{{-- draw table --}}
-			@include('cms::cms.gui.table', array('title'=>'users', 'dataFunction'=>'initApplicationTable'))
 
+			{{-- draw table --}}
+			@include('cms::cms.gui.table', array('title'=>'', 'dataFunction'=>'initSecurityTable'))
+
+	
+			{{-- add group button --}}
+			<a href="{{ URL::to('cms/' . $appId . '/security/edit') }}" class="btn btn-primary">Add Group</a>
 	
 
 		{{-- end form group --}}

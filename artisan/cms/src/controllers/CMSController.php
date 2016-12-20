@@ -43,15 +43,44 @@
 			$username = Input::get('username');
 			$password = Input::get('password');
 	
-
+	
+			//validate login
 			if (Auth::CMSuser()->attempt(Array ('username' => $username, 'password' => $password)))
 			{
-				return Redirect::secure('/cms/');
+				//set current application
+				//$appID = Session::get(CMSAccess::$SESSION_KEY_APP_ID);
+				//if (!isset($appID)) {
+					
+					//find first user application
+					
+					
+				//}
+				
+				//find app id
+				$appId = null;
+				
+				//get list of available applications
+				$applications = CMSAccess::userApplications();
+				if ($applications && count($applications)>0) {
+					$appId = $applications[0]->id;
+				}
+				
+				//found application
+				if ($appId>=0) {
+					return Redirect::secure('/cms/' . $appId);
+				}
+				//no application available
+				else {
+					return Redirect::secure('/cms/');
+				}
 			}
 
+
+			//error - redirect to login page with error message
 			return Redirect::back()
 				->withInput()
 				->withErrors('Invalid username/password combination.');
+				
 				
 		} //end postLogin()
 	
@@ -60,14 +89,43 @@
 	
 		public function getLogout() {
 
+			//logout user
 			Auth::CMSuser()->logout();
 	
+			//redirect to login
 			return Redirect::to('/cms/login');
 			
 		} //end getLogout()
 
 		
 		
+		
+		public function getError($errorCode = null) {
+		
+			//compile error message
+			$errorTitle = null;
+			$errorMessage = null;
+			
+			switch ($errorCode) {
+				
+				case 404:
+				{
+					$errorTitle = "Permission Denied";
+					$errorMessage = "You do not have permission to view this page";
+				}
+				break;
+					
+			} //end switch (errorCode)
+		
+		
+			//show error view
+			return View::make('cms::admin.error')->with(array(
+				'errorTitle' => $errorTitle,
+				'errorMessage' => $errorMessage
+			));
+			
+			
+		} //end getError()
 		
 		
 		
@@ -200,106 +258,7 @@
 		
 		*/
 		
-		
-		//==========================================================//
-		//====					UTIL METHODS					====//
-		//==========================================================//	
-		
-		
-		
-		
-		public function paginateRequestQuery($countQuery, $dataQueryFunction, $objectData = null) {
-			
-			//get authorised user
-			$user = Auth::cmsuser()->user();
-			if ($user) {
-			
-				//create response
-				$response = new StdClass;
-			
-			
-				//valid queries
-				if ($countQuery && $dataQueryFunction && strlen($countQuery)>0) {
-			
-				
-					//get parameters
-					$page = isset($_GET['page']) && is_numeric($_GET['page']) ? $_GET['page'] : 0;
-					$limit = isset($_GET['limit']) && is_numeric($_GET['limit']) ? $_GET['limit'] : 0; //10;
-					
-					//bounds checks
-					if ($page<0) $page = 0;
-					if ($limit<0) $limit = 0;
-					
 	
-					
-					//process count query
-					$countData = DB::select(DB::raw($countQuery));
-					
-					
-					//process variables
-					$index = 0;
-					$count = 0;
-					$totalPages = 0;
-					if ($limit>0) {
-						
-						//determine number of pages
-						if (isset($countData) && count($countData)>0) {
-							$count = $countData[0]->count;	
-							$response->rows = $count;
-							if (is_numeric($count)) {
-								$totalPages = ceil($count / $limit);
-							}
-						}
-					
-						//bounds check page
-						if ($page>=$totalPages) {
-							$page=$totalPages-1;
-						}
-						
-						//set index
-						$index = $page * $limit;
-						
-					}
-					
-					
-					
-					//process data query
-					if ($limit>0) {
-						$dataQuery = $dataQueryFunction($index, $limit, $objectData);
-					}
-					else {
-						$dataQuery = $objectData;
-					}
-					$data = DB::select(DB::raw($dataQuery));
-					
-					
-					//update parameters
-					$response->current_page = $page;
-					$response->items_per_page = $limit;
-					$response->total_pages = $totalPages;
-					$response->last_page = ($totalPages>0 ? ($totalPages-1) : 0);
-					$response->data = $data;
-				
-				
-				} //end if (valid query)
-				
-				//log error
-				else {
-					$response->error = "Invalid queries";
-				}
-				
-				
-				//return Response::json($data);
-				return Response::json($response);
-			
-			}
-			
-			//invalid user
-			else {
-				return Redirect::to('/cms');
-			}
-			
-		} //end paginateRequestQuery()
 		
 					
 	} //end class CMSController

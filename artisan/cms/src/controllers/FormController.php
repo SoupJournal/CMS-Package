@@ -29,7 +29,32 @@
 	
 	
 	
-		public function getTable($dbConnection = null) {
+		public function getForms($appId = null) {
+			
+			//valid app id
+			if ($appId>=0) {
+			
+				//build query
+				$query = CMSForm::select(['id', 'name', 'type'])
+						->where('status', '=', 1)
+						->where('application', '=', $appId);
+				
+				//get paginated results
+				$results = $this->paginateRequestQuery($query, $_GET);
+				
+				//return paginated query
+				return Response::json($results);
+			
+			} //end if (valid app id)
+			
+			//no results
+			return "";
+		
+		} //end getForms()
+	
+	
+	
+		public function getTable($appId = null, $dbConnection = null) {
 			
 			return View::make('cms::admin.form.table')->with('dbConnection', $dbConnection);
 			
@@ -38,7 +63,7 @@
 	
 	
 	
-		public function getField($dbConnection = null, $dbTable = null) {
+		public function getField($appId = null, $dbConnection = null, $dbTable = null) {
 			
 			$parameters = Array (
 				'dbConnection' => $dbConnection,
