@@ -22,15 +22,17 @@
 	//====					ROUTE FILTERS					====//
 	//==========================================================//	
 
-
-//	Route::filter('internalAccess', function()
-//	{
-//	    //ensure IP's match, else deny access - 404
-//	    if (Request::server('SERVER_ADDR') != Request::server('REMOTE_ADDR'))
-//	    {
-//	        return App::abort(404);
-//	    }
-//	});
+	
+	Route::filter('HTTPS', function()
+	{		
+	   
+	   	//ensure https connection 
+	    if (!Request::secure()) {
+	    	return Redirect::secure( Request::path('/toSecureURL') );
+	    }
+	    
+	});
+	
 	
 	
 	Route::filter('CMSAuth', function()
@@ -39,8 +41,14 @@
 		if (Auth::CMSuser()->guest()) {
 	        return Redirect::to('/cms/login');
 	    }
+	   
+	   	//ensure https connection 
+	    if (!Request::secure()) {
+	    	return Redirect::secure( Request::path('/toSecureURL') );
+	    }
 	    
 	});
+	
 	
 	
 	Route::filter('CMSApp', function($route)
@@ -93,6 +101,31 @@
 	    
 	});
 	
+	
+	
+	Route::filter('P_Form', function($route)
+	{	
+		//get appID
+		$appID = isset($route) ? $route->getParameter('appId') : null;
+		
+		//valid app ID
+		if (is_numeric($appID) && $appID>0) {
+		
+			//ensure user has permission
+			if (!CMSAccess::validPermission(CMSAccess::$PERMISSION_EDIT_FORM, $appID)) { 
+				
+				//no security permission - redirect to overview
+				return Redirect::to('/cms/' . $appID);
+			}
+		
+		}
+		//invalid app ID
+		else {
+			return Redirect::to('/cms/error/404');
+		}
+	    
+	});
+	
 
 
 
@@ -121,17 +154,24 @@
 	//Forms
 	//Route::get('cms/form/table/{safestr}', array('before' => 'CMSAuth|Ajax', 'uses' => 'FormController@getTable'));
 	//Route::get('cms/form/field/{safestr}/{safestr2}', array('before' => 'CMSAuth|Ajax', 'uses' => 'FormController@getField'));
-	Route::group(array('before' => 'CMSAuth'), function() {
+	Route::group(array('before' => 'CMSAuth|P_Form'), function() {
 		Route::controller('cms/{appId}/form', 'FormController');
 	});
 	
 	
 	
+	//Settings
+	Route::group(array('before' => 'CMSAuth'), function() {
+		Route::controller('cms/{appId}/settings', 'SettingsController');
+	});
+	
+	
 	
 	//CMS Login
-	Route::get('cms/login', 'CMSController@getLogin');
-	Route::post('cms/login', 'CMSController@postLogin');
+	Route::get('cms/login', array('before' => 'HTTPS', 'uses' => 'CMSController@getLogin'));
+	Route::post('cms/login', array('before' => 'HTTPS', 'uses' => 'CMSController@postLogin'));
 	Route::get('cms/logout', 'CMSController@getLogout');
+
 	
 	//CMS Errors
 	Route::get('cms/error', 'CMSController@getError');

@@ -63,77 +63,120 @@
 <div style="background-color: #EEEEEE">
 
 
+	{{-- display form errors --}}
+    @if ($errors->has())
+        @foreach ($errors->all() as $error)
+            <div class='bg-danger alert'>{{ $error }}</div>
+        @endforeach
+    @endif
+    
+
+
 	{{-- select database view --}}
 	<div ng-controller="FormController" ng-init='connections={{ $databaseConnectionNames }}; tableURL="{{ $tableURL }}"; tableContainer="edit_table_container"; fieldURL="{{ $fieldURL }}"; fieldContainer="edit_field_container";'>
 	
-	
-		{{-- title --}}
-		<h2>Create Form</h2>
-	
-	
-		<div class="form-group">
-				
-			{{ Form::label('name', 'Form Name') }}
-			{{ Form::text('name', null, Array ('placeholder' => 'Form Name', 'class' => 'form-control', 'required' => '')) }}
-			
-		</div>
-	
-	
-	
-		<!-- vertical-spacer size="50"></verticalSpacer -->
-		<hr>
 		
-	
-	
-		<div class="form-group">
+		{{ Form::open(Array('role' => 'form', 'name' => 'securityForm')) }}
 		
 			{{-- title --}}
-			<h2>Add Fields</h2>
-
+			<h2>Create Form</h2>
 		
 		
 			<div class="form-group">
-				<h5>SELECT DATABASE:<h5>
-				<!-- select data-ng-model="database.connection" ng-options="str for str in connections track by str" ng-change="selectDatabase()" -->
-				<select data-ng-model="database.connection" ng-options="str for str in connections" ng-change="selectDatabase()">
-				</select>
-			</div>
-	
-			
-			
-			
-			{{-- select table view --}}
-			<div ng-controller="DynamicContentController" ng-init='getContent("{{ $tableURL }}", "edit_table_container");'> 
-			
-				<div id="edit_table_container"></div>
-			
-			</div>
-			{{-- end controller --}}
-			
-			
-			
-			
-			
-			{{-- select fields view --}}
-			<div ng-controller="DynamicContentController" ng-init='getContent("{{ $fieldURL }}", "edit_field_container");'> 
-			
-				<div id="edit_field_container"></div>
-			
-			</div>
-			{{-- end controller --}}
-	
-	
-	
-			{{-- save button --}}
-			<!-- div class="form-group">
-				<save-button controller="FormController" action="saveForm"></save-button>
-			</div -->
 					
-
-
-		{{-- end form group --}}
-		</div>
+				{{ Form::label('name', 'Form Name') }}
+				{{ Form::text('name', null, Array ('placeholder' => 'Form Name', 'class' => 'form-control', 'required' => '')) }}
+	
+			</div>
 		
+		
+			<div class="form-group">
+					
+				{{ Form::label('type', 'Form Type') }}
+				
+			</div>
+		
+		
+		
+		
+		
+			<!-- vertical-spacer size="50"></verticalSpacer -->
+			<hr>
+			
+		
+		
+			{{--add fields button --}}
+			<a href="#" class="btn btn-primary" ng-click="showAddFields = !showAddFields">
+				<span ng-show="showAddFields">Hide New Fields</span>
+	    		<span ng-hide="showAddFields">Add New Fields</span>
+			</a>
+		
+		
+			{{-- fields selection --}}
+			<div id="addFieldsSection" class="form-group" ng-show="showAddFields">
+			
+				{{-- title --}}
+				<h3>Add Fields</h3>
+	
+			
+			
+				<div class="form-group">
+					<h5>SELECT DATABASE:<h5>
+					<!-- select data-ng-model="database.connection" ng-options="str for str in connections track by str" ng-change="selectDatabase()" -->
+					<select data-ng-model="database.connection" ng-options="str for str in connections" ng-change="selectDatabase()">
+					</select>
+				</div>
+		
+				
+				
+				
+				{{-- select table view --}}
+				<div ng-controller="DynamicContentController" ng-init='getContent("{{ $tableURL }}", "edit_table_container");'> 
+				
+					<div id="edit_table_container"></div>
+				
+				</div>
+				{{-- end controller --}}
+				
+				
+				
+				
+				
+				{{-- select fields view --}}
+				<div ng-controller="DynamicContentController" ng-init='getContent("{{ $fieldURL }}", "edit_field_container");'> 
+				
+					<div id="edit_field_container"></div>
+				
+				</div>
+				{{-- end controller --}}
+		
+		
+		
+				{{-- save button --}}
+				<!-- div class="form-group">
+					<save-button controller="FormController" action="saveForm"></save-button>
+				</div -->
+						
+	
+	
+			{{-- end form group --}}
+			</div>
+			
+			
+			
+			<br>
+			<br>
+			
+			
+			{{-- save button --}}
+			<div class="form-group pull-right">
+				<save-form-button></save-button>
+			</div>
+			
+			
+			
+		{{ Form::close() }}	
+			
 	</div>
 	{{-- end controller --}}	
 

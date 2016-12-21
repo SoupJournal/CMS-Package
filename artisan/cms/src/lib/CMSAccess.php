@@ -17,6 +17,7 @@
 		
 		//CMS permissions
 		private static $PERMISSIONS = Array(
+			'create_application',
 			'edit_application',
 			'edit_security_group',
 			'edit_form',
@@ -26,12 +27,13 @@
 		);
 			
 		//permission ID's
-		public static $PERMISSION_EDIT_APPLICATION 	= 0;
-		public static $PERMISSION_EDIT_SECURITY 	= 1;
-		public static $PERMISSION_EDIT_FORM 		= 2;
-		public static $PERMISSION_EDIT_PAGE 		= 3;
-		public static $PERMISSION_DATA_ENTRY 		= 4;		
-		public static $PERMISSION_VIEW_APP 			= 5;
+		public static $PERMISSION_CREATE_APPLICATION 	= 0;
+		public static $PERMISSION_EDIT_APPLICATION 		= 1;
+		public static $PERMISSION_EDIT_SECURITY 		= 2;
+		public static $PERMISSION_EDIT_FORM 			= 3;
+		public static $PERMISSION_EDIT_PAGE 			= 4;
+		public static $PERMISSION_DATA_ENTRY 			= 5;		
+		public static $PERMISSION_VIEW_APP 				= 6;
 		
 		
 		
@@ -40,7 +42,7 @@
 		 *	Get the associated permission key from a permission ID
 		 *
 		 *	@param permissionID	the ID of the permission to check
-		 *	@return the associated query key or null if no matching key is found
+		 *	@return the string key of the specified permission, null if no key found
 		 *
 		 **/
 		static function permissionKey($permissionID) {
@@ -55,6 +57,40 @@
 			return $key;
 			
 		} //end permissionKey()
+		
+		
+		
+		
+		
+		/**
+		 *	Checks the provided list of permissions to see if it contains the specified permission
+		 *
+		 *	@param permissionsList the list of permissions to check 
+		 *	@param permissionID	the ID of the permission to check
+		 *	@return true if the permission is contained within the provided list, otherwise false
+		 *
+		 **/
+		static function validPermissionFromList($permissionsList, $permissionID) {
+			
+			$valid = false;
+			
+			//valid list
+			if ($permissionsList && count($permissionsList)>0) { 
+			
+				//get the key for the permission
+				$permissionKey = CMSAccess::permissionKey($permissionID);
+				if ($permissionKey && strlen($permissionKey)>0) {
+					
+					//check permission status
+					$valid = (array_key_exists($permissionKey, $permissionsList) && $permissionsList[$permissionKey]);
+					
+				}
+				
+			} //end if (valid list)
+			
+			return $valid;
+			
+		} //end validPermissionFromList()
 		
 		
 		

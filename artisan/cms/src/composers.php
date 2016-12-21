@@ -58,6 +58,9 @@
     	//make app name available
     	$view->with('appName', $appName);
 	    
+	    //make user permissions available
+    	$view->with('userPermissions', CMSAccess::userPermissions($appId));
+	    
 	    
 	});
 	

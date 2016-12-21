@@ -1,4 +1,4 @@
-@extends('cms::layouts.admin')
+@extends('cms::layouts.master')
 
 
 {{------------------ TITLE -------------------}}
@@ -46,11 +46,11 @@
 
 
 	{{-- select database view --}}
-	<div ng-controller="ApplicationController" ng-init="setDataURL('{{ $dataURL }}');">
+	<!-- div ng-controller="SettingsController" ng-init="setDataURL('{{ $dataURL }}');" -->
 	
 	
 		{{-- title --}}
-		<h2>Applications</h2>
+		<h2>Settings</h2>
 	
 	
 
@@ -58,19 +58,15 @@
 	
 		<div class="form-group">
 		
-		
-		
+			{{ Form::label('imageLocation', 'Base Image Upload Path') }}
+	        {{ Form::text('imageLocation', null, Array ('placeholder' => 'Path', 'class' => 'form-control')) }}
 			
-		
-			{{-- draw table --}}
-			@include('cms::cms.gui.table', array('title'=>'users', 'dataFunction'=>'initApplicationTable'))
-
-	
+			
 
 		{{-- end form group --}}
 		</div>
 		
-	</div>
+	<!-- /div -->
 	{{-- end controller --}}	
 
 

@@ -1,4 +1,4 @@
-@extends('cms::layouts.master')
+@extends('cms::layouts.admin')
 
 
 {{------------------ TITLE -------------------}}

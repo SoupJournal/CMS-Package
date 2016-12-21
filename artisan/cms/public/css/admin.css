@@ -35,8 +35,7 @@
 /**** 			BUTTONS 		****/
 /***********************************/
 
-.cms-save-button {
-	float: right;	
+.cms-form-button {	
 	padding: 5px 10px 5px 10px;
 	border: 2px solid grey;
 	border-radius: 10px;

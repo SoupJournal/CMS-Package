@@ -3,11 +3,20 @@
 	//set custom page controllers
 	//$pageModules = array_push($pageModules, 'ui.bootstrap.dropdown');
 
+
+	//determine visible menu items
+	$showCreateApp = CMSAccess::validPermissionFromList($userPermissions, CMSAccess::$PERMISSION_CREATE_APPLICATION);
+	
+
+
   	//user is logged in
 	if (isset($user)) {
 
 		//get list of users applications
 		$applications = CMSAccess::userApplications();
+
+		//get number of applications
+		$numberOfApplications = count($applications);
 
 ?>
 
@@ -30,7 +39,7 @@
 		   		@if ($applications)
 		   		
 		   			{{-- multiple applications --}}
-		   			@if (count($applications)>1)
+		   			@if ($numberOfApplications>1 || ($showCreateApp && $numberOfApplications==1))
 		   		
 			   		
 				   		<div class="dropdown pull-left">
@@ -46,16 +55,34 @@
 						        	<span class="caret"></span>
 						      	</a>
 						      	<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="simple-dropdown">
+						      	
+						      		{{-- list applications --}}
 						      		@foreach ($applications as $appData)
 						      			@if ($appData && isset($appData->name) && isset($appData->id) && strlen($appData->name))
 								          	<li><a href="{{ URL::to('cms/' . $appData->id) }}">{{ $appData->name }}</a></li>
 								        @endif
 						          	@endforeach
+						          	
+						          	{{-- add create option --}}
+						          	@if ($showCreateApp)
+						        		<li class="divider"></li>
+						          		<li><a href="{{ URL::to('cms/app') }}">Add new application</a></li>
+						          	@endif
 						      	</ul>
 						    </span>
 						    
 						</div>
 				
+					
+					{{-- no applications but permission to create new app --}}
+					@elseif ($numberOfApplications==0)
+				
+						<div class="dropdown pull-left">
+							<span><a href="{{ URL::to('cms/app') }}">Add new application</a></span>
+						</div>
+				
+				
+					{{-- only one application available and no create permission --}}
 					@elseif ($appName && strlen($appName))
 				
 						<div class="dropdown pull-left">
@@ -65,6 +92,8 @@
 					@endif
 				
 				@endif
+		   		
+		   		
 		   		
 		   		
 		   		
@@ -78,7 +107,6 @@
 				      	</a>
 				      	<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="simple-dropdown">
 				          	<li><a href="{{ URL::to('cms/logout') }}">logout</a></li>
-			        		<!-- li class="divider"></li -->
 				      	</ul>
 				    </span>
 		   		

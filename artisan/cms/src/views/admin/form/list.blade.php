@@ -40,7 +40,16 @@
 	$tableURL = action("FormController@getTable");
 	$fieldURL = action("FormController@getField");
 	$dataURL = URL::to('cms/' . $appId . '/form/forms');
+	$editURL = URL::to('cms/' . $appId . '/form/create/');
 
+	//compile table parameters
+	$tableParameters = array(
+		'title'=>'', 
+		'dataFunction'=>'initFormTable', 
+		'editURL' => $editURL,
+		'editField' => 'id'
+	);
+	
 	
 ?>
 
@@ -60,7 +69,7 @@
 		
 		
 			{{-- draw table --}}
-			@include('cms::cms.gui.table', array('title'=>'', 'dataFunction'=>'initFormTable'))
+			@include('cms::cms.gui.table', $tableParameters)
 
 	
 		

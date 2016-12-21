@@ -99,9 +99,9 @@
 							
 							
 							{{-- save button --}}
-							<div class="form-group">
+							<!--div class="form-group">
 								<save-button action="saveForm"></save-button>
-							</div>
+							</div -->
 				
 <?php
 
