@@ -26,7 +26,7 @@
 			$form = CMSForm::find($formId);
 			
 			//render view
-			return View::make('cms::admin.form.create')->with('form', $form);
+			return View::make('cms::admin.form.edit')->with('form', $form);
 			
 		} //end getEdit()	
 	
