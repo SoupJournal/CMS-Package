@@ -40,14 +40,15 @@
 	$tableURL = action("FormController@getTable");
 	$fieldURL = action("FormController@getField");
 	$dataURL = URL::to('cms/' . $appId . '/form/forms');
-	$editURL = URL::to('cms/' . $appId . '/form/create/');
+	$editURL = URL::to('cms/' . $appId . '/form/edit/');
 
 	//compile table parameters
 	$tableParameters = array(
 		'title'=>'', 
 		'dataFunction'=>'initFormTable', 
 		'editURL' => $editURL,
-		'editField' => 'id'
+		'editField' => 'id',
+		'columnSyntax' => Array(true)
 	);
 	
 	
@@ -57,7 +58,7 @@
 
 
 	{{-- select database view --}}
-	<div ng-controller="FormController" ng-init="setDataURL('{{ $dataURL }}');">
+	<div ng-controller="FormController" ng-init="setDataURL('{{ $dataURL }}'); setEditURL('{{ $editURL }}');">
 	
 	
 		{{-- title --}}
@@ -74,7 +75,7 @@
 	
 		
 			{{-- add form button --}}
-			<a href="{{ URL::to('cms/' . $appId . '/form/create') }}" class="btn btn-primary">Add Form</a>
+			<a href="{{ URL::to('cms/' . $appId . '/form/edit') }}" class="btn btn-primary">Add Form</a>
 	
 
 		{{-- end form group --}}

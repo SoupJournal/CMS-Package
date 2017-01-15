@@ -16,18 +16,44 @@
 			$scope.dataURL = url;	
 		}
 		
+		//set url for form editing
+		$scope.setEditURL = function(url) {
+			$scope.editURL = url;	
+		}
+		
 		
 		//setup forms table
 		$scope.initFormTable = function(scope) {
 
 			//valid scope
 			if (scope) {
+				scope.tableId = 'formTable';
 				scope.dataURL = $scope.dataURL;	
 				scope.includeKeys = ['name'];
 				scope.excludeKeys = [];
+				scope.columnProperties = { 
+					1: {
+						html: true			
+					}
+				};
 			}
 			
 		} //end initFormTable()
+
+
+		
+		//setup fields table
+		$scope.initFieldTable = function(scope) {
+
+			//valid scope
+			if (scope) {
+				scope.tableId = 'fieldTable';
+				scope.dataURL = $scope.dataURL;	
+				scope.includeKeys = ['key', 'connection', 'table', 'field'];
+				scope.excludeKeys = [];
+			}
+			
+		} //end initFieldTable()
 
 
 		
@@ -96,6 +122,55 @@
 		$scope.saveForm = function() {
 			console.log("saved form");	
 		};
+		
+		
+		
+		
+		
+		//respond to table update events
+		$scope.$on('tableUpdated', function(event, obj) {
+
+    	  	//valid data
+    	  	if (obj) {
+    	  		
+    	  		
+    	  		//form table
+    	  		if (obj.tableId == 'formTable') {
+    	  		
+	    	  		//get object properties
+	    	  		var rawData = obj.data;
+	    	  		var filteredData = obj.results;
+	    	  		
+	    	  		//valid data
+	    	  		if (rawData && filteredData && rawData.length>0 && filteredData.length>=rawData.length) {
+	 
+	 					//valid edit URL
+	 					if ($scope.editURL && $scope.editURL.length>0) {
+	 
+		 					//process data
+		 					for (var i=0; i<rawData.length; ++i) {
+		 						
+		 						//append edit field
+		 						filteredData[i].push('<edit-button href="' + $scope.editURL + '/' + rawData[i]['id'] + '">edit</edit-button>');
+		 						
+		 					} //end for()
+	 					
+	 					
+		 					//update values
+							$scope.$broadcast('applyValues', { 
+								results: filteredData
+							});
+	 					
+	 					} //end if (valid edit URL)
+	 					
+	    	  		
+	    	  		}
+    	  		
+    	  		} //end if (form table)
+    	  		
+    	  	} //end if (valid data)
+    	  	
+	    }); //end event handler()
 		
 		
 	}]); //end controller

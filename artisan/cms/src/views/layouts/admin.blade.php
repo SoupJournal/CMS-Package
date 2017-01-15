@@ -36,29 +36,12 @@
 		<div class="container top-margin-small">
 		    <div class="row">
 		    
-		    	<!-- sidebar -->
-		        <div class="col-md-2">
-		            
-			    	{{------------------ MENU --------------------}}
-				    @include('cms::admin.layout.menu')
-	
-        		</div>
-		    	<!-- end sidebar -->
 		    	
-		    	
-		    	
-		    	<div class="col-md-10">
+		    	<div class="col-md-12">
 		            <div class="jumbotron">
 				    	
 				    	<div id="page-content-wrapper">
 				        	<div class='container-fluid'>
-
-
-								{{-- display any messages --}}
-								@if (Session::has('message'))
-									<div class='alert alert-success'>{{ Session::get('message') }}</div>
-								@endif
-								
 
 				        		{{----------------- CONTENT ------------------}}
 				        		@yield('content')
@@ -70,6 +53,7 @@
 					</div>
            
         		</div>
+        		
         
         	</div>
         </div>
@@ -78,10 +62,6 @@
         {{----------------- SCRIPTS ------------------}}
 	    @include('cms::cms.app', ['pageModules' => $pageModules])
         
-
-    	<?php
-		//	} //end if (auth check)
-		?>
         
     </body>
 </html>

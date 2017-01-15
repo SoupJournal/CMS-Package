@@ -155,11 +155,14 @@
 	
 	
 	//table controller
-	module.controller('TableController', [ '$http', '$scope', function($http, $scope) {
+	module.controller('TableController', [ '$http', '$scope', '$sce', function($http, $scope, $sce) {
 
 		//inherit from base controller 
 		angular.extend(this, new GUIController($scope));
 
+		//table variables
+		$scope.tableId = null;
+		$scope.columnProperties = null;
 
 		//data variables
 		$scope.dataURL = null;
@@ -178,21 +181,50 @@
 		//parent init function
 		$scope.initFunction = null;
 
-/*
-		$scope.initController = function(initFunction) {
 
-			//function specified
-			if (initFunction && initFunction.length>0) {
-				$scope.initFunction = initFunction;	
-			}
+		//get value of property for column
+		$scope.columnProperty = function(columnIndex, propertyName) {
 			
-			//call parent function
-			if ($scope.$parent && typeof($scope.$parent[$scope.initFunction])=='function') {
-				$scope.$parent[$scope.initFunction]($scope);
-			}
+			var value = undefined;
+
+			//table has properties
+			if ($scope.columnProperties) {
+
+				//valid index (columnProperties may be an array or an object so don't compare against length)
+				if (columnIndex>=0) {
+
+					//valid property name
+					if (propertyName && propertyName.length>0) {
+						
+						//properties exist for column
+						if ($scope.columnProperties[columnIndex]) {
+
+							//retrieve column value
+							value = $scope.columnProperties[columnIndex][propertyName];
+							
+						}
+						
+					} //end if (valid propery name)
+					
+				} //end if (valid index)
+				
+			} //end if (table has properties)
 			
-		} //end initController()
-*/
+			return value;
+			
+		} //end columnProperty()
+		
+
+
+		//return compiled HTML version of string
+		$scope.getHTMLValue = function(html){
+			
+	        return $sce.trustAsHtml(html);
+	        
+	    }; //end getHTMLValue()
+	    
+	    
+	    
 
 		//retrieve table data
 		$scope.getTableData = function(pageNumber){
@@ -249,10 +281,46 @@
 					$scope.filteredKeys = filteredKeys;
 					$scope.filteredResults = filteredResults;
 
+					//trigger update
+					$scope.$emit('tableUpdated', { 
+						tableId: $scope.tableId,
+						keys: $scope.filteredKeys,
+						data: $scope.pageData,
+						results: $scope.filteredResults
+					});
+
 				
 				});
 			
 			} //end if (valid data URL)
+			
+			
+			
+			//respond to update events
+			$scope.$on('applyValues', function(event, obj) {
+
+	    	  	//valid parameters
+	    	  	if (obj) {
+	 
+	 				//check for valid table id
+	 				if (!obj.tableId || obj.tableId.length<=0 || obj.tableID==$scope.tableId) {
+	 
+		    	  		//apply keys
+		    	  		if (obj.keys!==undefined) {
+		    	  			$scope.filteredKeys = obj.keys;
+		    	  		}
+	    	  		
+	    	  			//apply data
+		    	  		if (obj.results!==undefined) {
+		    	  			$scope.filteredResults = obj.results;
+		    	  		}
+	    	  		
+	 				} //end if (valid table id)
+	    	  		
+	    	  	} //end if (valid parameters)
+	    	  	
+		    }); //end event handler()
+			
 		
 		};
 	
@@ -349,6 +417,31 @@
 	//==========================================================//	
 	
 	
+
+	
+	
+	//editButton directive - standard edit button 
+	module.directive('editButton', function($parse) {
+	    return {
+	    	restrict: 'AE',
+	        template: '<a href="{{ editURL }}" class="{{ class }}">edit</button>',
+	        link: function (scope, element, attrs) {
+	        	
+				//valid attributes
+	        	if (attrs) {
+
+	        		//store attributes in scope
+	        		scope.editURL = (attrs.href && attrs.href.length>0) ? attrs.href : '#';
+	        		scope.class = (attrs.class && attrs.class.length>0) ? attrs.class : 'cms-edit-button';
+	        		
+	        	} //end if (valid attributes)
+	        	
+	        },
+	 	    replace: false
+	    }
+	}); //end directive
+	
+	
 			
 	//saveButton directive - standard save button 
 	module.directive('saveFormButton', function($parse) {
@@ -367,7 +460,7 @@
 	        	} //end if (valid attributes)
 	        	
 	        },
-	 	    replace: true
+	 	    replace: false
 	    }
 	}); //end directive
 	 	    
@@ -379,7 +472,7 @@
 	    return {
 	    	restrict: 'AE',
 	        template: '<button type="button" ng-click="performAction()" class="{{ class }}">{{ name }}</button>',
-	 	    replace: true,
+	 	    replace: false,
 	        link: function (scope, element, attrs) {
 	        	
 				//valid attributes

@@ -91,6 +91,9 @@
 
 			//logout user
 			Auth::CMSuser()->logout();
+			
+			//clear session
+			Session::flush();
 	
 			//redirect to login
 			return Redirect::to('/cms/login');

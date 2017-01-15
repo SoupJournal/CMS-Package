@@ -122,6 +122,30 @@
 	
 	
 
+
+	//dynamicCompile directive - used to dynamically compile innerHTML changes
+	module.directive('dynamicCompile', function($compile, $parse) {
+		return {
+			restrict: 'AE',
+			link: function(scope, element, attr) {
+			
+			 	var parsed = $parse(attr.ngBindHtml);
+			 
+			 	//Recompile if the template changes
+			 	scope.$watch(
+				   	function() { 
+				     	return (parsed(scope) || '').toString(); 
+				   	}, 
+				   	function() {
+
+				       	//compile html
+						$compile(element, null, -9999)(scope);
+
+				   	}
+			 	);
+			}
+		};
+	}); //end directive
 	
 	
 	

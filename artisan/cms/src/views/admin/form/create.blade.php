@@ -57,6 +57,25 @@
 	//$databaseConnectionNames = addslashes($databaseConnectionNames);
 	//$databaseConnectionNames = htmlspecialchars($databaseConnectionNames);
 	//echo "databaseConnections: " . $databaseConnectionNames;
+	$formTypes = array(
+		'form',
+		'template',
+		'service'
+	);
+	$formTypesString = convertObjectToJS($formTypes);
+	
+	
+	//field form
+	$fieldDataURL = URL::to('cms/' . $appId . '/form/fields' . ($form ? ('/' . $form->id) : ''));
+	//$editURL = URL::to('cms/' . $appId . '/form/create/');
+
+	//compile table parameters
+	$tableParameters = array(
+		'title'=>'', 
+		'dataFunction'=>'initFieldTable', 
+		//'editURL' => $editURL,
+		'editField' => 'id'
+	);
 	
 ?>
 
@@ -73,29 +92,49 @@
 
 
 	{{-- select database view --}}
-	<div ng-controller="FormController" ng-init='connections={{ $databaseConnectionNames }}; tableURL="{{ $tableURL }}"; tableContainer="edit_table_container"; fieldURL="{{ $fieldURL }}"; fieldContainer="edit_field_container";'>
+	<div ng-controller="FormController" ng-init='connections={{ $databaseConnectionNames }}; tableURL="{{ $tableURL }}"; tableContainer="edit_table_container"; fieldURL="{{ $fieldURL }}"; setDataURL("{{ $fieldDataURL }}");  fieldContainer="edit_field_container"; formTypes={{ $formTypesString }};'>
 	
 		
 		{{ Form::open(Array('role' => 'form', 'name' => 'securityForm')) }}
 		
 			{{-- title --}}
-			<h2>Create Form</h2>
+			@if (isset($form))
+				<h2>Edit Form</h2>			
+			@else
+				<h2>Create Form</h2>
+			@endif
 		
 		
 			<div class="form-group">
 					
 				{{ Form::label('name', 'Form Name') }}
-				{{ Form::text('name', null, Array ('placeholder' => 'Form Name', 'class' => 'form-control', 'required' => '')) }}
+				{{ Form::text('name', (isset($form) ? $form->name : null), Array ('placeholder' => 'Form Name', 'class' => 'form-control', 'required' => '')) }}
+	
+			</div>
+		
+
+
+			<div class="form-group">					
+			
+				{{ Form::label('key', 'Form Id') }}
+				{{ Form::text('key', (isset($form) ? $form->key : null), Array ('placeholder' => 'Form Id', 'class' => 'form-control', 'required' => '')) }}
 	
 			</div>
 		
 		
+		{{-- TODO: implement type --}}
+		{{--
 			<div class="form-group">
 					
 				{{ Form::label('type', 'Form Type') }}
+				<div class="form-group">
+					{{ Form::select('type', $formTypes, (isset($form) ? $form->type : null), ['data-ng-model' => 'form.type', 'change'=>'selectType()']) }}
+					<!--select data-ng-model="form.type" ng-options="str for str in formTypes" ng-change="selectType()"--> 
+					</select>
+				</div>
 				
 			</div>
-		
+		--}}
 		
 		
 		
@@ -105,8 +144,26 @@
 			
 		
 		
+			{{-- fields selection --}}
+			<div class="form-group">
+			
+				{{-- Form fields --}}
+				<h3>Current Fields</h3>
+		
+				{{-- draw table --}}
+				@include('cms::cms.gui.table', $tableParameters)
+
+	
+		
+			{{-- end form group --}}
+			</div>
+			
+			
+			
+		
+		
 			{{--add fields button --}}
-			<a href="#" class="btn btn-primary" ng-click="showAddFields = !showAddFields">
+			<a href="javascript:void()" class="btn btn-primary" ng-click="showAddFields = !showAddFields">
 				<span ng-show="showAddFields">Hide New Fields</span>
 	    		<span ng-hide="showAddFields">Add New Fields</span>
 			</a>
@@ -115,7 +172,7 @@
 			{{-- fields selection --}}
 			<div id="addFieldsSection" class="form-group" ng-show="showAddFields">
 			
-				{{-- title --}}
+				{{-- Add new fields --}}
 				<h3>Add Fields</h3>
 	
 			
@@ -152,6 +209,7 @@
 		
 		
 		
+		
 				{{-- save button --}}
 				<!-- div class="form-group">
 					<save-button controller="FormController" action="saveForm"></save-button>
@@ -162,6 +220,8 @@
 			{{-- end form group --}}
 			</div>
 			
+			
+		
 			
 			
 			<br>

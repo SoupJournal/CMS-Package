@@ -20,16 +20,20 @@
 	
 	
 	
-		public function getCreate($appId, $formId = null) {
+		public function getEdit($appId, $formId = null) {
 			
-			return View::make('cms::admin.form.create')->with('formId', $formId);
+			//get form properties
+			$form = CMSForm::find($formId);
 			
-		} //end getCreate()	
+			//render view
+			return View::make('cms::admin.form.create')->with('form', $form);
+			
+		} //end getEdit()	
 	
 	
 	
 	
-		public function postCreate($appId, $formId = null) {
+		public function postEdit($appId, $formId = null) {
 			
 			
 			//form errors
@@ -53,15 +57,27 @@
 						
 						//get form values
 						$name = (isset($_POST['name']) && strlen($_POST['name'])>0) ? trim($_POST['name']) : null;
+						$key = (isset($_POST['key']) && strlen($_POST['key'])>0) ? trim($_POST['key']) : null;
+						$fields = (isset($_POST['field']) && count($_POST['field'])>0) ? $_POST['field'] : null; 
 						
 						
-						//validate form
+						//validate form name
 						if ($name && strlen($name)>0 && isSQLSafeString($name)) {
 							$valid = true;
 						}
 						else {
 							array_push($errors, 'Please specify a valid form name');
 						}
+						
+						
+						//validate form key
+						if ($key && strlen($key)>0 && isSQLSafeString($key)) {
+							$valid &= true;
+						}
+						else {
+							array_push($errors, 'Please specify a valid form key');
+						}
+						
 						
 	
 						//valid form
@@ -84,12 +100,89 @@
 							
 								//set attributes
 								$form->name = $name;
-	
-								//TODO: set form fields
-								
-								
+								$form->key = $key;
+
 								//save form
 								if ($form->save()) {
+									
+									
+									//save form fields
+									if ($fields && is_array($fields)) {
+										
+										//iterrate through connection
+										foreach ($fields as $fieldConnection => $fieldTables) {
+										
+											//iterrate through tables
+											foreach ($fieldTables as $fieldTable => $fieldsList) {
+												
+												//iterrate through fields
+												foreach ($fieldsList as $fieldData) {
+													
+													//valid data
+													if ($fieldData && is_array($fieldData)) {
+						
+						//echo "fieldData[" . $fieldTable . "]: " .print_r($fieldData, true);
+						//exit(0);
+						
+														//get field data values
+														$fieldId = (isset($fieldData['id']) && strlen($fieldData['id'])>0) ? trim($fieldData['id']) : null;
+														$fieldKey = (isset($fieldData['key']) && strlen($fieldData['key'])>0) ? trim($fieldData['key']) : null;
+														
+														//valid field
+														if ($fieldId && $fieldKey && strlen($fieldId)>0 && strlen($fieldKey)>0) {
+															
+															//TODO: validate field Key (JSON / javascript safe name??)
+															//TODO: validate connection, table & field??
+															
+															//TODO: handle unique constraint violation
+															
+															//find existing field
+															$field = CMSFormField
+																::where('form', $form->id)
+																->where('connection', $fieldConnection)
+																->where('table', $fieldTable)
+																->where('field', $fieldId)
+																->first();
+																
+															
+															//create field
+															if (!$field) {
+																$field = new CMSFormField();
+																$field->form = $form->id;
+																$field->connection = $fieldConnection;
+																$field->table = $fieldTable;
+																$field->field = $fieldId;
+															}
+															
+															//valid field
+															if ($field) {
+																
+																//update properties
+																$field->key = $fieldKey;	
+																
+																//store field
+																$field->save();
+																
+															}
+															
+														} //end if (valid field)
+														
+													
+													} //end if (has field data)
+													
+													
+												} //end for (fields)
+												
+											} //end for(tables)
+										
+										} //end for(connections)
+										
+									} //end if (found fields)
+								
+								
+									
+									
+									//redirect user
 									return Redirect::to('/cms/' . $appId . '/form')->with('message', 'Form saved!');
 								}
 								//error saving
@@ -147,7 +240,7 @@
 				->withInput()
 				->withErrors($errors);
 			
-		} //end postCreate()	
+		} //end postEdit()	
 	
 	
 	
@@ -218,24 +311,39 @@
 	
 	
 	
-		public function getFields($appId = null, $formID = null) {
-		/*	
+		public function getFields($appId = null, $formId = null) {
+			
 			//valid app id
 			if ($appId>=0) {
 			
-				//build query
-				$query = CMSForm::select(['id', 'name', 'type'])
-						->where('status', '=', 1)
-						->where('application', '=', $appId);
+				//valid form id
+				if ($formId>=0) {
+			
+					//check if form is valid
+					$form = CMSForm::find($formId);
+					if ($form && $form->application==$appId) {
+			
+						//build query
+						$query = CMSFormField::select(['id', 'key', 'connection', 'table', 'field', 'row'])
+								->where('form', '=', $formId);
+								//->where('application', '=', $appId)
+								//->with('fields');
+	//							->whereHas('fields', function($fieldQuery){
+	//								$fieldQuery->select(['id', 'name']);
+	//							});
+						
+						//get paginated results
+						$results = $this->paginateRequestQuery($query, $_GET);
+						
+						//return paginated query
+						return Response::json($results);
+					
+					} //end if (valid form)
 				
-				//get paginated results
-				$results = $this->paginateRequestQuery($query, $_GET);
-				
-				//return paginated query
-				return Response::json($results);
+				} //end if (valid form id)
 			
 			} //end if (valid app id)
-		*/	
+			
 			//no results
 			return "";
 		

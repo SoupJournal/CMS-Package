@@ -8,8 +8,7 @@
 		
 		/*
 		
-	//module.directive('compiled-html', function($interpolate, $compile) {
-		
+	
 	module.directive('compiledHtml', function() {
 		
 	//		      return { template: "some template cCODDDDE Here"};

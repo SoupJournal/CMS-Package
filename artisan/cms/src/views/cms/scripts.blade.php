@@ -7,21 +7,36 @@
 	//PAGE PROPERTIES
 	//$pageModules = null;
 	
+	//DEBUG
+	$useLocalAPIs = false;
+	
 ?>
 
+
 	{{-- Load styles --}}
-   	<link href="//maxcdn.bootstrapcdn.com/bootstrap/{{ $bootstrapVersion }}/css/bootstrap.min.css" rel="stylesheet">
-   	<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"> 
+	@if (isset($useLocalAPIs) && $useLocalAPIs)
+	   	<link href="//bootstrap.api.aberration.dev/css/bootstrap.min.css" rel="stylesheet">
+	   	<link href="//bootstrap.api.aberration.dev/css/font-awesome.css" rel="stylesheet"> 	
+	@else
+	   	<link href="//maxcdn.bootstrapcdn.com/bootstrap/{{ $bootstrapVersion }}/css/bootstrap.min.css" rel="stylesheet">
+	   	<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"> 
+	@endif
       
 
 	{{-- Add libraries --}}
 	<!-- script src="//maxcdn.bootstrapcdn.com/bootstrap/{{ $bootstrapVersion }}/js/bootstrap.min.js"></script -->
 	<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script> -->
     <!-- add Angular JS support -->
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/{{ $angularVersion }}/angular.min.js"></script>  
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/{{ $angularVersion }}/angular-resource.min.js"></script> 
+    @if (isset($useLocalAPIs) && $useLocalAPIs)
+		<script src="https://angular.api.aberration.dev/angular.min.js"></script>  
+		<script src="https://angular.api.aberration.dev/angular-resource.min.js"></script> 	    
+	@else
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/{{ $angularVersion }}/angular.min.js"></script>  
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/{{ $angularVersion }}/angular-resource.min.js"></script> 
+	@endif
 	<!-- script src="https://ajax.googleapis.com/ajax/libs/angularjs/{{ $angularVersion }}/angular-route.js"></script --> 
 	{{ HTML::script('packages/artisan/cms/js/bootstrap/ui-bootstrap-2.3.0.js') }}
+
 
 
 
