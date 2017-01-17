@@ -1,5 +1,5 @@
 {
-    "name": "artisan/cms",
+    "name": "soup/cms",
     "description": "CMS for mobile and web applications",
     "authors": [
         {
@@ -21,7 +21,7 @@
             "src/lib"
         ],
         "psr-0": {
-            "Artisan\\Cms\\": "src/"
+            "Soup\\Cms\\": "src/"
         }
     },
     "minimum-stability": "stable"

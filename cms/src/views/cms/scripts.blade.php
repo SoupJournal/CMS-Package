@@ -35,7 +35,7 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/{{ $angularVersion }}/angular-resource.min.js"></script> 
 	@endif
 	<!-- script src="https://ajax.googleapis.com/ajax/libs/angularjs/{{ $angularVersion }}/angular-route.js"></script --> 
-	{{ HTML::script('packages/artisan/cms/js/bootstrap/ui-bootstrap-2.3.0.js') }}
+	{{ HTML::script($assetPath . '/js/bootstrap/ui-bootstrap-2.3.0.js') }}
 
 
 
@@ -49,17 +49,17 @@
 
 
 	{{-- custom app scripts --}}
-	{{ HTML::script('packages/artisan/cms/js/core/ajax.js') }}
-	{{ HTML::script('packages/artisan/cms/js/core/components.js') }}
-	{{ HTML::script('packages/artisan/cms/js/cms/general/cms.js') }}		
-	{{ HTML::script('packages/artisan/cms/js/cms/general/gui.js') }}
+	{{ HTML::script($assetPath . '/js/core/ajax.js') }}
+	{{ HTML::script($assetPath . '/js/core/components.js') }}
+	{{ HTML::script($assetPath . '/js/cms/general/cms.js') }}		
+	{{ HTML::script($assetPath . '/js/cms/general/gui.js') }}
 	{{-- cms scripts --}}
-	{{ HTML::script('packages/artisan/cms/js/cms/layout/header.js') }}
+	{{ HTML::script($assetPath . '/js/cms/layout/header.js') }}
 	
     
     {{-- debug script --}}
-    {{ HTML::script('packages/artisan/cms/js/core/debug.js') }}
+    {{ HTML::script($assetPath . '/js/core/debug.js') }}
     
     
     <!-- add style -->
-    {{ HTML::style('packages/artisan/cms/css/admin.css'); }} 
+    {{ HTML::style($assetPath . '/css/admin.css'); }} 

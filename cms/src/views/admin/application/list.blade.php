@@ -14,7 +14,7 @@
 
 @section('scripts')
 
-	{{ HTML::script('packages/artisan/cms/js/cms/pages/application.js') }}
+	{{ HTML::script($assetPath . '/js/cms/pages/application.js') }}
 	
 	<?php
 	

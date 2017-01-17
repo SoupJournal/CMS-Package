@@ -61,6 +61,8 @@
 	    //make user permissions available
     	$view->with('userPermissions', CMSAccess::userPermissions($appId));
 	    
+	    //set scripts asset path
+	    $view->with('assetPath', URL::asset('packages/soup/cms/'));
 	    
 	});
 	

@@ -1,4 +1,4 @@
-<?php namespace Artisan\Cms;
+<?php namespace Soup\Cms;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -20,7 +20,7 @@ class CmsServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('artisan/cms');
+		$this->package('soup/cms');
 		
 		//include package routes
 		include __DIR__.'/../../routes.php';
@@ -50,7 +50,7 @@ class CmsServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		//register package
-		$this->package('artisan/cms');
+		$this->package('soup/cms');
 		
 		
 		//apply auth config
