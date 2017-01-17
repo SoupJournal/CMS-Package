@@ -51,11 +51,6 @@
 						<span ng-if="!columnProperty($index, 'html')">@{{ value }}</span>
 						<dynamic-compile ng-if="columnProperty($index, 'html')" ng-bind-html="getHTMLValue(value)"></dynamic-compile>
 					</td>
-					<td>
-						@if (isset($editURL) && strlen($editURL)>0)
-							<a href="{{ $editURL }}@{{ rowData[$editField] }}">edit</a>
-						@endif
-					</td>
 				</tr>
 	
 			</table>

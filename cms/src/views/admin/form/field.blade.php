@@ -83,17 +83,15 @@
 									    	
 									    		{{-- data fields --}}
 									    		<input type="hidden" name="{{ $fieldName }}[id]" value="{{ $field->getName() }}">
-									    	
-										    	<!--td><input type="checkbox" data-ng-model="database.field" ng-change="selectField()"></td -->					
+									    					
 										    	<td>{{ $field->getName() }}</td>
 										    	<td><input type="text" name="{{ $fieldName }}[key]" value="{{ $field->getName() }}" class="col-md-10"></td>
-										    	<!-- td><database-input type="{{ $field->getType() }}"></database-input></td>
-										    	<td><input type="checkbox"></td -->
+
 										    	<td class="col-md-2">
-										    		<a href="javascript:void()" class="btn btn-primary" ng-click="showAdd_{{ $index }} = !showAdd_{{ $index }}" class="text-center">
-														<span ng-show="showAdd_{{ $index }}">Remove</span>
-										    			<span ng-hide="showAdd_{{ $index }}">Add</span>
-										    			<input type="hidden" name="{{ $fieldName }}[attached]" value="showAdd_{{ $index }}">
+										    		<a href="javascript:void(0)" class="btn btn-primary" ng-click="selectField('{{ $index }}')" class="text-center">
+														<span ng-show="isFieldSelected('{{ $index }}')">Remove</span>
+										    			<span ng-hide="isFieldSelected('{{ $index }}')">Add</span>
+										    			<input type="hidden" name="{{ $fieldName }}[attached]" ng-value="isFieldSelected('{{ $index }}')">
 													</a>
 												</td>
 

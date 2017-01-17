@@ -163,7 +163,7 @@
 		
 		
 			{{--add fields button --}}
-			<a href="javascript:void()" class="btn btn-primary" ng-click="showAddFields = !showAddFields">
+			<a href="javascript:void(0)" class="btn btn-primary" ng-click="showAddFields = !showAddFields">
 				<span ng-show="showAddFields">Hide New Fields</span>
 	    		<span ng-hide="showAddFields">Add New Fields</span>
 			</a>

@@ -10,6 +10,10 @@
 	module.controller('FormController', [ '$http', '$scope', 'PageService', function($http, $scope, $page) {
 		
 
+		//list of selected fields
+		$scope.selectedFields = null;
+		
+
 
 		//set url for form data
 		$scope.setDataURL = function(url) {
@@ -103,14 +107,48 @@
 					containerID: $scope.fieldContainer
 				});
 				
+				
+				//TODO: dynamically update selected fields
+				
 			//}
 			
 		}; //end selectTable()
 		
 		
 		
-		$scope.selectField = function() {
-			console.log("selected field");	
+		
+		$scope.isFieldSelected = function(fieldIndex) {
+			
+			//valid index
+			if (fieldIndex && fieldIndex.length>0) {
+			
+				//determine if field selected		
+				return ($scope.selectedFields && $scope.selectedFields[fieldIndex]);
+			
+			}
+			
+			return false;
+			
+		} //end isFieldSelected()
+		
+		
+		
+		
+		$scope.selectField = function(fieldIndex) {
+			
+			//valid index
+			if (fieldIndex && fieldIndex.length>0) {
+				
+				//ensure selection exists
+				if (!$scope.selectedFields) {
+					$scope.selectedFields = {};	
+				}
+				
+				//set field selection
+				$scope.selectedFields[fieldIndex] = !$scope.selectedFields[fieldIndex];
+				
+			} //end if (valid index)
+			
 		};
 		
 		//clear service variables -- seems not to be needed

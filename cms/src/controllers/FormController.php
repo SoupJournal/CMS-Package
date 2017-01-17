@@ -127,6 +127,7 @@
 														//get field data values
 														$fieldId = (isset($fieldData['id']) && strlen($fieldData['id'])>0) ? trim($fieldData['id']) : null;
 														$fieldKey = (isset($fieldData['key']) && strlen($fieldData['key'])>0) ? trim($fieldData['key']) : null;
+														$fieldAttached = isset($fieldData['attached']) ? filter_var($fieldData['attached'], FILTER_VALIDATE_BOOLEAN) : false;
 														
 														//valid field
 														if ($fieldId && $fieldKey && strlen($fieldId)>0 && strlen($fieldKey)>0) {
@@ -145,25 +146,36 @@
 																->first();
 																
 															
-															//create field
-															if (!$field) {
-																$field = new CMSFormField();
-																$field->form = $form->id;
-																$field->connection = $fieldConnection;
-																$field->table = $fieldTable;
-																$field->field = $fieldId;
+															//add field
+															if ($fieldAttached) {
+															
+																//create field
+																if (!$field) {
+																	$field = new CMSFormField();
+																	$field->form = $form->id;
+																	$field->connection = $fieldConnection;
+																	$field->table = $fieldTable;
+																	$field->field = $fieldId;
+																}
+																
+																//valid field
+																if ($field) {
+																	
+																	//update properties
+																	$field->key = $fieldKey;	
+																	
+																	//store field
+																	$field->save();
+																	
+																}
+															
 															}
 															
-															//valid field
-															if ($field) {
-																
-																//update properties
-																$field->key = $fieldKey;	
-																
-																//store field
-																$field->save();
-																
+															//remove field
+															else if ($field) {
+																$field->delete();
 															}
+															
 															
 														} //end if (valid field)
 														
