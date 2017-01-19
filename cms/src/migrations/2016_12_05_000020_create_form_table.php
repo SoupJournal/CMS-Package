@@ -19,6 +19,7 @@ class CreateFormTable extends Migration {
 			$table->string('key', 255);
 			$table->string('name', 255);
 			$table->string('properties', 2047)->nullable();
+			$table->string('permissions', 2047)->nullable();
 			$table->integer('type')->default(0);
 			$table->integer('status')->default(0);
 
