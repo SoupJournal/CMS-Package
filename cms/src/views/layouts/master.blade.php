@@ -38,7 +38,7 @@
 		    
 		    	<!-- sidebar -->
 		        <div class="col-md-2">
-		            
+     
 			    	{{------------------ MENU --------------------}}
 				    @include('cms::admin.layout.menu')
 	

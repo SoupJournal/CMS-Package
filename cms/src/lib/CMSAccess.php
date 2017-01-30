@@ -23,7 +23,8 @@
 			'edit_form',
 			'edit_page',
 			'data_entry',
-			'view_app'
+			'view_app',
+			'forms'
 		);
 			
 		//permission ID's
@@ -34,6 +35,11 @@
 		public static $PERMISSION_EDIT_PAGE 			= 4;
 		public static $PERMISSION_DATA_ENTRY 			= 5;		
 		public static $PERMISSION_VIEW_APP 				= 6;
+		public static $PERMISSION_FORMS 				= 7;
+		
+		//form permissions
+		public static $PERMISSION_FORMS_INCLUDE			= 'include';
+		public static $PERMISSION_FORMS_EXCLUDE			= 'exclude';
 		
 		
 		

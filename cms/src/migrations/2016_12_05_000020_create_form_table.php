@@ -18,8 +18,8 @@ class CreateFormTable extends Migration {
 			$table->integer('application')->references('id')->on('application');
 			$table->string('key', 255)->unique();
 			$table->string('name', 255);
-			$table->string('properties', 2047)->nullable();
-			$table->string('permissions', 2047)->nullable();
+			$table->string('properties')->nullable();
+			$table->string('permissions')->nullable();
 			$table->integer('type')->default(0);
 			$table->integer('status')->default(0);
 

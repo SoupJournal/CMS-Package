@@ -46,3 +46,24 @@
 .cms-save-button:hover {
 	text-decoration: none;	
 }
+
+
+/***********************************/
+/**** 			MENU	 		****/
+/***********************************/
+
+.nav-menu li a {
+	border-radius: 10px;	
+}
+
+
+.menu-pages a {
+	color: #654e7c;	
+}
+
+
+.menu-pages li a:hover {
+	color: #FFFFFF;	
+	background-color: #55AAFF;
+}
+

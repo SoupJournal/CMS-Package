@@ -20,13 +20,225 @@
 	
 	
 	
+		public function getInput($appId, $formId = null) {
+			
+			//get validated form
+			$form = $this->getValidatedForm($appId, $formId);
+			
+			//valid form
+			if ($form) {
+			
+				//render view
+				return View::make('cms::admin.form.input')->with('form', $form);
+			
+			} //end if (valid form)
+			
+			//insecure access
+			return Redirect::action('CMSController@getError')->with('errorCode', '404');
+			
+		} //end getInput()	
+	
+	
+	
+	
+		public function postInput($appId, $formId = null) {
+			
+			//get validated form
+			$form = $this->getValidatedForm($appId, $formId);
+			
+			//update result
+			$result = false;
+			
+			//valid form
+			if ($form) {
+
+				//get form fields (in data order)
+//				$fields = CMSFormField::select(['id', 'key', 'connection', 'table', 'field', 'row'])
+//										->where('form', '=', $form->id)
+//										->orderBy('connection', 'table', 'row')
+//										->get();
+				
+				$fields = $form->fields()->orderBy('connection', 'table', 'row')->get();
+				if ($fields) {
+
+					//compile query
+					$connection = null;
+					$connectionName = null;
+					$lastConnectionName = null;
+					$tableName = null;
+					$lastTableName = null;
+					$fieldName = null;
+					$row = null;
+					$lastRow = null;
+					$updateFields = [];
+					$runQuery = false;
+
+					//update post data
+					//foreach ($_POST as $field) {
+					$fieldValue = null;
+					foreach ($fields as $field) {	
+						
+						//get field properties
+						$connectionName = $field->connection;
+						$tableName = $field->table;
+						$fieldName = $field->field;
+						$row = $field->row;
+						$key = $field->key;
+						
+						//get field value
+						$fieldValue = safeArrayValue($field->key, $_POST, null);
+						//if (isset($fieldValue)) {
+							
+						//$field->
+							
+						//}
+						
+						
+						//valid properties
+						if (strlen($connectionName)>0 && strlen($tableName)>0 && strlen($fieldName)>0 && $row!=null) {
+							
+		
+							//new table or connection
+							if (strcmp($tableName, $lastTableName)!=0 || strcmp($connectionName, $lastConnectionName)!=0 || $row!=$lastRow) {
+						
+					
+								//previous query exists
+								if ($connection) {
+						
+									//run last query 
+									$runQuery = true;
+									
+								}
+								//no existing query
+								else {
+				
+									//create initial query
+									$connection = DB::connection($connectionName);
+									if ($connection) {
+										
+										//update query
+										$connection = $connection->table($tableName)->where('id', '=', $row);
+									}
+									
+								}
+						
+								//select table
+								//$connection = DB::connection($connectionName)->table($tableName);
+								
+								//store new properties
+								$lastConnectionName = $connectionName;
+								$lastTableName = $tableName;
+								$lastRow = $row;
+						
+							} //end if (new table)
+	
+							
+							if ($runQuery) {
+	
+								//valid connection
+								if ($connection) {
+	
+									//update table
+									$result = $connection->update($updateFields);
+									if (!$result) {
+										//TODO: handle update error
+									}
+								
+								}
+								
+								//clear fields list
+								$updateFields = [];
+								
+								//recreate connection
+								$connection = DB::connection($connectionName);
+								if ($connection) {
+									
+									//update query
+									$connection = $connection->table($tableName)->where('id', '=', $row);
+								}
+	
+								//clear query state
+								$runQuery = false;
+								
+							}
+	
+							//add fields to current query						
+							else {
+								
+								//add field to update query
+								$updateFields[$fieldName] = $fieldValue;
+							
+							}
+							
+							
+						} //end if (valid properties)
+						
+						
+					} //end for()
+				
+				
+
+					//run final query
+					if ($connection) {
+						
+						//update table
+						$result = $connection->update($updateFields);
+						if (!$result) {
+							//TODO: handle update error
+						}
+						
+						//echo "QUERY TO RUN111: " . $connection->toSql() . " - fields: " . print_r($updateFields, true);
+
+					} //end if (valid connection)
+
+						
+				
+				
+				
+				} //end if (found fields)
+
+		
+				//valid result
+				if ($result) {
+					
+					return Redirect::action('FormController@getInput', array(
+						'appId' => $appId,
+						'formId' => $formId,
+					))->with(
+						'message', 'Form saved!'
+					);
+					
+				}
+		
+			} //end if (valid form)
+			
+			
+			//print_r(DB::getQueryLog());
+			//exit(0);
+			//insecure access
+			return Redirect::action('CMSController@getError')->with('errorCode', '404');
+			
+		} //end postInput()
+	
+	
+	
+	
+	
 		public function getEdit($appId, $formId = null) {
 			
-			//get form properties
-			$form = CMSForm::find($formId);
+			//get validated form
+			$form = $this->getValidatedForm($appId, $formId);
 			
-			//render view
-			return View::make('cms::admin.form.edit')->with('form', $form);
+			//valid form
+			if ($form) {
+			
+				//render view
+				return View::make('cms::admin.form.edit')->with('form', $form);
+			
+			} //end if (valid form)
+			
+			//insecure access
+			return Redirect::action('CMSController@getError')->with('errorCode', '404');
 			
 		} //end getEdit()	
 	
@@ -241,7 +453,7 @@
 			if (!$validApplication) {
 				
 				//redirect to home page (filters will handle authentication)
-				Redirect::to('/cms');
+				return Redirect::action('CMSController@getLogin');
 				
 			}
 			
@@ -361,6 +573,37 @@
 		
 		} //end getFields()
 			
+			
+			
+			
+		//==========================================================//
+		//====					SECURITY METHODS				====//
+		//==========================================================//	
+			
+			
+		private function getValidatedForm($appId, $formId) {
+			
+			$form = null;
+			
+			//valid application id
+			if ($appId>=0) {
+
+				//check application id
+				$app = CMSApp::find($appId);
+				if ($app) {
+					
+					//get form
+					$form = CMSForm::find($formId);
+					
+				} //end if (valid app)
+				
+				
+			} //end if (valid app id)
+			
+			return $form;
+			
+		} //end getValidatedForm()
+		
 					
 	} //end class FormController
 

@@ -16,6 +16,8 @@ class CreateFormFieldTable extends Migration {
 		{
 			$table->increments('id');
 			$table->integer('form')->references('id')->on('form');
+			$table->string('name', 255)->nullable();
+			$table->string('type', 255)->nullable();
 			$table->string('key', 255);
 			$table->string('connection', 255);
 			$table->string('table', 255);
@@ -25,7 +27,7 @@ class CreateFormFieldTable extends Migration {
 			//$table->string('placeholder', 255);
 			//$table->string('default_value', 255); ??
 			//$table->integer('type')->default(0);
-			//$table->integer('order')->default(0);
+			$table->integer('order')->default(0);
 			//$table->boolean('required')->default(0);
 			$table->integer('row')->nullable();
 			$table->string('properties', 2047)->nullable();

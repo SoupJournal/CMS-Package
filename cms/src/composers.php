@@ -60,9 +60,15 @@
 	    
 	    //make user permissions available
     	$view->with('userPermissions', CMSAccess::userPermissions($appId));
+
+	    //make form data available - TODO: handle permissions - allow access only to specific forms
+	    $forms = CMSForm::where('application', '=', $appId)->get();
+	    $view->with('forms', $forms);
+
 	    
 	    //set scripts asset path
 	    $view->with('assetPath', URL::asset('packages/soup/cms/'));
+
 	    
 	});
 	
