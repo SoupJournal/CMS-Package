@@ -11,7 +11,7 @@
 		
 
 		
-		public function getIndex() {
+		public function getIndex($appId = null) {
 			
 			return View::make('cms::admin.form.list');
 			
@@ -28,8 +28,20 @@
 			//valid form
 			if ($form) {
 			
-				//render view
-				return View::make('cms::admin.form.input')->with('form', $form);
+				//template input
+				if ($form->type == CMSData::$FORM_TYPE_TEMPLATE) {
+					
+					//render view
+					return View::make('cms::admin.form.template')->with('form', $form);
+					
+				}
+				//page input
+				else {
+			
+					//render view
+					return View::make('cms::admin.form.input')->with('form', $form);
+						
+				}
 			
 			} //end if (valid form)
 			
@@ -224,18 +236,19 @@
 	
 	
 	
+	
 		public function getEdit($appId, $formId = null) {
 			
-			//get validated form
-			$form = $this->getValidatedForm($appId, $formId);
+			//validate app
+			if ($this->getValidatedApp($appId)) {
 			
-			//valid form
-			if ($form) {
+				//get validated form
+				$form = $this->getValidatedForm($appId, $formId);
 			
-				//render view
+				//render view (new form will be created if one doesn't exist)
 				return View::make('cms::admin.form.edit')->with('form', $form);
 			
-			} //end if (valid form)
+			} //end if (valid app)
 			
 			//insecure access
 			return Redirect::action('CMSController@getError')->with('errorCode', '404');
@@ -581,6 +594,25 @@
 		//==========================================================//	
 			
 			
+		private function getValidatedApp($appId) {
+			
+			$app = null;
+			
+			//valid application id
+			if ($appId>=0) {
+
+				//check application id
+				$app = CMSApp::find($appId);
+				
+			} //end if (valid app id)
+			
+			return $app;
+			
+		} //end getValidatedApp()
+		
+			
+			
+			
 		private function getValidatedForm($appId, $formId) {
 			
 			$form = null;
@@ -593,7 +625,8 @@
 				if ($app) {
 					
 					//get form
-					$form = CMSForm::find($formId);
+					//$form = CMSForm::find($formId);
+					$form = CMSForm::where('id', '=', $formId)->where('application', '=', $appId)->first();
 					
 				} //end if (valid app)
 				

@@ -36,11 +36,12 @@
 
 <?php
 
+	//get form properties
+	$formName = safeObjectValue('name', $form, "");
+
 	//get AJAX URL's
-	//$tableURL = action("FormController@getTable");
-	//$fieldURL = action("FormController@getField");
-	$dataURL = action('FormController@getForms', ['appId' => $appId]);
-	$editURL = action('FormController@getEdit', ['appId' => $appId]);
+	$dataURL = ""; //action("FormController@getTemplates");
+	$editURL = ""; //URL::to('cms/' . $appId . '/form/edit/');
 
 	//compile table parameters
 	$tableParameters = array(
@@ -62,7 +63,7 @@
 	
 	
 		{{-- title --}}
-		<h2>Forms</h2>
+		<h2>{{ $formName }}</h2>
 
 	
 	
@@ -75,7 +76,7 @@
 	
 		
 			{{-- add form button --}}
-			<a href="{{ action('FormController@getEdit', ['appId' => $appId]) }}" class="btn btn-primary">Add Form</a>
+			<a href="{{ URL::to('cms/' . $appId . '/form/edit') }}" class="btn btn-primary">Add Form</a>
 	
 
 		{{-- end form group --}}

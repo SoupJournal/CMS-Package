@@ -1,6 +1,16 @@
 <?php
 
 	//==========================================================//
+	//====						CONFIG						====//
+	//==========================================================//
+
+	//get base path for cms
+	$basePath = \Config::get('cms::config.route.path');
+
+
+
+
+	//==========================================================//
 	//====						PATTERNS					====//
 	//==========================================================//
 
@@ -39,7 +49,7 @@
 	{		
 	    //ensure user is logged in
 		if (Auth::CMSuser()->guest()) {
-	        return Redirect::to('/cms/login');
+	        return Redirect::action('CMSController@getLogin');
 	    }
 	   
 	   	//ensure https connection 
@@ -54,11 +64,11 @@
 	Route::filter('CMSApp', function($route)
 	{		
 	   	//get appID
-		$appID = isset($route) ? $route->getParameter('appId') : null;
+		$appId = isset($route) ? $route->getParameter('appId') : null;
 	    
 	    //invalid app ID
-		if (!is_numeric($appID) || $appID<0 || !CMSAccess::validApplication($appID)) {
-			return Redirect::to('/cms');
+		if (!is_numeric($appId) || $appId<0 || !CMSAccess::validApplication($appId)) {
+			return Redirect::action('CMSController@getIndex');
 			//return Redirect::to('/cms/error/404');
 		}
 	    
@@ -81,22 +91,22 @@
 	Route::filter('P_Security', function($route)
 	{	
 		//get appID
-		$appID = isset($route) ? $route->getParameter('appId') : null;
+		$appId = isset($route) ? $route->getParameter('appId') : null;
 		
 		//valid app ID
-		if (is_numeric($appID) && $appID>0) {
+		if (is_numeric($appId) && $appId>0) {
 		
 			//ensure user has permission
-			if (!CMSAccess::validPermission(CMSAccess::$PERMISSION_EDIT_SECURITY, $appID)) { 
+			if (!CMSAccess::validPermission(CMSAccess::$PERMISSION_EDIT_SECURITY, $appId)) { 
 				
 				//no security permission - redirect to overview
-				return Redirect::to('/cms/' . $appID);
+				return Redirect::action('CMSController@getIndex', array('appId' => $appId));
 			}
 		
 		}
 		//invalid app ID
 		else {
-			return Redirect::to('/cms/error/404');
+			return Redirect::action('CMSController@getError', array('errorCode' => '404'));
 		}
 	    
 	});
@@ -106,22 +116,22 @@
 	Route::filter('P_Form', function($route)
 	{	
 		//get appID
-		$appID = isset($route) ? $route->getParameter('appId') : null;
+		$appId = isset($route) ? $route->getParameter('appId') : null;
 		
 		//valid app ID
-		if (is_numeric($appID) && $appID>0) {
+		if (is_numeric($appId) && $appId>0) {
 		
 			//ensure user has permission
-			if (!CMSAccess::validPermission(CMSAccess::$PERMISSION_EDIT_FORM, $appID)) { 
+			if (!CMSAccess::validPermission(CMSAccess::$PERMISSION_EDIT_FORM, $appId)) { 
 				
 				//no security permission - redirect to overview
-				return Redirect::to('/cms/' . $appID);
+				return Redirect::action('CMSController@getIndex', array('appId' => $appId));
 			}
 		
 		}
 		//invalid app ID
 		else {
-			return Redirect::to('/cms/error/404');
+			return Redirect::action('CMSController@getError', array('errorCode' => '404'));
 		}
 	    
 	});
@@ -138,15 +148,15 @@
 	//Applications
 	//Route::get('cms/app/applications', array('before' => 'ajaxAccess', 'uses' => 'ApplicationController@getApplications'));
 	//controller routes
-	Route::group(array('before' => 'CMSAuth'), function() {
-		Route::controller('cms/app', 'ApplicationController');
+	Route::group(array('before' => 'CMSAuth'), function() use (&$basePath) {
+		Route::controller($basePath . '/app', 'ApplicationController');
 	});
 	
 	
 	
 	//Security Groups
-	Route::group(array('before' => 'CMSAuth|P_Security'), function() {
-		Route::controller('cms/{appId}/security', 'SecurityController');
+	Route::group(array('before' => 'CMSAuth|P_Security'), function() use (&$basePath) {
+		Route::controller($basePath . '/{appId}/security', 'SecurityController');
 	});
 	
 	
@@ -154,34 +164,34 @@
 	//Forms
 	//Route::get('cms/form/table/{safestr}', array('before' => 'CMSAuth|Ajax', 'uses' => 'FormController@getTable'));
 	//Route::get('cms/form/field/{safestr}/{safestr2}', array('before' => 'CMSAuth|Ajax', 'uses' => 'FormController@getField'));
-	Route::group(array('before' => 'CMSAuth|P_Form'), function() {
-		Route::controller('cms/{appId}/form', 'FormController');
+	Route::group(array('before' => 'CMSAuth|P_Form'), function() use (&$basePath) {
+		Route::controller($basePath . '/{appId}/form', 'FormController');
 	});
 	
 	
 	
 	//Settings
-	Route::group(array('before' => 'CMSAuth'), function() {
-		Route::controller('cms/{appId}/settings', 'SettingsController');
+	Route::group(array('before' => 'CMSAuth'), function() use (&$basePath) {
+		Route::controller($basePath . '/{appId}/settings', 'SettingsController');
 	});
 	
 	
 	
 	//CMS Login
-	Route::get('cms/login', array('before' => 'HTTPS', 'uses' => 'CMSController@getLogin'));
-	Route::post('cms/login', array('before' => 'HTTPS', 'uses' => 'CMSController@postLogin'));
-	Route::get('cms/logout', 'CMSController@getLogout');
+	Route::get($basePath . '/login', array('before' => 'HTTPS', 'uses' => 'CMSController@getLogin'));
+	Route::post($basePath . '/login', array('before' => 'HTTPS', 'uses' => 'CMSController@postLogin'));
+	Route::get($basePath . '/logout', 'CMSController@getLogout');
 
 	
 	//CMS Errors
-	Route::get('cms/error', 'CMSController@getError');
-	Route::get('cms/error/{safestr}', 'CMSController@getError');
+	Route::get($basePath . '/error', 'CMSController@getError');
+	Route::get($basePath . '/error/{safestr}', 'CMSController@getError');
 	
 	//CMS Admin
-	Route::get('cms', array('before' => 'CMSAuth', 'uses' => 'CMSController@getIndex'));
-	Route::group(array('before' => 'CMSAuth|CMSApp'), function() {
+	Route::get($basePath, array('before' => 'CMSAuth', 'uses' => 'CMSController@getIndex'));
+	Route::group(array('before' => 'CMSAuth|CMSApp'), function() use (&$basePath) {
 		//Route::get('cms', 'CMSController@getIndex'); //TODO: have landing page when no app specified
-		Route::controller('cms/{appId}', 'CMSController');
+		Route::controller($basePath . '/{appId}', 'CMSController');
 	});
 	
 	

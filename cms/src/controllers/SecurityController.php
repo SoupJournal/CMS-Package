@@ -25,7 +25,7 @@
 
 
 		
-		public function getIndex() {
+		public function getIndex($appId = null) {
 			
 			return View::make('cms::admin.security.list');
 			
@@ -87,7 +87,7 @@
 					array_push($errors, 'test: ' . $group->permission);
 					
 					//if ($group->save()) {
-						return Redirect::secure('/cms/security');
+						return Redirect::action('SecurityController@getIndex'); 
 					//}
 				}
 				

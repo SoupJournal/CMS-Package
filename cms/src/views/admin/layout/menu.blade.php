@@ -14,16 +14,16 @@
 	
 			{{-- Main Menu --}}
 	
-			<li><a href="{{ URL::to('cms/' . $appId) }}">Overview</a></li>
+			<li><a href="{{  URL::action('CMSController@getIndex') . '/' . $appId }}">Overview</a></li>
 		@if ($showSettings)
-			<li><a href="{{ URL::to('cms/' . $appId . '/settings') }}">Settings</a></li>
+			<li><a href="{{ URL::action('SettingsController@getIndex', ['appId' => $appId]) }}">Settings</a></li>
 		@endif
 		@if ($showForms)
-			<li><a href="{{ URL::to('cms/' . $appId . '/form') }}">Forms</a></li>
+			<li><a href="{{ URL::action('FormController@getIndex', ['appId' => $appId]) }}">Forms</a></li>
 		@endif
 			{{-- <li><a href="#">Pages</a></li>	--}}
 		@if ($showSecurity)
-			<li><a href="{{ URL::to('cms/' . $appId . '/security') }}">Security Groups</a></li>
+			<li><a href="{{ URL::action('SecurityController@getIndex', ['appId' => $appId]) }}">Security Groups</a></li>
 		@endif
 			
 		
@@ -51,7 +51,7 @@
 							
 						?>
 						
-							<li><a href="{{ URL::to('cms/' . $appId . '/form/input/' . $formId) }}">{{ $formName }}</a></li>
+							<li><a href="{{ URL::action('FormController@getInput', ['appId' => $appId, 'formId' => $formId]) }}">{{ $formName }}</a></li>
 				
 						<?php
 						

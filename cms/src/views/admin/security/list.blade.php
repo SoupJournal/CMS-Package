@@ -37,7 +37,7 @@
 <?php
 
 	//get AJAX URL's
-	$dataURL = URL::to('cms/' . $appId . '/security/groups');
+	$dataURL = action('SecurityController@getGroups', ['appId' => $appId]);
 
 	
 ?>
@@ -62,7 +62,7 @@
 
 	
 			{{-- add group button --}}
-			<a href="{{ URL::to('cms/' . $appId . '/security/edit') }}" class="btn btn-primary">Add Group</a>
+			<a href="{{ action('SecurityController@getEdit', ['appId' => $appId]) }}" class="btn btn-primary">Add Group</a>
 	
 
 		{{-- end form group --}}

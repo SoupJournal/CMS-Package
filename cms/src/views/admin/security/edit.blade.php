@@ -37,7 +37,7 @@
 <?php
 
 	//get AJAX URL's
-	$dataURL = URL::to('cms/' . $appId . '/security/groups');
+	$dataURL = action('SecurityController@getGroups', ['appId' => $appId]);
 
 	
 ?>

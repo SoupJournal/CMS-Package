@@ -22,8 +22,14 @@ class CmsServiceProvider extends ServiceProvider {
 	{
 		$this->package('soup/cms');
 		
+		//check if CMS routing enabled
+		$routeEnabled = \Config::get('cms::config.route.enabled'); 
+		
+		
 		//include package routes
-		include __DIR__.'/../../routes.php';
+		if ($routeEnabled) {
+			include __DIR__.'/../../routes.php';
+		}
 		
 		//include package composers
 		include __DIR__.'/../../composers.php';
@@ -33,6 +39,7 @@ class CmsServiceProvider extends ServiceProvider {
 		include __DIR__.'/../../helpers/SQLHelper.php';
 		include __DIR__.'/../../helpers/DataHelper.php';
 		include __DIR__.'/../../helpers/CMSHelper.php';
+		
 		
 		
 //		//enable multi-auth
@@ -70,6 +77,7 @@ class CmsServiceProvider extends ServiceProvider {
 			$mergedConfig = array_merge($this->app['config']['auth']['multi'], $cmsConfig);
 			\Config::set('auth.multi', $mergedConfig);
 		}
+		
 
 	} //end register()
 	

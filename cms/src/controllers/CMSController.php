@@ -20,7 +20,7 @@
 		
 		
 		
-		public function getIndex() {
+		public function getIndex($appId = null) {
 			
 			return View::make('cms::admin.home');
 			
@@ -67,11 +67,12 @@
 				
 				//found application
 				if ($appId>=0) {
-					return Redirect::secure('/cms/' . $appId);
+					//NB. for index path passing appId as parameter is treated as GET parameter instead of named parameter
+					return Redirect::secure(URL::action('CMSController@getIndex') . '/' . $appId);  
 				}
 				//no application available
 				else {
-					return Redirect::secure('/cms/');
+					return Redirect::action('CMSController@getIndex');
 				}
 			}
 
@@ -96,7 +97,7 @@
 			Session::flush();
 	
 			//redirect to login
-			return Redirect::to('/cms/login');
+			return Redirect::action('CMSController@getLogin');
 			
 		} //end getLogout()
 
