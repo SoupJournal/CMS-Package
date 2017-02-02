@@ -1,11 +1,15 @@
 
 /* TODO - move to layout.css */
 
-.top-margin-small {
-	margin-top: 30px;	
+
+/***********************************/
+/**** 			ALIGNMENT 		****/
+/***********************************/
+
+.center {
+	display: table;
+	margin: 0 auto;	
 }
-
-
 
 /***********************************/
 /**** 	 BACKGROUND COLOURS 	****/
@@ -66,4 +70,51 @@
 	color: #FFFFFF;	
 	background-color: #55AAFF;
 }
+
+
+
+/***********************************/
+/**** 			TABLE	 		****/
+/***********************************/
+
+.table-header {
+	display: inline-block;
+	width: 100%;	
+}
+
+
+.table-footer {
+	display: inline-block;
+	width: 100%;	
+}
+
+
+.pagination-settings {
+	margin-bottom: 20px;
+}
+
+.pagination-settings input {
+	width: 60px;	
+	padding-left: 5px;
+}
+
+.pagination-label {
+	font-size: 0.8em;
+}
+
+
+/***********************************/
+/**** 			SPACERS	 		****/
+/***********************************/
+
+
+.top-margin-small {
+	margin-top: 30px;	
+}
+
+
+.spacer-medium {
+	padding-top: 5%;	
+}
+
 

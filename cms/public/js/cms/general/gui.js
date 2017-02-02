@@ -16,7 +16,7 @@
 	//base GUI controller
 	var GUIController = function($scope) {
 	
-			$scope.initController = function(initFunction) {
+		$scope.initController = function(initFunction) {
 
 			//function specified
 			if (initFunction && initFunction.length>0) {
@@ -42,9 +42,7 @@
        	//perform action
        	$scope.performAction = function(data) {
 
-//console.log("TESTTTT: " + propertiesString($scope.$parent, 2));
-//console.log("TESTTTT1111: " + typeof($scope[$scope.action]));
-//console.log('got action: ' + $scope.action + " - parent: " + $scope.$parent + " - func: " + typeof($scope.$parent[$scope.action]));
+
 			//script exists
        		if ($scope.script && $scope.script.length>0) { 
        			
@@ -175,11 +173,151 @@
 	  	$scope.data = [];
 		$scope.totalPages = 0;
 		$scope.currentPage = 0;
+		$scope.itemsPerPage = -1;
 		$scope.range = [];
 
 
 		//parent init function
 		$scope.initFunction = null;
+
+
+	    
+	    
+	    
+	    //== AJAX METHODS ==//
+	    
+
+		//retrieve table data
+		$scope.getTableData = function(pageNumber){
+
+			//valid URL
+			if ($scope.dataURL && $scope.dataURL.length>0) {
+				
+				//compile url
+				var url = $scope.dataURL + '?' 
+					+ (pageNumber>=0 ? 'page='+pageNumber + '&' : '') 
+					+ ($scope.itemsPerPage>0 ? 'limit=' + $scope.itemsPerPage : '');
+				
+				
+				//request JSON data
+				$http.get(url).success(function(response) {
+	
+
+					//store properties
+					$scope.pageData     = response.data;
+					$scope.totalPages   = parseInt(response.last_page);
+					$scope.currentPage  = parseInt(response.current_page);
+					//$scope.itemsPerPage = parseInt(response.items_per_page);
+	
+					// Pagination Range
+					var pages = [];
+					
+					//add page number
+					for(var i=0; i<response.total_pages; i++) {          
+						pages.push(i);
+					}
+					$scope.range = pages; 
+					
+					
+					//filter/sort results
+					var filteredKeys = [];
+					var filteredResults = [];
+					var rowData = null;
+					if ($scope.pageData) {
+						
+						for (var i=0; i<$scope.pageData.length; ++i) {
+						
+							if (i==0) {
+								filteredKeys = $scope.filterKeys($scope.pageData[i], true, $scope.includeKeys, $scope.excludeKeys);
+							}
+						
+							rowData = $scope.filterKeys($scope.pageData[i], false, $scope.includeKeys, $scope.excludeKeys, $scope.valueFunction);
+							if (rowData) {
+								filteredResults.push(rowData);
+							}
+							
+						} //end for()
+						
+					} //end if (found page data)
+					
+					$scope.filteredKeys = filteredKeys;
+					$scope.filteredResults = filteredResults;
+
+					//trigger update
+					$scope.$emit('tableUpdated', { 
+						tableId: $scope.tableId,
+						keys: $scope.filteredKeys,
+						data: $scope.pageData,
+						results: $scope.filteredResults,
+						currentPage: $scope.currentPage,
+						totalPages: $scope.totalPages,
+						itemsPerPage: $scope.itemsPerPage
+					});
+
+				
+				});
+			
+			} //end if (valid data URL)
+		
+		};
+	
+	
+
+			
+		//== LISTENERS ==//
+
+		//respond to update events (not required if editing the same object instance returned from 'tableUpdated' event)
+		$scope.$on('applyValues', function(event, obj) {
+
+    	  	//valid parameters
+    	  	if (obj) {
+
+ 				//check for valid table id
+ 				if (obj.tableId==$scope.tableId) {
+
+	    	  		//apply keys
+	    	  		if (obj.keys!==undefined && typeof(obj.keys.splice)==='function') {
+	    	  			$scope.filteredKeys = obj.keys.splice();
+	    	  		}
+    	  		
+    	  			//apply data
+	    	  		if (obj.results!==undefined && typeof(obj.results.splice)==='function') {
+	    	  			$scope.filteredResults = obj.results.splice();
+	    	  		}
+    	  		
+ 				} //end if (valid table id)
+    	  		
+    	  	} //end if (valid parameters)
+    	  	
+	    }); //end event handler()
+		
+		
+			
+			
+		$scope.$on('changePageSize', function(event, obj) {
+
+			//valid parameters
+    	  	if (obj) {
+ 
+ 				//check for valid table id
+ 				if (obj.tableId==$scope.tableId) {
+ 
+ 					//update visible items
+ 					$scope.itemsPerPage = obj.limit;
+ 
+					//update table
+					$scope.getTableData($scope.currentPage);
+
+				} //end if (valid table id)
+    	  		
+    	  	} //end if (valid parameters)
+			
+		}); //end event handler()
+	
+	
+	
+
+		//== DATA METHODS ==//
 
 
 		//get value of property for column
@@ -223,108 +361,6 @@
 	        
 	    }; //end getHTMLValue()
 	    
-	    
-	    
-
-		//retrieve table data
-		$scope.getTableData = function(pageNumber){
-
-			//valid URL
-			if ($scope.dataURL && $scope.dataURL.length>0) {
-				
-				//compile url
-				var url = $scope.dataURL + '?' 
-					+ (pageNumber>=0 ? 'page='+pageNumber + '&' : '') 
-					+ ($scope.visibleItems>0 ? 'limit=' + $scope.visibleItems : '');
-				
-				
-				//request JSON data
-				$http.get(url).success(function(response) {
-	
-					//store properties
-					$scope.pageData     = response.data;
-					$scope.totalPages   = parseInt(response.last_page);
-					$scope.currentPage  = parseInt(response.current_page);
-					$scope.itemsPerPage = parseInt(response.items_per_page);
-	
-					// Pagination Range
-					var pages = [];
-					
-					//add page number
-					for(var i=0; i<response.total_pages; i++) {          
-						pages.push(i);
-					}
-					$scope.range = pages; 
-					
-					
-					//filter/sort results
-					var filteredKeys = [];
-					var filteredResults = [];
-					var rowData = null;
-					if ($scope.pageData) {
-						
-						for (var i=0; i<$scope.pageData.length; ++i) {
-						
-							if (i==0) {
-								filteredKeys = $scope.filterKeys($scope.pageData[i], true, $scope.includeKeys, $scope.excludeKeys);
-							}
-						
-							rowData = $scope.filterKeys($scope.pageData[i], false, $scope.includeKeys, $scope.excludeKeys, $scope.valueFunction);
-							if (rowData) {
-								filteredResults.push(rowData);
-							}
-							
-						} //end for()
-						
-					} //end if (found page data)
-					
-					$scope.filteredKeys = filteredKeys;
-					$scope.filteredResults = filteredResults;
-
-					//trigger update
-					$scope.$emit('tableUpdated', { 
-						tableId: $scope.tableId,
-						keys: $scope.filteredKeys,
-						data: $scope.pageData,
-						results: $scope.filteredResults
-					});
-
-				
-				});
-			
-			} //end if (valid data URL)
-			
-			
-			
-			//respond to update events
-			$scope.$on('applyValues', function(event, obj) {
-
-	    	  	//valid parameters
-	    	  	if (obj) {
-	 
-	 				//check for valid table id
-	 				if (!obj.tableId || obj.tableId.length<=0 || obj.tableID==$scope.tableId) {
-	 
-		    	  		//apply keys
-		    	  		if (obj.keys!==undefined) {
-		    	  			$scope.filteredKeys = obj.keys;
-		    	  		}
-	    	  		
-	    	  			//apply data
-		    	  		if (obj.results!==undefined) {
-		    	  			$scope.filteredResults = obj.results;
-		    	  		}
-	    	  		
-	 				} //end if (valid table id)
-	    	  		
-	    	  	} //end if (valid parameters)
-	    	  	
-		    }); //end event handler()
-			
-		
-		};
-	
-	
 	
 		
 		//filter function for sorting object keys
@@ -334,10 +370,10 @@
 			
 			//valid object
 			if (itemData) {
-				
+
 				//get keys list
-				var keys = includeKeys;
-				if (!keys && keys.length>0) {
+				var keys = includeKeys ? includeKeys : [];
+				if (!includeKeys && itemData) {
 					for(var key in itemData) {
 						keys.push(key);
 					}
@@ -442,6 +478,7 @@
 	}); //end directive
 	
 	
+	
 			
 	//saveButton directive - standard save button 
 	module.directive('saveFormButton', function($parse) {
@@ -498,6 +535,42 @@
 	
 	
 	
+	//pagination settings
+	module.directive('paginationSettings', function() {
+		  
+	   return{
+	      restrict: 'E',
+	      template: '<div class="pagination-settings"><span class="pagination-label">Items per page: </span><input type="number" size="3" value="{{ visibleItems }}" ng-model="visibleItems" ng-change="updateTable()"></div>',
+	      link: function (scope, element, attrs) {
+	      		
+	      		//set attributes
+	      		scope.visibleItems = parseFloat(attrs.limit);
+	      		scope.table = attrs.table;
+    		    	
+		      	//update initial value
+	      		scope.updateTable();
+	      },
+	      controller: function($scope, $rootScope) {
+	      	
+	      	//trigger table update
+	      	$scope.updateTable = function() {
+
+				//broadcast limit change
+				$rootScope.$broadcast('changePageSize', {
+					tableId: $scope.table,
+					limit: $scope.visibleItems
+				});
+
+	      	}
+	      	
+	      },
+	      replace: false,
+	   };
+	}); //end directive
+	
+	
+	
+	
 	
 	
 	//pagination buttons
@@ -505,7 +578,7 @@
 		  
 	   return{
 	      restrict: 'E',
-	      template: '<ul class="pagination">'+
+	      template: '<ul class="pagination" style="visibility:{{ visibility }};">'+
 	      
 		    //start / previous buttons
 	        '<li ng-class="{button_disabled: currentPage<=0}">' +
@@ -519,10 +592,47 @@
 	        '</li>'+
 	        
 	        //next / end buttons
-	        '<li ng-class="{button_disabled: currentPage>=totalPages}"><a href="javascript:void(0)" ng-click="getTableData(currentPage+1);console.log(currentPage);">Next &rsaquo;</a></li>'+
+	        '<li ng-class="{button_disabled: currentPage>=totalPages}"><a href="javascript:void(0)" ng-click="getTableData(currentPage+1);">Next &rsaquo;</a></li>'+
 	        '<li ng-class="{button_disabled: currentPage>=totalPages}"><a href="javascript:void(0)" ng-click="getTableData(totalPages-1)">&raquo;</a></li>'+		
 	      '</ul>',
-	      controller: ['$scope', GUIController]
+	      link: function (scope, element, attrs) {
+	      	
+	      		//set defaults
+	      		scope.totalPages = 0;
+	      		scope.visiblePages = 10;
+	      	
+	      		//set attributes
+	      		scope.table = attrs.table;
+	      		scope.visiblePages = attrs.visiblePages;
+	      		
+	      		//style properties
+	      		scope.visibility = scope.totalPages > 0 ? 'visible' : 'hidden';
+	      	
+	      },
+	      controller: function($scope, $rootScope) {
+	      	
+	      		$scope.$on('tableUpdated', function(event, obj) {
+
+	      			//valid parameters
+		    	  	if (obj) {
+		 
+		 				//check for valid table id
+		 				if (obj.tableId==$scope.tableId) {
+		 
+		 					//set total pages
+		 					$scope.totalPages = obj.totalPages;
+		
+							//update visibility
+							$scope.visibility = $scope.totalPages > 0 ? 'visible' : 'hidden';
+			
+						} //end if (valid table id)
+		    	  		
+		    	  	} //end if (valid parameters)
+	      			
+	      		}); //end event handler()
+	      	
+	      }
+	      //controller: ['$scope', GUIController]
 	   };
 	   
 	}); //end directive

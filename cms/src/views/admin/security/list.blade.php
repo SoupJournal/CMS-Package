@@ -39,6 +39,15 @@
 	//get AJAX URL's
 	$dataURL = action('SecurityController@getGroups', ['appId' => $appId]);
 
+	//compile table parameters
+	$tableParameters = array(
+		'title'=>'', 
+		'tableId' => 'securityTable',
+		'dataFunction'=>'initSecurityTable', 
+		//'editURL' => $editURL,
+		//'editField' => 'id',
+		//'columnSyntax' => Array(true)
+	)
 	
 ?>
 
@@ -58,7 +67,7 @@
 		
 
 			{{-- draw table --}}
-			@include('cms::cms.gui.table', array('title'=>'', 'dataFunction'=>'initSecurityTable'))
+			@include('cms::cms.gui.table', $tableParameters)
 
 	
 			{{-- add group button --}}

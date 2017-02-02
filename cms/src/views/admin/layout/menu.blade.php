@@ -64,5 +64,6 @@
 
 	</ul>
 	
+	<div class="spacer-medium"></div>
 	
 </div>

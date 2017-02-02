@@ -5,6 +5,11 @@
 		$title = "";
 	}
 	
+	//tableId
+	if (!isset($tableId)) {
+		$tableId = null;
+	}
+	
 	//data URL
 	if (!isset($dataFunction)) {
 		$dataFunction = "";
@@ -16,9 +21,9 @@
 	}
 
 	//items per page
-	//if (!isset($pageSize)) {
-	//	$pageSize = -1;
-	//}	
+	if (!isset($pageSize)) {
+		$pageSize = 20;
+	}	
 
 
 ?>
@@ -28,12 +33,25 @@
 
 <div class='data-table-container'>
 
-    
-    <div ng-controller="TableController" ng-init='initController("{{ $dataFunction }}"); getTableData();'>
+    {{-- N.B. removed init getTableData() call because this is handled by pagination-settings directive --}}
+    <div ng-controller="TableController" ng-init="tableId='{{ $tableId }}'; initController('{{ $dataFunction }}');">
 
+		{{-- table header --}}
+		<div class="table-header button_export_padding">
+		
+			{{-- pagination settings --}}
+			<div class="pull-right">
+	        	<pagination-settings table="{{ $tableId }}" limit="{{ $pageSize }}"></pagination-settings>
+	      	</div>
+
+
+		</div>
+
+
+
+		{{-- table --}}	
 		<div class="table-responsive">
-				
-			{{-- table --}}				
+							
 			<table class="table table-hover">
 		
 				<thead>
@@ -54,20 +72,20 @@
 				</tr>
 	
 			</table>
-			
+		
+		</div>
 		
 		
-			{{-- table footer --}}
-			<div class="table-footer button_export_padding">
-			
-				{{-- pagination buttons --}}
-				<div class="left">
-		        	<pagination></pagination>
-		      	</div>
-	
-	
-			</div>
 		
+		{{-- table footer --}}
+		<div class="table-footer button_export_padding">
+		
+			{{-- pagination buttons --}}
+			<div class="center">
+	        	<pagination table="{{ $tableId }}"></pagination>
+	      	</div>
+
+
 		</div>
 
     </div> 

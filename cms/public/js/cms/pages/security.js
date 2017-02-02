@@ -24,7 +24,7 @@
 			//valid scope
 			if (scope) {
 				scope.dataURL = $scope.dataURL;	
-				scope.includeKeys = ['name'];
+				scope.includeKeys = ['name', 'permission'];
 				scope.excludeKeys = [];
 			}
 			

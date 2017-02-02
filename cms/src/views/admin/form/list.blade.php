@@ -45,6 +45,7 @@
 	//compile table parameters
 	$tableParameters = array(
 		'title'=>'', 
+		'tableId' => 'formTable',
 		'dataFunction'=>'initFormTable', 
 		'editURL' => $editURL,
 		'editField' => 'id',

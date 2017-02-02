@@ -60,6 +60,20 @@
 		} //end initFieldTable()
 
 
+
+		//setup templates table
+		$scope.initTemplateTable = function(scope) {
+
+			//valid scope
+			if (scope) {
+				//scope.tableId = 'templateTable';
+				scope.dataURL = $scope.dataURL;	
+				//scope.includeKeys = ['key', 'connection', 'table', 'field'];
+				scope.excludeKeys = [];
+			}
+			
+		} //end initTemplateTable()
+
 		
 		
 		//handle database selection
@@ -157,9 +171,9 @@
 //		});
 		
 		
-		$scope.saveForm = function() {
-			console.log("saved form");	
-		};
+		//$scope.saveForm = function() {
+			//console.log("saved form");	
+		//};
 		
 		
 		
@@ -171,14 +185,14 @@
     	  	//valid data
     	  	if (obj) {
     	  		
-    	  		
+
     	  		//form table
     	  		if (obj.tableId == 'formTable') {
     	  		
 	    	  		//get object properties
 	    	  		var rawData = obj.data;
 	    	  		var filteredData = obj.results;
-	    	  		
+
 	    	  		//valid data
 	    	  		if (rawData && filteredData && rawData.length>0 && filteredData.length>=rawData.length) {
 	 
@@ -194,11 +208,12 @@
 		 					} //end for()
 	 					
 	 					
-		 					//update values
-							$scope.$broadcast('applyValues', { 
-								results: filteredData
-							});
-	 					
+		 					//update values (no need to broadcast - editing same object instance)
+//							$scope.$broadcast('applyValues', { 
+//								tableId: 'formTable',
+//								results: filteredData
+//							});
+
 	 					} //end if (valid edit URL)
 	 					
 	    	  		

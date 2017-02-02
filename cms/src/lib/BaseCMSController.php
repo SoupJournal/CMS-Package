@@ -37,7 +37,7 @@
 				//get parameters
 				$page = isset($params) && isset($params['page']) && is_numeric($params['page']) ? $params['page'] : 0;
 				$limit = isset($params) && isset($params['limit']) && is_numeric($params['limit']) ? $params['limit'] : 0; 
-				
+
 				//bounds checks
 				if ($page<0) $page = 0;
 				if ($limit<0) $limit = 0;
@@ -45,29 +45,34 @@
 
 				
 				//process count query
-				$countData = $query->count();
+				$count = $query->count();
 				
+				//validate count
+				$count = isset($count) ? $count : 0;
+				
+				//store number of rows
+				$response->rows = $count;
+				
+				//echo "count data: " . print_r($countData, true) . " - count: " . $countData . "<BR><BR>\n\n";
+				//echo "count: " . $count . " - total: " . ceil(floatval($count) / $limit) ."<BR><BR>\n\n";
+				//echo "page: " . $page . " - limit: " . $limit ."<BR><BR>\n\n";
 				
 				//process variables
 				$index = 0;
-				$count = 0;
 				$totalPages = 0;
 				if ($limit>0) {
 					
 					//determine number of pages
-					if (isset($countData) && count($countData)>0) {
-						$count = $countData[0]->count;	
-						$response->rows = $count;
-						if (is_numeric($count)) {
-							$totalPages = ceil($count / $limit);
-						}
+					if (is_numeric($count)) {
+						$totalPages = ceil(floatval($count) / $limit);
 					}
-				
+
+
 					//bounds check page
 					if ($page>=$totalPages) {
-						$page=$totalPages-1;
+						$page=$totalPages>0 ? $totalPages-1 : 0;
 					}
-					
+
 					//set index
 					$index = $page * $limit;
 					
@@ -93,7 +98,7 @@
 				$response->items_per_page = $limit;
 				$response->total_pages = $totalPages;
 				$response->last_page = ($totalPages>0 ? ($totalPages-1) : 0);
-				$response->data = $data ? $data->toArray() : null;
+				$response->data = ($data && !is_array($data)) ? $data->toArray() : $data;
 							
 			
 			} //end if (valid query)

@@ -66,12 +66,13 @@
 	
 	
 	//field form
-	$fieldDataURL = action('FormController@getFields', ['appId' => $appId, 'formId' => ($form ? ('/' . $form->id) : '')]);
+	$fieldDataURL = action('FormController@getFields', ['appId' => $appId, 'formId' => ($form ? $form->id : '')]);
 
 	//compile table parameters
 	$tableParameters = array(
-		'title'=>'', 
-		'dataFunction'=>'initFieldTable', 
+		'title' => '', 
+		'tableId' => 'fieldTable',
+		'dataFunction' => 'initFieldTable', 
 		//'editURL' => $editURL,
 		'editField' => 'id'
 	);

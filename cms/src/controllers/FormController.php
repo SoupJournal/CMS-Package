@@ -589,6 +589,90 @@
 			
 			
 			
+		public function getTemplates($appId = null, $formId = null) {
+			
+			//get validated form
+			$form = $this->getValidatedForm($appId, $formId);
+			if ($form) {
+				
+				//get tables
+				$tables = $form->fields()->select(['connection', 'table'])->groupBy('connection', 'table')->get();
+				if ($tables) {
+					
+					//only one table
+					if (count($tables)==1) {
+						
+						//get fields
+						$fields = $form->fields()->lists('field');
+						if ($fields && count($fields)>0) {
+							
+							//get properties
+							$connection = $tables[0]->connection;
+							$table = $tables[0]->table;
+							
+							//valid properties
+							if ($connection && $table && strlen($connection)>0 && strlen($table)>0) {
+
+								//create query
+								$query = DB::connection($connection)->table($table)->select($fields);
+								
+								//get paginated results
+								$results = $this->paginateRequestQuery($query, $_GET);
+								
+								//return paginated query
+								return Response::json($results);
+								
+							}
+								
+						} //end if (found fields)
+						
+					} 
+					
+					//multiple tables
+					else {
+						
+						//TODO: handle join - probably use another table that list form joins (and the key/column used)
+							
+					}
+					
+				} //end if (found table data)
+				
+			} //end if (found form)
+			
+			/*
+			//valid app id
+			if ($appId>=0) {
+			
+				//valid form id
+				if ($formId>=0) {
+			
+					//build query
+					$query = CMSForm::select(['id', 'name', 'type'])
+							->where('application', '=', $appId)
+							->where(function($whereQuery) {
+								$whereQuery->orWhere('status', '=', CMSData::$STATUS_DRAFT);
+								$whereQuery->orWhere('status', '=', CMSData::$STATUS_PUBLISHED);
+							});
+					
+					//get paginated results
+					$results = $this->paginateRequestQuery($query, $_GET);
+					
+					//return paginated query
+					return Response::json($results);
+				
+				} //end if (valid form id)
+			
+			} //end if (valid app id)
+			*/
+			
+			//no results
+			return "";
+		
+		} //end getTemplates()
+			
+			
+			
+			
 		//==========================================================//
 		//====					SECURITY METHODS				====//
 		//==========================================================//	

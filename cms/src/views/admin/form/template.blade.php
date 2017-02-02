@@ -40,13 +40,14 @@
 	$formName = safeObjectValue('name', $form, "");
 
 	//get AJAX URL's
-	$dataURL = ""; //action("FormController@getTemplates");
+	$dataURL = action("FormController@getTemplates", ['appId' => $appId, 'formId' => (isset($form) ? $form->id : null)]);
 	$editURL = ""; //URL::to('cms/' . $appId . '/form/edit/');
 
 	//compile table parameters
 	$tableParameters = array(
 		'title'=>'', 
-		'dataFunction'=>'initFormTable', 
+		'tableId' => 'templateTable',
+		'dataFunction'=>'initTemplateTable', 
 		'editURL' => $editURL,
 		'editField' => 'id',
 		'columnSyntax' => Array(true)
@@ -73,13 +74,16 @@
 			{{-- draw table --}}
 			@include('cms::cms.gui.table', $tableParameters)
 
-	
+
+		</div>
 		
-			{{-- add form button --}}
-			<a href="{{ URL::to('cms/' . $appId . '/form/edit') }}" class="btn btn-primary">Add Form</a>
+		
+		<div class="form-group">
+		
+			{{-- add entry button --}}
+			{{-- <a href="" class="btn btn-primary">Add Entry</a> --}}
 	
 
-		{{-- end form group --}}
 		</div>
 		
 	</div>
