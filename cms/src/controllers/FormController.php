@@ -517,6 +517,119 @@
 		//==========================================================//	
 		
 
+		
+		public function postExport($appId = null, $formId = null) {
+			
+			//get validated form
+			$form = $this->getValidatedForm($appId, $formId);
+			if ($form) {
+				
+				//get range values
+				$start = safeArrayValue('start', $_POST, -1);
+				$end = safeArrayValue('end', $_POST, -1);
+				
+				//form validation
+				$valid = true;
+				$errorMessage = null;
+				
+				//valid range
+				if (!($start>=0)) {
+					$errorMessage = "Please specify a valid start range";
+					$valid = false;
+				}
+				if ($valid && !$end>0) {
+					$errorMessage = "Please specify a valid end range";
+					$valid = false;
+				}
+				else if ($valid && $end<$start) {
+					$errorMessage = "Please specify an end range greater than the start range";
+					$valid = false;
+				}
+				
+				
+				//valid form
+				if ($valid) {
+					
+					//get form query
+					$query = dataFromTemplateQuery($form);
+					if ($query) {
+						
+						//process query results as array
+						//$query->setFetchMode(PDO::FETCH_ASSOC);
+						
+						//determine limit
+						$limit = $end - $start;
+						
+						//create pagination data
+						$pageData = Array (
+							'index' => $start,
+							'limit' => $limit
+						);
+						
+						//get paginated results
+						$results = $this->paginateRequestQuery($query, $pageData);
+						if ($results && isset($results->data)) {
+						
+							//content file name
+							$filename = ($form->name && strlen($form->name)>0 ? $form->name . '-' : '') . date('Y-m-d') . '.csv';
+						
+
+							//convert results to array data
+							$arrayData = json_decode(json_encode($results->data), true);
+							if ($arrayData && count($arrayData)>0) {
+							
+								//get headers
+								$csvHeaders = array_keys($arrayData[0]);
+							
+								//create handle for CSV conversion
+								$handle = fopen('php://memory', 'w');
+							
+								//convert to CSV content
+								fputcsv($handle, $csvHeaders); //, ';');
+								foreach ($arrayData as $row) {
+									fputcsv($handle, $row); 
+								}
+							
+								//read handle contents
+								fseek($handle, 0);
+	   							$csv = stream_get_contents($handle);
+	   							
+							
+								//create content headers
+								$headers = [
+							        'Content-type'        => 'text/csv',
+							        'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+							    ];
+							    return \Response::make($csv, 200, $headers);
+						    
+							} //end if (valid array data)
+    
+						} //end if (found results)
+						
+						//no data
+						else {
+							$errorMessage = "Sorry, no data was found to export";
+						}
+						
+					} //end if (created query)
+					
+				} //end if (valid form)
+				
+				
+				//invalid form
+				return Redirect::back()
+							->withInput()
+							->withErrors($errorMessage);
+				
+			} //end if (valid form)
+			
+			
+			//insecure access
+			return Redirect::action('CMSController@getError')->with('errorCode', '404');
+			
+		} //end postExport()
+		
+
 
 	
 		public function getForms($appId = null) {
@@ -595,6 +708,19 @@
 			$form = $this->getValidatedForm($appId, $formId);
 			if ($form) {
 				
+				//get form query
+				$query = dataFromTemplateQuery($form);
+				if ($query) {
+					
+					//get paginated results
+					$results = $this->paginateRequestQuery($query, $_GET);
+					
+					//return paginated query
+					return Response::json($results);
+					
+				}
+				
+				/*
 				//get tables
 				$tables = $form->fields()->select(['connection', 'table'])->groupBy('connection', 'table')->get();
 				if ($tables) {
@@ -636,6 +762,7 @@
 					}
 					
 				} //end if (found table data)
+				*/
 				
 			} //end if (found form)
 			

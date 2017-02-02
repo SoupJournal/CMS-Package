@@ -35,6 +35,7 @@
 		
 			
 				//get parameters
+				$index = isset($params) && isset($params['index']) && is_numeric($params['index']) ? $params['index'] : -1;
 				$page = isset($params) && isset($params['page']) && is_numeric($params['page']) ? $params['page'] : 0;
 				$limit = isset($params) && isset($params['limit']) && is_numeric($params['limit']) ? $params['limit'] : 0; 
 
@@ -58,7 +59,7 @@
 				//echo "page: " . $page . " - limit: " . $limit ."<BR><BR>\n\n";
 				
 				//process variables
-				$index = 0;
+				//$index = 0;
 				$totalPages = 0;
 				if ($limit>0) {
 					
@@ -73,11 +74,16 @@
 						$page=$totalPages>0 ? $totalPages-1 : 0;
 					}
 
-					//set index
-					$index = $page * $limit;
+					//set index (if required)
+					if ($index<0) {
+						$index = $page * $limit;
+					}
 					
 				}
 				
+				//bounds check index
+				if ($index<0) $index = 0;
+				if ($index>$count) $index = $count;
 				
 				
 				//process data query
@@ -86,7 +92,11 @@
 					$dataQuery = $dataQuery->offset($index);
 				}
 				if ($limit>0) {
-					$dataQuery = $dataQuery->limit($limit);;
+					$dataQuery = $dataQuery->limit($limit);
+				}
+				//ensure limit is set if offset is used (avoids SQL error)
+				else if ($index>0) {
+					$dataQuery = $dataQuery->limit(PHP_INT_MAX);
 				}
 
 				//retrieve data

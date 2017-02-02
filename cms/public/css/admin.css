@@ -36,6 +36,17 @@
 
 
 /***********************************/
+/**** 			INPUT	 		****/
+/***********************************/
+
+
+.input-small {
+	width: 60px;	
+	padding-left: 5px;
+}
+
+
+/***********************************/
 /**** 			BUTTONS 		****/
 /***********************************/
 
@@ -93,10 +104,6 @@
 	margin-bottom: 20px;
 }
 
-.pagination-settings input {
-	width: 60px;	
-	padding-left: 5px;
-}
 
 .pagination-label {
 	font-size: 0.8em;

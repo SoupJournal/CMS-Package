@@ -504,7 +504,7 @@
 	 	    
 	 	    
 		
-	//saveButton directive - standard save button 
+	//formButton directive - standard save button 
 	module.directive('formButton', function($parse) {
 	    return {
 	    	restrict: 'AE',
@@ -540,7 +540,7 @@
 		  
 	   return{
 	      restrict: 'E',
-	      template: '<div class="pagination-settings"><span class="pagination-label">Items per page: </span><input type="number" size="3" value="{{ visibleItems }}" ng-model="visibleItems" ng-change="updateTable()"></div>',
+	      template: '<div class="pagination-settings"><span class="pagination-label">Items per page: </span><input type="number" size="3" value="{{ visibleItems }}" ng-model="visibleItems" ng-change="updateTable()" class="input-small"></div>',
 	      link: function (scope, element, attrs) {
 	      		
 	      		//set attributes

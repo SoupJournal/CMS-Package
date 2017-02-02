@@ -200,5 +200,81 @@
 		return $data;
 		
 	} //end dataForForm()
+	
+	
+	
+	function dataFromTemplate($formKey, $arrayFormat = true) {
+		
+		//valid form key
+		if ($formKey && strlen($formKey)>0) {
+		
+			//find form
+			$form = CMSForm::where('key', $formKey)->first(); 
+			if ($form) {
+				
+				//get query
+				$query = dataFromTemplateQuery($form);
+				
+				//TODO: get data
+				
+			} //end if (valid form)
+		
+		} //end if (valid form key)		
+		
+	} //end dataFromTemplate()
+	
+	
+	
+	function dataFromTemplateQuery($form) {
+		
+		//form query
+		$query = null;
+		
+		
+		//valid form 
+		if ($form) {
+		
+			//get tables
+			$tables = $form->fields()->select(['connection', 'table'])->groupBy('connection', 'table')->get();
+			if ($tables) {
+				
+				//only one table
+				if (count($tables)==1) {
+					
+					//get fields
+					$fields = $form->fields()->orderBy('id', 'ASC')->orderBy('order', 'DESC')->lists('field');
+					if ($fields && count($fields)>0) {
+						
+						//get properties
+						$connection = $tables[0]->connection;
+						$table = $tables[0]->table;
+						
+						//valid properties
+						if ($connection && $table && strlen($connection)>0 && strlen($table)>0) {
+
+							//create query
+							$query = DB::connection($connection)->table($table)->select($fields);
+							
+						}
+							
+					} //end if (found fields)
+					
+				} 
+				
+				//multiple tables
+				else {
+					
+					//TODO: handle join - probably use another table that list form joins (and the key/column used)
+						
+				}
+				
+			} //end if (found table data)
+		
+		} //end if (valid form)
+	
+		
+		return $query;
+		
+	} //end dataFromTemplate()
 
 ?>
