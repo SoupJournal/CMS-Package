@@ -230,7 +230,7 @@
 			
 			{{-- save button --}}
 			<div class="form-group pull-right">
-				<save-form-button></save-button>
+				<save-form-button confirm-form="securityForm" confirm-message="Add new form?"></save-button>
 			</div>
 			
 			

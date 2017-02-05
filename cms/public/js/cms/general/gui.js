@@ -484,7 +484,7 @@
 	module.directive('saveFormButton', function($parse) {
 	    return {
 	    	restrict: 'AE',
-	        template: '<button class="{{ class }}">{{ name }}</button>',
+	        template: '<button class="{{ class }}" confirm-click="{{ confirmForm }}" message="{{ confirmMessage }}">{{ name }}</button>',
 	        link: function (scope, element, attrs) {
 	        	
 				//valid attributes
@@ -493,8 +493,62 @@
 	        		//store attributes in scope
 	        		scope.name = (attrs.name && attrs.name.length>0) ? attrs.name : 'Save';
 	        		scope.class = (attrs.class && attrs.class.length>0) ? attrs.class : 'cms-form-button';
-	        		
+	        		scope.confirmForm = (attrs.confirmForm && attrs.confirmForm.length>0) ? attrs.confirmForm : '';
+	        		scope.confirmMessage = (attrs.confirmMessage && attrs.confirmMessage.length>0) ? attrs.confirmMessage : '';
+
 	        	} //end if (valid attributes)
+	        	
+	        	
+	        	//handle button click
+	            element.bind('click', function(event) {
+
+	            	//valid event
+	            	if (event) {
+	            	
+	            		//dialoag message specified
+	            		if (scope.confirmMessage && scope.confirmMessage.length>0) {
+	            	
+			            	//stop default handling
+			            	event.preventDefault();
+			            	
+			            	//show alert
+			                if (confirm(scope.confirmMessage)) {
+
+			                	//form to submit
+			                	var submitForm = null;
+			                	
+			                	//get form by name
+			                	if (scope.confirmForm && scope.confirmForm.length>0) {
+			                		submitForm = document.forms[scope.confirmForm];
+			                	}
+			                	
+			                	//no form found - find nearest parent
+			                	if (!submitForm) {
+			                		if (element) {
+			                			
+			                			//find parent form
+			                			var parentNode = element.parentNode;
+			                			while (parentNode && parentNode.tag!='form' && parentNode!=window) {
+			                				parentNode = parentNode.parentNode;
+			                			}
+			                			//found form
+			                			if (parentNode.tag!='form') {
+				                			submitForm = parentNode; 
+			                			}
+			                		} 
+			                	}
+			                	
+			                	//found form
+			                	if (submitForm) {
+			                		submitForm.submit();
+			                	}
+			                }
+		                
+	            		} //end if (dialog message specified)
+		                
+	            	} //end if (valid event)
+	            	
+	            });
 	        	
 	        },
 	 	    replace: false
@@ -532,7 +586,61 @@
 	}); //end directive
 	
 	
-	
+	/*
+	//confirmation
+	module.directive('confirmClick', [function() {
+	    return {
+	        restrict: 'A',
+	        link: function(scope, element, attrs) {
+	        	
+	        	//set attributes
+	        	if (attrs) {
+	        		
+	        		//store attributes
+	        		scope.message = attrs.confirmMessage;
+	        		scope.callback = attrs.confirmClick;
+	        console.log("confirm click link: " + scope.confirmAction + " - message: " + scope.message);	
+	        	
+	        	} //end if (found attributes)
+	        	
+	        	//handle button click
+	            element.bind('click', function(event) {
+	            	console.log("got confirm click: " + scope.confirmClick + " - event: " + event + " - message: " + scope.message);
+	            	//valid event
+	            	if (event) {
+	            	
+		            	//stop default handling
+		            	event.preventDefault();
+		            	
+		            	scope.showConfirm();
+		            	
+
+	                
+	            	} //end if (valid event)
+	            	
+	            });
+	        	
+	        },
+	        controller: function($scope) {
+	        		
+				$scope.showConfirm = function() {
+					
+					console.log("got controller call - message: " + $scope.message);
+					
+	            	//show alert
+	                if ($scope.message && confirm($scope.message)) {
+	                	
+	                	//trigger callback
+	                	if ($scope.confirmClick) {
+	                    	$scope.$apply($scope.confirmClick);
+	                	}
+	                }
+					
+				} //end showConfirm()
+	        }
+	    }
+	}]); //end directive
+	*/
 	
 	
 	//pagination settings

@@ -54,7 +54,7 @@
 	
 	
 		public function postInput($appId, $formId = null) {
-			
+		
 			//get validated form
 			$form = $this->getValidatedForm($appId, $formId);
 			
@@ -86,10 +86,9 @@
 					$runQuery = false;
 
 					//update post data
-					//foreach ($_POST as $field) {
 					$fieldValue = null;
 					foreach ($fields as $field) {	
-						
+		
 						//get field properties
 						$connectionName = $field->connection;
 						$tableName = $field->table;
@@ -99,11 +98,6 @@
 						
 						//get field value
 						$fieldValue = safeArrayValue($field->key, $_POST, null);
-						//if (isset($fieldValue)) {
-							
-						//$field->
-							
-						//}
 						
 						
 						//valid properties
@@ -112,7 +106,7 @@
 		
 							//new table or connection
 							if (strcmp($tableName, $lastTableName)!=0 || strcmp($connectionName, $lastConnectionName)!=0 || $row!=$lastRow) {
-						
+
 					
 								//previous query exists
 								if ($connection) {
@@ -146,7 +140,7 @@
 	
 							
 							if ($runQuery) {
-	
+
 								//valid connection
 								if ($connection) {
 	
@@ -176,7 +170,7 @@
 	
 							//add fields to current query						
 							else {
-								
+				
 								//add field to update query
 								$updateFields[$fieldName] = $fieldValue;
 							
@@ -194,10 +188,16 @@
 					if ($connection) {
 						
 						//update table
-						$result = $connection->update($updateFields);
-						if (!$result) {
+						$connection->update($updateFields);
+						
+						//indicate form was updated (force value as 'update' call returns false if no changes where made)
+						$result = true;
+						
+						//update table
+						//$result = $connection->update($updateFields);
+						//if (!$result) {
 							//TODO: handle update error
-						}
+						//}
 						
 						//echo "QUERY TO RUN111: " . $connection->toSql() . " - fields: " . print_r($updateFields, true);
 
@@ -209,7 +209,7 @@
 				
 				} //end if (found fields)
 
-		
+
 				//valid result
 				if ($result) {
 					
@@ -221,12 +221,10 @@
 					);
 					
 				}
-		
+
 			} //end if (valid form)
 			
 			
-			//print_r(DB::getQueryLog());
-			//exit(0);
 			//insecure access
 			return Redirect::action('CMSController@getError')->with('errorCode', '404');
 			

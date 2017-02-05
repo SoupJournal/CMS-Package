@@ -92,7 +92,7 @@
 					
 					{{-- save button --}}
 					<div class="form-group pull-right">
-						<save-form-button></save-button>
+						<save-form-button confirm-form="inputForm" confirm-message="Save changes? Changes will be applied to the live site."></save-button>
 					</div>
 					
 				</div>
