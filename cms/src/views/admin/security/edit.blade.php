@@ -37,8 +37,16 @@
 <?php
 
 	//get AJAX URL's
-	$dataURL = action('SecurityController@getGroups', ['appId' => $appId]);
+	$dataURL = action('SecurityController@getUsers', ['appId' => $appId, 'securityGroupId' => isset($securityGroup) ? $securityGroup->id : null]);
 
+	
+	//compile table parameters
+	$tableParameters = array(
+		'title' => '', 
+		'tableId' => 'userTable',
+		'dataFunction' => 'initGroupTable', 
+		'editField' => 'id'
+	);
 	
 ?>
 
@@ -65,7 +73,11 @@
 		
 			{{-- title --}}
 			<div class="row">
-				<h2>Security Group</h2>
+				@if (isset($securityGroup))
+					<h2>Edit Security Group</h2>
+				@else
+					<h2>Create Security Group</h2>				
+				@endif
 				<br>
 			</div>
 		
@@ -75,7 +87,7 @@
 				<div class="form-group">
 				
 					{{ Form::label('name', 'Group Name') }}
-					{{ Form::text('name', null, Array ('placeholder' => 'Group Name', 'class' => 'form-control', 'required' => '')) }}
+					{{ Form::text('name', (isset($securityGroup) ? $securityGroup->name : null), Array ('placeholder' => 'Group Name', 'class' => 'form-control', 'required' => '')) }}
 		
 				</div>
 			</div>
@@ -102,6 +114,7 @@
 									{{-- draw permission option --}}
 									<div class="checkbox">
 										<label>
+										{{-- TODO:: preset value to current group permissions --}}
 										{{ Form::checkbox('permission[' . $count .']', $value); }}
 										{{ Form::label($value, $value) }}
 										</label>
@@ -127,7 +140,7 @@
 					<h5>Users</h5>
 					
 					{{-- draw table --}}
-					@include('cms::cms.gui.table', array('title'=>'', 'dataFunction'=>'initGroupTable'))
+					@include('cms::cms.gui.table', $tableParameters)
 					
 				</div>
 			</div>

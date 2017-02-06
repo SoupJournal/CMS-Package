@@ -38,6 +38,7 @@
 
 	//get AJAX URL's
 	$dataURL = action('SecurityController@getGroups', ['appId' => $appId]);
+	$editURL = action('SecurityController@getEdit', ['appId' => $appId]);
 
 	//compile table parameters
 	$tableParameters = array(
@@ -55,7 +56,7 @@
 
 
 	{{-- select database view --}}
-	<div ng-controller="SecurityController" ng-init="setDataURL('{{ $dataURL }}');">
+	<div ng-controller="SecurityController" ng-init="setDataURL('{{ $dataURL }}');  setEditURL('{{ $editURL }}');">
 	
 	
 		{{-- title --}}

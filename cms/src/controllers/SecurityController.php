@@ -34,10 +34,13 @@
 	
 	
 	
-		public function getEdit($securityGroupID = null) {
+		public function getEdit($appId = null, $securityGroupId = null) {
+			
+			//get security group
+			$group = CMSSecurity::find($securityGroupId);
 			
 			return View::make('cms::admin.security.edit')->with(array(
-				'securityGroupID' => $securityGroupID,
+				'securityGroup' => $group,
 				'availablePermissions' => $this->permissionsList
 			));
 			
@@ -109,11 +112,13 @@
 		
 			
 			
-		public function getGroups() {
+		public function getGroups($appId = null) {
 			
 			
 			//build query
-			$query = CMSSecurity::select(['id', 'name', 'permission'])->where('status', '=', 1);
+			$query = CMSSecurity::select(['id', 'name', 'permission'])
+					->where('application', '=', $appId)
+					->where('status', '=', 1);
 			
 			//get paginated results
 			$results = $this->paginateRequestQuery($query, $_GET);
@@ -123,6 +128,35 @@
 					
 			
 		} //end getGroups()
+		
+		
+		
+		
+		
+		public function getUsers($appId = null, $securityGroupId = null) {
+			
+			
+			//build query
+			$query = CMSUser::select([
+						'first_name', 
+						'last_name'
+					])
+					->whereHas('permissions', function($innerQuery) use (&$securityGroupId) {
+							$innerQuery->where('security_group', '=', $securityGroupId);
+					});
+			//$query = CMSSecurityPermission::where('security_group', '=', $securityGroupId);
+//			$query = CMSUser::leftjoin()
+			
+			//TODO: get users associated with permissions
+			
+			//get paginated results
+			$results = $this->paginateRequestQuery($query, $_GET);
+			
+			//return paginated query
+			return Response::json($results);
+					
+			
+		} //end getUsers()
 			
 					
 	} //end class SecurityController

@@ -22,6 +22,10 @@
 		
 		
 		
+		//==========================================================//
+		//====					DATA METHODS					====//
+		//==========================================================//	
+		
 		
 		protected function paginateRequestQuery($query, $params) { //, $objectData = null) {
 			
@@ -123,6 +127,32 @@
 		
 			
 		} //end paginateRequestQuery()
+		
+		
+		
+		
+		
+					
+		//==========================================================//
+		//====					SECURITY METHODS				====//
+		//==========================================================//	
+			
+			
+		private function getValidatedApp($appId) {
+			
+			$app = null;
+			
+			//valid application id
+			if ($appId>=0) {
+
+				//check application id
+				$app = CMSApp::find($appId);
+				
+			} //end if (valid app id)
+			
+			return $app;
+			
+		} //end getValidatedApp()
 		
 		
 		

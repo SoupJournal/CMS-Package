@@ -9,11 +9,14 @@
 	//create controller
 	module.controller('SecurityController', [ '$scope', 'PageService', function($scope, $page) {
 		
-		$scope.test = "hello";
-		
 		//set url for form data
 		$scope.setDataURL = function(url) {
 			$scope.dataURL = url;	
+		}
+		
+		//set url for group editing
+		$scope.setEditURL = function(url) {
+			$scope.editURL = url;	
 		}
 		
 		
@@ -26,6 +29,11 @@
 				scope.dataURL = $scope.dataURL;	
 				scope.includeKeys = ['name', 'permission'];
 				scope.excludeKeys = [];
+				scope.columnProperties = { 
+					2: {
+						html: true			
+					}
+				};
 			}
 			
 		} //end initSecurityTable()
@@ -82,6 +90,57 @@
 			}
 			
 		};
+		
+		
+		
+		
+		
+
+		//respond to table update events
+		$scope.$on('tableUpdated', function(event, obj) {
+
+    	  	//valid data
+    	  	if (obj) {
+    	  		
+
+    	  		//form table
+    	  		if (obj.tableId == 'securityTable') {
+    	  		
+	    	  		//get object properties
+	    	  		var rawData = obj.data;
+	    	  		var filteredData = obj.results;
+
+	    	  		//valid data
+	    	  		if (rawData && filteredData && rawData.length>0 && filteredData.length>=rawData.length) {
+	 
+	 					//valid edit URL
+	 					if ($scope.editURL && $scope.editURL.length>0) {
+	 
+		 					//process data
+		 					for (var i=0; i<rawData.length; ++i) {
+		 						
+		 						//append edit field
+		 						filteredData[i].push('<edit-button href="' + $scope.editURL + '/' + rawData[i]['id'] + '">edit</edit-button>');
+		 						
+		 					} //end for()
+	 					
+	 					
+		 					//update values (no need to broadcast - editing same object instance)
+//							$scope.$broadcast('applyValues', { 
+//								tableId: 'formTable',
+//								results: filteredData
+//							});
+
+	 					} //end if (valid edit URL)
+	 					
+	    	  		
+	    	  		}
+    	  		
+    	  		} //end if (form table)
+    	  		
+    	  	} //end if (valid data)
+    	  	
+	    }); //end event handler()
 		
 		
 	}]); //end controller

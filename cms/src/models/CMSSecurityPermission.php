@@ -19,6 +19,16 @@ class CMSSecurityPermission extends BaseModel {
     } //end group()
 
 
+	/**
+     * Get the user record associated with this permission.
+     */
+	public function user() {
+    
+        return $this->hasOne('CMSUser', 'id', 'user');
+        
+    } //end user()
+    
+
 
 } //end class CMSSecurityPermission
 

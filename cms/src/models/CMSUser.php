@@ -8,6 +8,20 @@ class CMSUser extends BaseModel implements UserInterface {
     protected $table = 'user';
 
 
+
+
+	/**
+     * Get the security permission records associated with this user.
+     */
+	public function permissions() {
+    
+        return $this->hasMany('CMSSecurityPermission', 'user', 'id');
+        
+    } //end permissions()
+
+
+
+
     /**
 	 * Get the unique identifier for the user.
 	 *

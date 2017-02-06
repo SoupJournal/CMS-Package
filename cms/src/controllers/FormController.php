@@ -802,24 +802,7 @@
 		//====					SECURITY METHODS				====//
 		//==========================================================//	
 			
-			
-		private function getValidatedApp($appId) {
-			
-			$app = null;
-			
-			//valid application id
-			if ($appId>=0) {
-
-				//check application id
-				$app = CMSApp::find($appId);
 				
-			} //end if (valid app id)
-			
-			return $app;
-			
-		} //end getValidatedApp()
-		
-			
 			
 			
 		private function getValidatedForm($appId, $formId) {
