@@ -221,7 +221,7 @@
 					
 					//determine page button offset
 					var buttonsOffset = $scope.maxNumberOfPageButtons > 0 ? parseInt($scope.maxNumberOfPageButtons * 0.5) : 0;
-					var lastPageButton = response.total_pages - $scope.maxNumberOfPageButtons;
+					var lastPageButton = $scope.maxNumberOfPageButtons > 0 ? response.total_pages - $scope.maxNumberOfPageButtons : 0;
 					
 					//determine first page button number
 					var startButtonPage = $scope.currentPage - buttonsOffset;
