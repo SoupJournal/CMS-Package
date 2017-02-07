@@ -175,6 +175,7 @@
 		$scope.currentPage = 0;
 		$scope.itemsPerPage = -1;
 		$scope.range = [];
+		$scope.maxNumberOfPageButtons = 5;
 
 
 		//parent init function
@@ -209,12 +210,28 @@
 					$scope.currentPage  = parseInt(response.current_page);
 					//$scope.itemsPerPage = parseInt(response.items_per_page);
 	
+	
+	
+					//TODO: move to pagination directive
 					// Pagination Range
 					var pages = [];
 					
 					//add page number
-					for(var i=0; i<response.total_pages; i++) {          
-						pages.push(i);
+					var numberOfButtons = $scope.maxNumberOfPageButtons > 0 ? $scope.maxNumberOfPageButtons : response.total_pages;
+					
+					//determine page button offset
+					var buttonsOffset = $scope.maxNumberOfPageButtons > 0 ? parseInt($scope.maxNumberOfPageButtons * 0.5) : 0;
+					var lastPageButton = response.total_pages - $scope.maxNumberOfPageButtons;
+					
+					//determine first page button number
+					var startButtonPage = $scope.currentPage - buttonsOffset;
+					if (startButtonPage<0) startButtonPage = 0;
+					if (startButtonPage>lastPageButton) startButtonPage = lastPageButton;
+					
+
+					//add page buttons
+					for(var i=0; i<numberOfButtons; i++) {          
+						pages.push(startButtonPage + i);
 					}
 					$scope.range = pages; 
 					
