@@ -47,7 +47,7 @@
 	@if ($appId>0)
 
 		{{-- title --}}
-		<h2>{{ $appName }}</h2>
+		<h2>{{ $appName }} Overview</h2>
 	
 	
 		<div class="form-group">

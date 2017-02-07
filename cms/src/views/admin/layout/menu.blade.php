@@ -6,6 +6,7 @@
 	$showSettings = CMSAccess::validPermissionFromList($userPermissions, CMSAccess::$PERMISSION_CREATE_APPLICATION)
 				|| CMSAccess::validPermissionFromList($userPermissions, CMSAccess::$PERMISSION_EDIT_APPLICATION);
 
+	$showInput = CMSAccess::validPermissionFromList($userPermissions, CMSAccess::$PERMISSION_FORMS);
 
 ?>
 <div class=" text-center">
@@ -35,7 +36,7 @@
 			
 			{{-- Pages --}}
 			<?php
-				if (isset($forms)) {
+				if ($showInput && isset($forms)) {
 					
 					//add form links
 					$formName = null;
@@ -60,6 +61,7 @@
 					} //end for()
 				
 				} //end if (forms set)
+
 			?>
 
 	</ul>

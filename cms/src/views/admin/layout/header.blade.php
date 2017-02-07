@@ -6,7 +6,7 @@
 
 	//determine visible menu items
 	$showCreateApp = CMSAccess::validPermissionFromList($userPermissions, CMSAccess::$PERMISSION_CREATE_APPLICATION);
-	
+
 
 
   	//user is logged in
@@ -39,7 +39,7 @@
 		   		@if ($applications)
 		   		
 		   			{{-- multiple applications --}}
-		   			@if ($numberOfApplications>1 || ($showCreateApp && $numberOfApplications==1))
+		   			@if ($numberOfApplications>=1 || $showCreateApp)
 		   		
 			   		
 				   		<div class="dropdown pull-left">
@@ -75,18 +75,18 @@
 				
 					
 					{{-- no applications but permission to create new app --}}
-					@elseif ($numberOfApplications==0)
+					@elseif ($numberOfApplications==0 && $showCreateApp)
 				
 						<div class="dropdown pull-left">
 							<span><a href="{{ action('ApplicationController@getIndex') }}">Add new application</a></span>
 						</div>
 				
 				
-					{{-- only one application available and no create permission --}}
+					{{-- no application available and no create permission --}}
 					@elseif ($appName && strlen($appName))
 				
 						<div class="dropdown pull-left">
-							<span>{{ $appName }}</span>
+							<span>No Applications available</span>
 						</div>
 				
 					@endif

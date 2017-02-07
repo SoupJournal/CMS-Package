@@ -106,12 +106,12 @@
 		 *	Checks is the user has the specified permission
 		 *
 		 *	@param permissionID	the ID of the permission to check
-		 *  @param appID the application used for the check
+		 *  @param appId the application used for the check
 		 *	@param user optional parameter to specify the user used for the check
 		 *	@return true if the user has the correct permission, false otherwise
 		 *
 		 **/
-		static function validPermission($permissionID, $appID, $user=null) {
+		static function validPermission($permissionID, $appId, $user=null) {
 			
 			$valid = false;
 			
@@ -123,10 +123,10 @@
 				if ($permissionTag && strlen($permissionTag)>0) {
 			
 					//get application ID
-					//$appID = Session::get(CMSAccess::$SESSION_KEY_APP_ID);
+					//$appId = Session::get(CMSAccess::$SESSION_KEY_APP_ID);
 					
 					//valid app ID
-					if (is_numeric($appID) && $appID>=0) {
+					if (is_numeric($appId) && $appId>=0) {
 			
 			
 						//retrieve user
@@ -140,8 +140,8 @@
 							//find user permissions
 							$permissions = CMSSecurityPermission::select('id')
 									->where('user', '=', $user->id)
-									->whereHas('group', function($query) use ($permissionTag, $appID) {
-										$query->where('application', '=', $appID)
+									->whereHas('group', function($query) use ($permissionTag, $appId) {
+										$query->where('application', '=', $appId)
 											  ->where('permission', 'LIKE', '%"' . $permissionTag . '"%');
 									})
 									->first();
@@ -171,18 +171,18 @@
 		/**
 		 *	Checks is the user has access to the specified application
 		 *
-		 *  @param appID the application used for the check
+		 *  @param appId the application used for the check
 		 *	@param user optional parameter to specify the user used for the check
 		 *	@return true if the user has access to the application, false otherwise
 		 *
 		 **/
-		static function validApplication($appID, $user=null) {
+		static function validApplication($appId, $user=null) {
 		
 			$valid = false;
 		
 		
 			//valid app ID
-			if (is_numeric($appID) && $appID>=0) {
+			if (is_numeric($appId) && $appId>=0) {
 		
 				//retrieve user
 				if (!$user) {
@@ -195,10 +195,10 @@
 					
 					$result = CMSSecurityPermission::select('id')
 						->where('user', '=', $user->id)
-						->whereHas('group', function($query) use ($appID) {
+						->whereHas('group', function($query) use ($appId) {
 							
 							//user is part of application security group
-							$query->where('application', '=', $appID);
+							$query->where('application', '=', $appId);
 							
 							//at least one permission is specified
 							$query->where(function($whereQuery) {
@@ -290,18 +290,18 @@
 		/**
 		 *	Returns a list of permissions for the specified user and application
 		 *
-		 * 	@param appID the application used for the check
+		 * 	@param appId the application used for the check
 		 *	@param user optional parameter to specify the user used for the check
 		 *	@return array of user permissions
 		 *
 		 **/
-		static function userPermissions($appID, $user=null) {
+		static function userPermissions($appId, $user=null) {
 			
 			$permissions = null;
 			
-			
+
 			//valid app ID
-			if (is_numeric($appID) && $appID>=0) {
+			if (is_numeric($appId) && $appId>=0) {
 			
 				//retrieve user
 				if (!$user) {
@@ -314,13 +314,13 @@
 				
 					//select all permissions
 					$result = CMSSecurity::select(['id', 'permission'])
-						->where('application', '=', $appID)
+						->where('application', '=', $appId)
 						->whereHas('permissions', function($query) use ($user) {
 							$query->where('user', '=', $user->id);
 						})
 						->groupBy('permission')
 						->get();
-					
+	
 					//valid results
 					if ($result && count($result)>0) {
 					

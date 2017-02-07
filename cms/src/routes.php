@@ -138,6 +138,30 @@
 	
 
 
+	Route::filter('P_Input', function($route)
+	{	
+		//get appID
+		$appId = isset($route) ? $route->getParameter('appId') : null;
+		
+		//valid app ID
+		if (is_numeric($appId) && $appId>0) {
+		
+			//ensure user has permission
+			if (!CMSAccess::validPermission(CMSAccess::$PERMISSION_FORMS, $appId)) { 
+				
+				//no security permission - redirect to overview
+				return Redirect::action('CMSController@getIndex', array('appId' => $appId));
+			}
+		
+		}
+		//invalid app ID
+		else {
+			return Redirect::action('CMSController@getError', array('errorCode' => '404'));
+		}
+	    
+	});
+
+
 
 
 	//==========================================================//
@@ -148,14 +172,14 @@
 	//Applications
 	//Route::get('cms/app/applications', array('before' => 'ajaxAccess', 'uses' => 'ApplicationController@getApplications'));
 	//controller routes
-	Route::group(array('before' => 'CMSAuth'), function() use (&$basePath) {
+	Route::group(array('before' => 'CMSAuth|CMSApp'), function() use (&$basePath) {
 		Route::controller($basePath . '/app', 'ApplicationController');
 	});
 	
 	
 	
 	//Security Groups
-	Route::group(array('before' => 'CMSAuth|P_Security'), function() use (&$basePath) {
+	Route::group(array('before' => 'CMSAuth|CMSApp|P_Security'), function() use (&$basePath) {
 		Route::controller($basePath . '/{appId}/security', 'SecurityController');
 	});
 	
@@ -164,14 +188,14 @@
 	//Forms
 	//Route::get('cms/form/table/{safestr}', array('before' => 'CMSAuth|Ajax', 'uses' => 'FormController@getTable'));
 	//Route::get('cms/form/field/{safestr}/{safestr2}', array('before' => 'CMSAuth|Ajax', 'uses' => 'FormController@getField'));
-	Route::group(array('before' => 'CMSAuth|P_Form'), function() use (&$basePath) {
+	Route::group(array('before' => 'CMSAuth|CMSApp'), function() use (&$basePath) {
 		Route::controller($basePath . '/{appId}/form', 'FormController');
 	});
 	
 	
 	
 	//Settings
-	Route::group(array('before' => 'CMSAuth'), function() use (&$basePath) {
+	Route::group(array('before' => 'CMSAuth|CMSApp'), function() use (&$basePath) {
 		Route::controller($basePath . '/{appId}/settings', 'SettingsController');
 	});
 	

@@ -3,10 +3,23 @@
 	class FormController extends BaseCMSController {
 		
 
-		//public function __construct() {
+		public function __construct() {
+				
+			//list of input actions
+			$inputActions = array ('getInput', 'postInput', 'getTemplates', 'postExport');
 			
+				
+			//add filter (require form edit permission)
+			$this->beforeFilter('P_Form', array(
+				'except' => $inputActions
+			));
+				
+			//add filter (require form input permission)
+			$this->beforeFilter('P_Input', array(
+				'only' => $inputActions
+			));
 
-		//} //end constructor()
+		} //end constructor()
 		
 		
 
