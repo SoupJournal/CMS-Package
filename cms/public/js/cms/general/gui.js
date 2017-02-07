@@ -216,12 +216,15 @@
 					// Pagination Range
 					var pages = [];
 					
+					//check if maximum applied
+					var applyMaximum = $scope.maxNumberOfPageButtons > 0 && $scope.maxNumberOfPageButtons < response.total_pages;
+					
 					//add page number
-					var numberOfButtons = $scope.maxNumberOfPageButtons > 0 ? $scope.maxNumberOfPageButtons : response.total_pages;
+					var numberOfButtons = applyMaximum ? $scope.maxNumberOfPageButtons : response.total_pages;
 					
 					//determine page button offset
-					var buttonsOffset = $scope.maxNumberOfPageButtons > 0 ? parseInt($scope.maxNumberOfPageButtons * 0.5) : 0;
-					var lastPageButton = $scope.maxNumberOfPageButtons > 0 ? response.total_pages - $scope.maxNumberOfPageButtons : 0;
+					var buttonsOffset = applyMaximum ? parseInt($scope.maxNumberOfPageButtons * 0.5) : 0;
+					var lastPageButton = applyMaximum ? response.total_pages - $scope.maxNumberOfPageButtons : 0;
 					
 					//determine first page button number
 					var startButtonPage = $scope.currentPage - buttonsOffset;
