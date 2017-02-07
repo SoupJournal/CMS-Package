@@ -175,7 +175,7 @@
 		$scope.currentPage = 0;
 		$scope.itemsPerPage = -1;
 		$scope.range = [];
-		$scope.maxNumberOfPageButtons = 5;
+		$scope.maxNumberOfPageButtons = 10;
 
 
 		//parent init function
