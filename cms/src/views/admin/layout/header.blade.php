@@ -1,5 +1,7 @@
 <?php
 
+	use Soup\Cms\Lib\CMSAccess;
+
 	//set custom page controllers
 	//$pageModules = array_push($pageModules, 'ui.bootstrap.dropdown');
 
@@ -7,7 +9,14 @@
 	//determine visible menu items
 	$showCreateApp = CMSAccess::validPermissionFromList($userPermissions, CMSAccess::$PERMISSION_CREATE_APPLICATION);
 
+	//get controller paths
+	//$homePath = route('cms.home', ['appId' => (isset($appData) ? $appData->id : null)]);
+	$logoutPath = route('cms.logout');
+	$appPath = action($controllerNamespace . 'ApplicationController@getIndex');
 
+//echo "USER: ";
+//print_r($user);
+//exit(0);
 
   	//user is logged in
 	if (isset($user)) {
@@ -59,14 +68,14 @@
 						      		{{-- list applications --}}
 						      		@foreach ($applications as $appData)
 						      			@if ($appData && isset($appData->name) && isset($appData->id) && strlen($appData->name))
-								          	<li><a href="{{ URL::action('CMSController@getIndex') . '/' . $appData->id }}">{{ $appData->name }}</a></li>
+								          	<li><a href="{{ route('cms.home', ['appId' => (isset($appData) ? $appData->id : null)]) }}">{{ $appData->name }}</a></li>
 								        @endif
 						          	@endforeach
 						          	
 						          	{{-- add create option --}}
 						          	@if ($showCreateApp)
 						        		<li class="divider"></li>
-						          		<li><a href="{{ action('ApplicationController@getIndex') }}">Add new application</a></li>
+						          		<li><a href="{{ $appPath }}">Add new application</a></li>
 						          	@endif
 						      	</ul>
 						    </span>
@@ -78,7 +87,7 @@
 					@elseif ($numberOfApplications==0 && $showCreateApp)
 				
 						<div class="dropdown pull-left">
-							<span><a href="{{ action('ApplicationController@getIndex') }}">Add new application</a></span>
+							<span><a href="{{ $appPath }}">Add new application</a></span>
 						</div>
 				
 				
@@ -106,7 +115,7 @@
 				        	{{ $user->first_name }} {{ $user->last_name }}<span class="caret"></span>
 				      	</a>
 				      	<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="simple-dropdown">
-				          	<li><a href="{{ URL::action('CMSController@getLogout') }}">logout</a></li>
+				          	<li><a href="{{ $logoutPath }}">logout</a></li>
 				      	</ul>
 				    </span>
 		   		

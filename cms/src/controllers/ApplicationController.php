@@ -1,5 +1,10 @@
 <?php
 
+	namespace Soup\CMS\Controllers;
+
+	use Soup\CMS\Lib\BaseCMSController;
+	
+
 	class ApplicationController extends BaseCMSController {
 		
 

@@ -62,4 +62,4 @@
     
     
     <!-- add style -->
-    {{ HTML::style($assetPath . '/css/admin.css'); }} 
+    {{ HTML::style($assetPath . '/css/admin.css') }} 

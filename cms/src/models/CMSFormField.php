@@ -1,5 +1,9 @@
 <?php
 
+namespace Soup\CMS\Models;
+
+use Soup\CMS\Lib\Model\BaseModel;
+
 
 class CMSFormField extends BaseModel {
 

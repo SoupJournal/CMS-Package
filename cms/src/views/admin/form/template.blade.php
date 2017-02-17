@@ -44,9 +44,9 @@
 	$formName = safeObjectValue('name', $form, "");
 
 	//get AJAX URL's
-	$dataURL = action('FormController@getTemplates', ['appId' => $appId, 'formId' => (isset($form) ? $form->id : null)]);
+	$dataURL = action($controllerNamespace . 'FormController@getTemplates', ['appId' => $appId, 'formId' => (isset($form) ? $form->id : null)]);
 	$editURL = ""; //URL::to('cms/' . $appId . '/form/edit/');
-	$exportURL = action('FormController@postExport', ['appId' => $appId, 'formId' => (isset($form) ? $form->id : null)]);
+	$exportURL = action($controllerNamespace . 'FormController@postExport', ['appId' => $appId, 'formId' => (isset($form) ? $form->id : null)]);
 
 	//compile table parameters
 	$tableParameters = array(

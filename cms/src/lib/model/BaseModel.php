@@ -1,8 +1,11 @@
 <?php
 
-//use \Illuminate\Database\Eloquent
+namespace Soup\CMS\Lib\Model;
 
-class BaseModel extends Eloquent {
+use Illuminate\Database\Eloquent\Model;
+
+
+class BaseModel extends Model {
 	
 	
 	//set base connection

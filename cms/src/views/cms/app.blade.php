@@ -17,7 +17,7 @@
 	
 	      			?>
 	      			try {
-	      				pageModules = {{ $jsonModules }};
+	      				pageModules = <?php echo $jsonModules ?>;
 	      			}
 	      			catch (e) {
 	      				console.log("ERROR parsing page controllers");

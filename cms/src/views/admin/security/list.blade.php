@@ -37,8 +37,8 @@
 <?php
 
 	//get AJAX URL's
-	$dataURL = action('SecurityController@getGroups', ['appId' => $appId]);
-	$editURL = action('SecurityController@getEdit', ['appId' => $appId]);
+	$dataURL = action($controllerNamespace . 'SecurityController@getGroups', ['appId' => $appId, 'securityGroupId' => null]);
+	$editURL = action($controllerNamespace . 'SecurityController@getEdit', ['appId' => $appId, 'securityGroupId' => null]);
 
 	//compile table parameters
 	$tableParameters = array(
@@ -72,7 +72,7 @@
 
 	
 			{{-- add group button --}}
-			<a href="{{ action('SecurityController@getEdit', ['appId' => $appId]) }}" class="btn btn-primary">Add Group</a>
+			<a href="{{ $editURL }}" class="btn btn-primary">Add Group</a>
 	
 
 		{{-- end form group --}}

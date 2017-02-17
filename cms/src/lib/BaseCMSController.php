@@ -1,4 +1,12 @@
-<?php
+<?php 
+
+	namespace Soup\Cms\Lib;
+
+
+	use Soup\CMS\Models\CMSApp;
+
+	use App\Http\Controllers\Controller;
+	use \StdClass;
 
 	class BaseCMSController extends Controller {
 		
@@ -138,7 +146,7 @@
 		//==========================================================//	
 			
 			
-		private function getValidatedApp($appId) {
+		protected function getValidatedApp($appId) {
 			
 			$app = null;
 			

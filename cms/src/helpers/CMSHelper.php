@@ -1,5 +1,7 @@
 <?php
 
+	use Soup\CMS\Models\CMSForm;
+
 
 	function dataForForm($formKey, $arrayFormat = true) {
 		
@@ -71,18 +73,26 @@
 								//no existing query
 								else {
 				
-									//create initial query
-									$connection = DB::connection($connectionName);
-									if ($connection) {
-										
-										//user array results
-										if ($arrayFormat) {
-											$connection->setFetchMode(PDO::FETCH_ASSOC);
-											//$connection->setFetchMode(PDO::FETCH_CLASS);
+									try {
+				
+										//create initial query
+										$connection = DB::connection($connectionName);
+										if ($connection) {
+											
+											//user array results
+											if ($arrayFormat) {
+												$connection->setFetchMode(PDO::FETCH_ASSOC);
+												//$connection->setFetchMode(PDO::FETCH_CLASS);
+											}
+											
+											//update query
+											$connection = $connection->table($tableName)->where('id', '=', $row);
 										}
-										
-										//update query
-										$connection = $connection->table($tableName)->where('id', '=', $row);
+									
+									}
+									//invalid database connection
+									catch (Exception $ex) {
+										//TODO: log error
 									}
 									
 								}

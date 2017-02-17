@@ -1,5 +1,11 @@
 <?php
 
+namespace Soup\CMS\Models;
+
+use Soup\CMS\Lib\Model\BaseModel;
+use Soup\CMS\Models\CMSSecurity;
+
+
 
 class CMSApp extends BaseModel {
 
@@ -12,7 +18,7 @@ class CMSApp extends BaseModel {
      */
 	public function group() {
     
-        return $this->hasMany('CMSSecurity', 'application', 'id');
+        return $this->hasMany(CMSSecurity::class, 'application', 'id');
         
     } //end group()
 

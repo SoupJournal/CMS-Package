@@ -37,8 +37,8 @@
 <?php
 
 	//get AJAX URL's
-	$tableURL = action("FormController@getTable", ['appId' => $appId]);
-	$fieldURL = action("FormController@getField", ['appId' => $appId]);
+	$tableURL = action($controllerNamespace . "FormController@getTable", ['appId' => $appId, 'dbConnection' => null]);
+	$fieldURL = action($controllerNamespace . "FormController@getField", ['appId' => $appId, 'dbConnection' => null, 'dbTable' => null]);
 
 	//get available databases	
 	$databaseConnections = Config::get('database.connections');
@@ -66,7 +66,7 @@
 	
 	
 	//field form
-	$fieldDataURL = action('FormController@getFields', ['appId' => $appId, 'formId' => ($form ? $form->id : '')]);
+	$fieldDataURL = action($controllerNamespace . 'FormController@getFields', ['appId' => $appId, 'formId' => ($form ? $form->id : '')]);
 
 	//compile table parameters
 	$tableParameters = array(

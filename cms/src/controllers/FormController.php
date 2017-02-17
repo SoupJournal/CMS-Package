@@ -1,23 +1,35 @@
 <?php
 
+	namespace Soup\CMS\Controllers;
+
+	use Soup\CMS\Lib\BaseCMSController;
+	use Soup\CMS\Lib\CMSData;
+	use Soup\CMS\Models\CMSApp;
+	use Soup\CMS\Models\CMSForm;
+	use Soup\CMS\Models\CMSFormField;
+
+	use View;
+	use Redirect;
+	use Response;
+
 	class FormController extends BaseCMSController {
 		
 
 		public function __construct() {
-				
-			//list of input actions
-			$inputActions = array ('getInput', 'postInput', 'getTemplates', 'postExport');
-			
-				
-			//add filter (require form edit permission)
-			$this->beforeFilter('P_Form', array(
-				'except' => $inputActions
-			));
-				
-			//add filter (require form input permission)
-			$this->beforeFilter('P_Input', array(
-				'only' => $inputActions
-			));
+//				
+//			//list of input actions
+//			$inputActions = array ('getInput', 'postInput', 'getTemplates', 'postExport');
+//			
+//				
+//			//add filter (require form edit permission)
+//			$this->middleware('P_Form', array(
+//				'except' => $inputActions
+//			));
+//				
+//			//add filter (require form input permission)
+//			$this->middleware('P_Input', array(
+//				'only' => $inputActions
+//			));
 
 		} //end constructor()
 		

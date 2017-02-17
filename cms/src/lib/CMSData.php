@@ -1,5 +1,7 @@
 <?php
 
+	namespace Soup\CMS\Lib;
+	
 
 	class CMSData {
 		

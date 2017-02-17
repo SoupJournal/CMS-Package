@@ -1,5 +1,10 @@
 <?php
 
+namespace Soup\CMS\Models;
+
+use Soup\CMS\Lib\Model\BaseModel;
+use Soup\CMS\Models\CMSFormField;
+
 
 class CMSForm extends BaseModel {
 
@@ -13,7 +18,7 @@ class CMSForm extends BaseModel {
      */
 	public function fields() {
     
-        return $this->hasMany('CMSFormField', 'form', 'id');
+        return $this->hasMany(CMSFormField::class, 'form', 'id');
         
     } //end fields()
 

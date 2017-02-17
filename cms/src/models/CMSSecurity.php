@@ -1,5 +1,10 @@
 <?php
 
+namespace Soup\CMS\Models;
+
+use Soup\CMS\Lib\Model\BaseModel;
+use Soup\CMS\Models\CMSSecurityPermission;
+
 
 class CMSSecurity extends BaseModel {
 
@@ -24,7 +29,7 @@ class CMSSecurity extends BaseModel {
      */
 	public function permissions() {
     
-        return $this->hasMany('CMSSecurityPermission', 'security_group', 'id');
+        return $this->hasMany(CMSSecurityPermission::class, 'security_group', 'id');
         
     } //end permissions()
     

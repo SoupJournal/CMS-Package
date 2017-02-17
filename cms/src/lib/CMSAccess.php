@@ -1,8 +1,17 @@
 <?php
 
+	namespace Soup\CMS\Lib;
+	
+	use \Auth;
+	use Soup\CMS\Models\CMSApp;
+	use Soup\CMS\Models\CMSSecurity;
+	use Soup\CMS\Models\CMSSecurityPermission;
+
 
 	class CMSAccess {
 		
+		//auth guard
+		public static $AUTH_GUARD = 'cms';
 		
 		//CMS permissions
 //		public static $PERMISSION_EDIT_APPLICATION = 'edit_application';
@@ -131,7 +140,7 @@
 			
 						//retrieve user
 						if (!$user) {
-							$user = Auth::CMSuser()->user();
+							$user = Auth::guard(CMSAccess::$AUTH_GUARD)->user();
 						}
 						
 						//valid user
@@ -186,7 +195,7 @@
 		
 				//retrieve user
 				if (!$user) {
-					$user = Auth::CMSuser()->user();
+					$user = Auth::guard(CMSAccess::$AUTH_GUARD)->user();
 				}
 				
 				
@@ -242,7 +251,7 @@
 			
 			//retrieve user
 			if (!$user) {
-				$user = Auth::CMSuser()->user();
+				$user = Auth::guard(CMSAccess::$AUTH_GUARD)->user();
 			}
 
 			
@@ -305,7 +314,7 @@
 			
 				//retrieve user
 				if (!$user) {
-					$user = Auth::CMSuser()->user();
+					$user = Auth::guard(CMSAccess::$AUTH_GUARD)->user();
 				}
 				
 				

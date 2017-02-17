@@ -1,5 +1,16 @@
 <?php
 
+	namespace Soup\CMS\Controllers;
+
+	use Soup\CMS\Lib\BaseCMSController;
+	
+	
+//	use URL;
+	use View;
+//	use Redirect;
+//	use Illuminate\Support\Facades\Auth;
+//	use Illuminate\Support\Facades\Input;
+
 	class SettingsController extends BaseCMSController {
 		
 
@@ -8,8 +19,14 @@
 
 		//} //end constructor()
 		
+		/*
+		public function index() {
+			
+			return View::make('cms::admin.settings.list');
+			
+		} //end index()
 		
-
+		*/
 		
 		public function getIndex() {
 			

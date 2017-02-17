@@ -1,4 +1,13 @@
 <?php
+	
+	namespace Soup\CMS\Controllers;
+
+	use Soup\CMS\Lib\BaseCMSController;
+	use Soup\CMS\Lib\CMSAccess;
+	use Soup\CMS\Models\CMSSecurity;
+
+	use View;
+	use Redirect;
 
 	class SecurityController extends BaseCMSController {
 		
@@ -49,7 +58,7 @@
 	
 		
 		
-		public function postEdit($securityGroupID = null) {
+		public function postEdit($appId = null, $securityGroupId = null) {
 			
 			//form errors
 			$errors = array();

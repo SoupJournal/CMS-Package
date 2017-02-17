@@ -20,32 +20,48 @@ class CmsServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('soup/cms');
+		//$this->package('soup/cms');
+		
+		//publish config files
+		$this->publishes([
+		     __DIR__.'/../config/auth.php' => config_path('cms/auth.php'),
+		     __DIR__.'/../config/config.php' => config_path('cms/config.php'),
+		]);
+		
+		
+		//merge with user modified config
+		$this->mergeConfigFrom(
+    	    __DIR__.'/../config/auth.php', 'cms/auth',
+    	    __DIR__.'/../config/config.php', 'cms/config'
+	    );
+		
+		
+		//register middleware
+		$router = $this->app['router'];
+		if ($router) {
+			$router->middleware('CMSAuth', 'your\namespace\MiddlewareClass');	
+		}
+		
 		
 		//check if CMS routing enabled
-		$routeEnabled = \Config::get('cms::config.route.enabled'); 
+		$routeEnabled = config('cms.config.route.enabled'); 
+		
 		
 		
 		//include package routes
 		if ($routeEnabled) {
-			include __DIR__.'/../../routes.php';
+			include __DIR__.'/../routes.php';
 		}
 		
 		//include package composers
-		include __DIR__.'/../../composers.php';
+		include __DIR__.'/../composers.php';
 		
 		//include package helpers
-		include __DIR__.'/../../helpers/JSHelper.php';
-		include __DIR__.'/../../helpers/SQLHelper.php';
-		include __DIR__.'/../../helpers/DataHelper.php';
-		include __DIR__.'/../../helpers/CMSHelper.php';
+		include __DIR__.'/../helpers/JSHelper.php';
+		include __DIR__.'/../helpers/SQLHelper.php';
+		include __DIR__.'/../helpers/DataHelper.php';
+		include __DIR__.'/../helpers/CMSHelper.php';
 		
-		
-		
-//		//enable multi-auth
-//	   	if (!\App::getRegistered('Ollieread\Multiauth\MultiauthServiceProvider')) {
-//	    	\App::register('Ollieread\Multiauth\MultiauthServiceProvider');
-//	    }
 
 	} //end boot()
 
@@ -59,7 +75,7 @@ class CmsServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		//register package
-		$this->package('soup/cms');
+		//$this->package('soup/cms');
 		
 		
 		//apply auth config

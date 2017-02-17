@@ -37,7 +37,7 @@
 <?php
 
 	//get AJAX URL's
-	$dataURL = action('SecurityController@getUsers', ['appId' => $appId, 'securityGroupId' => isset($securityGroup) ? $securityGroup->id : null]);
+	$dataURL = action($controllerNamespace . 'SecurityController@getUsers', ['appId' => $appId, 'securityGroupId' => isset($securityGroup) ? $securityGroup->id : null]);
 
 	
 	//compile table parameters
@@ -115,7 +115,7 @@
 									<div class="checkbox">
 										<label>
 										{{-- TODO:: preset value to current group permissions --}}
-										{{ Form::checkbox('permission[' . $count .']', $value); }}
+										{{ Form::checkbox('permission[' . $count .']', $value) }}
 										{{ Form::label($value, $value) }}
 										</label>
 									</div>

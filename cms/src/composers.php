@@ -1,6 +1,10 @@
 <?php
 
 
+	use Soup\CMS\Models\CMSApp;
+	use Soup\CMS\Models\CMSForm;
+	use Soup\CMS\Lib\CMSAccess;
+
 	//composer groups
 	$adminGroup = ['cms::admin.*'];
 	//$cmsGroup = ['cms::layouts.master', 'cms:page', 'cms::admin.*'];
@@ -50,8 +54,11 @@
 	    
 
 	    //make user data available - TODO: check exposed properties
-	    $view->with('user', Auth::CMSuser()->user());
-
+	    //$view->with('user', Auth::CMSuser()->user());
+	    $view->with('user', Auth::guard(CMSAccess::$AUTH_GUARD)->user());
+//echo "SET UUESSSER: ";
+// print_r(Auth::guard(CMSAccess::$AUTH_GUARD));
+ 
     	//make app id available
     	$view->with('appId', $appId);
     	
@@ -67,8 +74,10 @@
 
 	    
 	    //set scripts asset path
-	    $view->with('assetPath', URL::asset('packages/soup/cms/'));
+	    $view->with('assetPath', URL::asset('soup/cms/'));
 
+	    //set controllers namespace
+	    $view->with('controllerNamespace', 'Soup\\CMS\\Controllers\\');
 	    
 	});
 	

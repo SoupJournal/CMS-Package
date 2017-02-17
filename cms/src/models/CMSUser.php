@@ -1,12 +1,28 @@
 <?php
 
-use Illuminate\Auth\UserInterface;
+namespace Soup\CMS\Models;
 
-class CMSUser extends BaseModel implements UserInterface {
+use Soup\CMS\Lib\Model\BaseModel;
+use Soup\CMS\Models\CMSSecurityPermission;
+
+//use Illuminate\Auth\UserInterface;
+use Illuminate\Foundation\Auth\User;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+
+//class CMSUser extends User { // BaseModel implements AuthenticatableContract { //UserInterface {
+class CMSUser extends BaseModel implements AuthenticatableContract {
 
 	//set model table name
     protected $table = 'user';
 
+
+
+
+		//==========================================================//
+		//====					DATA METHODS					====//
+		//==========================================================//	
+			
 
 
 
@@ -15,11 +31,29 @@ class CMSUser extends BaseModel implements UserInterface {
      */
 	public function permissions() {
     
-        return $this->hasMany('CMSSecurityPermission', 'user', 'id');
+        return $this->hasMany(CMSSecurityPermission::class, 'user', 'id');
         
     } //end permissions()
 
 
+
+
+
+		//==========================================================//
+		//====				AUTHENTICATION METHODS				====//
+		//==========================================================//	
+			
+
+
+    /**
+	 * Get the unique identifier name for the user.
+	 *
+	 * @return mixed
+	 */
+	public function getAuthIdentifierName()
+	{
+	    return $this->getKeyName(); //return column name 'id'
+	}
 
 
     /**
@@ -29,8 +63,9 @@ class CMSUser extends BaseModel implements UserInterface {
 	 */
     public function getAuthIdentifier()
     {
-        return $this->getKey();
+        return $this->getKey(); //return user id
     }
+
 
     /**
 	 * Get the password for the user.
