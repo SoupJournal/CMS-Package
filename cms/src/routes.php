@@ -33,138 +33,7 @@
 	//====					ROUTE FILTERS					====//
 	//==========================================================//	
 
-/*	
-	Route::filter('HTTPS', function()
-	{		
-	   
-	   	//ensure https connection 
-	    if (!Request::secure()) {
-	    	return Redirect::secure( Request::path('/toSecureURL') );
-	    }
-	    
-	});
-	
-	
-	
-	Route::filter('CMSAuth', function()
-	{		
-	    //ensure user is logged in
-		if (Auth::CMSuser()->guest()) {
-	        return Redirect::action('CMSController@getLogin');
-	    }
-	   
-	   	//ensure https connection 
-	    if (!Request::secure()) {
-	    	return Redirect::secure( Request::path('/toSecureURL') );
-	    }
-	    
-	});
-	
-	
-	
-	Route::filter('CMSApp', function($route)
-	{		
-	   	//get appID
-		$appId = isset($route) ? $route->getParameter('appId') : null;
-	    
-	    //invalid app ID
-		if (!is_numeric($appId) || $appId<0 || !CMSAccess::validApplication($appId)) {
-			return Redirect::action('CMSController@getIndex');
-			//return Redirect::to('/cms/error/404');
-		}
-	    
-	});
-	
-	Route::filter('Ajax', function()
-	{		
-//	    //ensure user is logged in
-//		if (Auth::CMSuser()->guest()) {
-//	        return Redirect::to('/cms/login');
-//	    }
-//	    
-//	    //check hashed timestamp??
-//	    
-	});
-	
 
-	//== PERMISSION FILTERS ==//
-	
-	Route::filter('P_Security', function($route)
-	{	
-		//get appID
-		$appId = isset($route) ? $route->getParameter('appId') : null;
-		
-		//valid app ID
-		if (is_numeric($appId) && $appId>0) {
-		
-			//ensure user has permission
-			if (!CMSAccess::validPermission(CMSAccess::$PERMISSION_EDIT_SECURITY, $appId)) { 
-				
-				//no security permission - redirect to overview
-				return Redirect::action('CMSController@getIndex', array('appId' => $appId));
-			}
-		
-		}
-		//invalid app ID
-		else {
-			return Redirect::action('CMSController@getError', array('errorCode' => '404'));
-		}
-	    
-	});
-	
-	
-	
-	Route::filter('P_Form', function($route)
-	{	
-		//get appID
-		$appId = isset($route) ? $route->getParameter('appId') : null;
-		
-		//valid app ID
-		if (is_numeric($appId) && $appId>0) {
-		
-			//ensure user has permission
-			if (!CMSAccess::validPermission(CMSAccess::$PERMISSION_EDIT_FORM, $appId)) { 
-				
-				//no security permission - redirect to overview
-				return Redirect::action('CMSController@getIndex', array('appId' => $appId));
-			}
-		
-		}
-		//invalid app ID
-		else {
-			return Redirect::action('CMSController@getError', array('errorCode' => '404'));
-		}
-	    
-	});
-	
-
-
-	Route::filter('P_Input', function($route)
-	{	
-		//get appID
-		$appId = isset($route) ? $route->getParameter('appId') : null;
-		
-		//valid app ID
-		if (is_numeric($appId) && $appId>0) {
-		
-			//ensure user has permission
-			if (!CMSAccess::validPermission(CMSAccess::$PERMISSION_FORMS, $appId)) { 
-				
-				//no security permission - redirect to overview
-				return Redirect::action('CMSController@getIndex', array('appId' => $appId));
-			}
-		
-		}
-		//invalid app ID
-		else {
-			return Redirect::action('CMSController@getError', array('errorCode' => '404'));
-		}
-	    
-	});
-
-
-
-*/
 	//==========================================================//
 	//====						CMS ROUTING					====//
 	//==========================================================//	
@@ -246,8 +115,10 @@
 				Route::post($path . '/edit/{id}', array('as' => 'cms.form.edit', 'uses' => 'FormController@postEdit'));
 				
 				//AJAX actions
-				Route::get($path . '/table/{safestr}', array('as' => 'cms.form.table', 'uses' => 'FormController@getTable'));
-				Route::get($path . '/field/{safestr}/{safestr2}', array('as' => 'cms.form.field', 'uses' => 'FormController@getField'));
+				Route::get($path . '/table', array('as' => 'cms.form.table', 'uses' => 'FormController@getTable'));
+				Route::get($path . '/table/{safestr}', array('as' => 'cms.form.table.id', 'uses' => 'FormController@getTable'));
+				Route::get($path . '/field', array('as' => 'cms.form.field', 'uses' => 'FormController@getField'));
+				Route::get($path . '/field/{safestr}/{safestr2}', array('as' => 'cms.form.field.id', 'uses' => 'FormController@getField'));
 				
 				//service actions
 				Route::get($path . '/forms', array('as' => 'cms.form.forms', 'uses' => 'FormController@getForms'));

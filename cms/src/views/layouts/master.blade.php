@@ -12,7 +12,7 @@
         
         {{------------------ TITLE -------------------}}
         
-        <title>@yield('title') | User Admin</title>
+        <title>@yield('title', '') | User Admin</title>
         
         {{---------------- END TITLE -----------------}}
         
@@ -61,7 +61,7 @@
 								
 
 				        		{{----------------- CONTENT ------------------}}
-				        		@yield('content')
+				        		@yield('content', '')
 				        		{{--------------- END CONTENT ----------------}}
 				        		
 				       	 	</div>
