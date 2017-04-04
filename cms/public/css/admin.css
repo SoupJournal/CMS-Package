@@ -83,6 +83,13 @@
 }
 
 
+.menu-pages li a.form_link_1 {
+	color: #000000;	
+}
+
+.menu-pages li a.form_link_1:hover {
+	background-color: #FFAA55;
+}
 
 /***********************************/
 /**** 			TABLE	 		****/

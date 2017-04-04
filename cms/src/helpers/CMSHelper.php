@@ -20,7 +20,12 @@
 			if ($form) {
 				
 				//select form fields (in optimised data order)
-				$fields = $form->fields()->orderBy('connection', 'table', 'row')->get(); 
+				$fields = $form->fields()
+								//->orderBy('connection', 'table', 'row')
+								->orderBy('connection')
+								->orderBy('table')
+								->orderBy('row')
+								->get(); 
 	
 				
 				//select form fields (in optimised data order)
@@ -138,7 +143,7 @@
 									}
 								
 								}
-								
+
 								//clear fields list
 								$selectFields = [];
 								
@@ -160,13 +165,10 @@
 								
 							}
 	
-							//add fields to current query						
-							else {
 								
-								//add fields to select query
-								array_push($selectFields, $fieldName . ' AS ' . $key);
-							
-							}
+							//add current field to select query
+							array_push($selectFields, $fieldName . ' AS ' . $key);
+
 							
 							
 						} //end if (valid properties)
@@ -174,7 +176,8 @@
 						
 					} //end for()
 					
-		
+
+
 					//run final query
 					if ($connection) {
 					
@@ -263,7 +266,7 @@
 						if ($connection && $table && strlen($connection)>0 && strlen($table)>0) {
 
 							//create query
-							$query = DB::connection($connection)->table($table)->select($fields);
+							$query = DB::connection($connection)->table($table)->select($fields->toArray());
 							
 						}
 							

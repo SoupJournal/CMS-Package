@@ -36,10 +36,15 @@
 
 <?php
 
+	//ensure properties set
+	$form = isset($form) ? $form : null;
+	$fields = isset($fields) ? $fields : null;
+	$fieldValues = isset($form) ? $fieldValues : null;
+
 	//get form properties
 	$formName = safeObjectValue('name', $form, "");
-	$fields = isset($form) ? $form->fields()->orderBy('order', 'DESC')->get() : null;
-	$fieldValues = isset($form) ? dataForForm($form->key) : null;
+//	$fields = isset($form) ? $form->fields()->orderBy('order', 'DESC')->get() : null;
+//	$fieldValues = isset($form) ? dataForForm($form->key) : null;
 	
 ?>
 

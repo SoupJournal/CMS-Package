@@ -59,13 +59,14 @@
 						//get form properties
 						$formName = safeObjectValue('name', $form, null);
 						$formId = safeObjectValue('id', $form, null);
+						$formType = safeObjectValue('type', $form, null);
 
 						//valid properties
 						if ($formName && $formId!=null && strlen($formName)>0 && $formId>=0) {
 							
 						?>
 
-							<li><a href="{{ action($controllerNamespace . 'FormController@getInput', ['appId' => $appId, 'formId' => $formId]) }}">{{ $formName }}</a></li>
+							<li><a href="{{ action($controllerNamespace . 'FormController@getInput', ['appId' => $appId, 'formId' => $formId]) }}" class="form_link_{{ $formType }}">{{ $formName }}</a></li>
 
 						<?php
 						

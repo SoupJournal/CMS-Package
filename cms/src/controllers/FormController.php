@@ -63,8 +63,16 @@
 				//page input
 				else {
 			
+					//get form properties
+					$fields = isset($form) ? $form->fields()->orderBy('order', 'DESC')->get() : null;
+					$fieldValues = isset($form) ? dataForForm($form->key) : null;
+			
 					//render view
-					return View::make('cms::admin.form.input')->with('form', $form);
+					return View::make('cms::admin.form.input')->with([
+						'form' => $form,
+						'fields' => $fields,
+						'fieldValues' => $fieldValues
+					]);
 						
 				}
 			
