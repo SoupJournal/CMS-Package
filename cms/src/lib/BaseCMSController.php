@@ -1,6 +1,6 @@
 <?php 
 
-	namespace Soup\Cms\Lib;
+	namespace Soup\CMS\Lib;
 
 
 	use Soup\CMS\Models\CMSApp;

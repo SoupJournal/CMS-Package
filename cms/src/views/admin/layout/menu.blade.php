@@ -1,7 +1,6 @@
 <?php
 	
-	use Soup\Cms\Lib\CMSAccess;
-	//use Soup\Cms\Controllers\CMSController;
+	use Soup\CMS\Lib\CMSAccess;
 	
 	
 	//determine visible menu items

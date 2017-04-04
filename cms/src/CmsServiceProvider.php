@@ -1,4 +1,4 @@
-<?php namespace Soup\Cms;
+<?php namespace Soup\CMS;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\App;

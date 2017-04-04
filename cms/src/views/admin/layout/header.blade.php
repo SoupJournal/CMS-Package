@@ -1,6 +1,6 @@
 <?php
 
-	use Soup\Cms\Lib\CMSAccess;
+	use Soup\CMS\Lib\CMSAccess;
 
 	//set custom page controllers
 	//$pageModules = array_push($pageModules, 'ui.bootstrap.dropdown');
