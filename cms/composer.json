@@ -16,10 +16,10 @@
     "autoload": {
         "classmap": [
             "src/migrations",
-            "src/controllers",
-            "src/models",
+            "src/Controllers",
+            "src/Models",
             "src/views",
-            "src/lib"
+            "src/Lib"
         ],
         "psr-4": {
             "Soup\\CMS\\": "src/",
