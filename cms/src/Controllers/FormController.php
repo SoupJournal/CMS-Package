@@ -11,6 +11,7 @@
 	use View;
 	use Redirect;
 	use Response;
+	use Illuminate\Support\Facades\DB;
 
 	class FormController extends BaseCMSController {
 		
@@ -246,7 +247,7 @@
 				//valid result
 				if ($result) {
 					
-					return Redirect::action('FormController@getInput', array(
+					return Redirect::route('cms.form.input', array(
 						'appId' => $appId,
 						'formId' => $formId,
 					))->with(

@@ -42,7 +42,7 @@
 		//Applications
 		//Route::get('cms/app/applications', array('before' => 'ajaxAccess', 'uses' => 'ApplicationController@getApplications'));
 		//controller routes
-		Route::group(array('middleware' => ['CMSAuth', 'CMSApp']), function() use (&$basePath) {
+		Route::group(array('middleware' => ['HTTPS', 'CMSAuth', 'CMSApp']), function() use (&$basePath) {
 			
 			//determine path
 			$path = $basePath . '/app';
@@ -60,7 +60,7 @@
 		
 		
 		//Security Groups
-		Route::group(array('middleware' => ['CMSAuth', 'CMSApp', 'P_Security']), function() use (&$basePath) {
+		Route::group(array('middleware' => ['HTTPS', 'CMSAuth', 'CMSApp', 'P_Security']), function() use (&$basePath) {
 			
 			//determine path
 			$path = $basePath . '/{appId}/security';
@@ -82,7 +82,7 @@
 		
 		
 		//Forms
-		Route::group(array('middleware' => ['CMSAuth', 'CMSApp']), function() use (&$basePath) {
+		Route::group(array('middleware' => ['HTTPS', 'CMSAuth', 'CMSApp']), function() use (&$basePath) {
 			
 			//determine path
 			$path = $basePath . '/{appId}/form';
@@ -125,7 +125,7 @@
 		
 		
 		//Settings
-		Route::group(array('middleware' => ['CMSAuth', 'CMSApp']), function() use (&$basePath) {
+		Route::group(array('middleware' => ['HTTPS', 'CMSAuth', 'CMSApp']), function() use (&$basePath) {
 			
 			//determine path
 			$path = $basePath . '/{appId}/settings';
@@ -148,19 +148,19 @@
 		Route::get($basePath . '/error/{safestr}', ['as' => 'cms.error', 'uses' => 'CMSController@getError']);
 		
 		//CMS Admin
-//		Route::group(array('middleware' => ['CMSAuth', 'CMSApp']), function() use (&$basePath) {
+//		Route::group(array('middleware' => ['HTTPS', 'CMSAuth', 'CMSApp']), function() use (&$basePath) {
 //			Route::resource($basePath . '/', 'CMSController');
 //		});
-		Route::get($basePath, ['as' => 'cms.home', 'middleware' => 'CMSAuth', 'uses' => 'CMSController@getIndex']);
-		Route::get($basePath . '/{appId}' , ['as' => 'cms.home', 'middleware' => ['CMSAuth', 'CMSApp'], 'uses' => 'CMSController@getIndex']);
+		Route::get($basePath, ['as' => 'cms.home', 'middleware' => ['HTTPS', 'CMSAuth'], 'uses' => 'CMSController@getIndex']);
+		Route::get($basePath . '/{appId}' , ['as' => 'cms.home', 'middleware' => ['HTTPS', 'CMSAuth', 'CMSApp'], 'uses' => 'CMSController@getIndex']);
 
 
 /*
 		//CMS Login
 		Route::get($basePath . '/login', array('before' => 'HTTPS', 'uses' => 'CMSController@getLogin', 'as' => 'login'));
 
-		Route::get($basePath, array('middleware' => 'CMSAuth', 'uses' => 'CMSController@getIndex', 'as' => 'home'));
-		Route::group(array('middleware' => ['CMSAuth', 'CMSApp']), function() use (&$basePath) {
+		Route::get($basePath, array('middleware' => ['HTTPS', 'CMSAuth'], 'uses' => 'CMSController@getIndex', 'as' => 'home'));
+		Route::group(array('middleware' => ['HTTPS', 'CMSAuth', 'CMSApp']), function() use (&$basePath) {
 			Route::controller($basePath . '/', 'CMSController');
 		});	
 */		
