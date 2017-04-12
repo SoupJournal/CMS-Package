@@ -98,13 +98,18 @@
 			//valid form
 			if ($form) {
 
+//DB::enableQueryLog();
 				//get form fields (in data order)
 //				$fields = CMSFormField::select(['id', 'key', 'connection', 'table', 'field', 'row'])
 //										->where('form', '=', $form->id)
 //										->orderBy('connection', 'table', 'row')
 //										->get();
 				
-				$fields = $form->fields()->orderBy('connection', 'table', 'row')->get();
+				$fields = $form->fields()
+								->orderBy('connection')
+								->orderBy('table')
+								->orderBy('row')
+								->get();
 				if ($fields) {
 
 					//compile query
@@ -133,6 +138,7 @@
 						//get field value
 						$fieldValue = safeArrayValue($field->key, $_POST, null);
 						
+						//echo "con[" . $connectionName . "]table[" . $tableName . "]field[" . $fieldName . "]row[" . $row . "]<br>\n";
 						
 						//valid properties
 						if (strlen($connectionName)>0 && strlen($tableName)>0 && strlen($fieldName)>0 && $row!=null) {
@@ -158,12 +164,10 @@
 										
 										//update query
 										$connection = $connection->table($tableName)->where('id', '=', $row);
+										//DB::connection($connectionName)->enableQueryLog();
 									}
 									
 								}
-						
-								//select table
-								//$connection = DB::connection($connectionName)->table($tableName);
 								
 								//store new properties
 								$lastConnectionName = $connectionName;
@@ -177,13 +181,13 @@
 
 								//valid connection
 								if ($connection) {
-	
+
 									//update table
 									$result = $connection->update($updateFields);
 									if (!$result) {
 										//TODO: handle update error
 									}
-								
+
 								}
 								
 								//clear fields list
@@ -202,13 +206,8 @@
 								
 							}
 	
-							//add fields to current query						
-							else {
-				
-								//add field to update query
-								$updateFields[$fieldName] = $fieldValue;
-							
-							}
+							//add field to update query
+							$updateFields[$fieldName] = $fieldValue;
 							
 							
 						} //end if (valid properties)
@@ -234,11 +233,12 @@
 						//}
 						
 						//echo "QUERY TO RUN111: " . $connection->toSql() . " - fields: " . print_r($updateFields, true);
-
+								//dd(DB::connection($lastConnectionName)->getQueryLog());
+				//dd(DB::getQueryLog());
 					} //end if (valid connection)
 
 						
-				
+
 				
 				
 				} //end if (found fields)
