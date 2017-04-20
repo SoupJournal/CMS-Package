@@ -70,6 +70,11 @@
 				scope.dataURL = $scope.dataURL;	
 				//scope.includeKeys = ['key', 'connection', 'table', 'field'];
 				scope.excludeKeys = [];
+//				scope.columnProperties = { 
+//					'-1': {
+//						html: true			
+//					}
+//				};
 			}
 			
 		} //end initTemplateTable()
@@ -187,11 +192,12 @@
     	  		
 
     	  		//form table
-    	  		if (obj.tableId == 'formTable') {
+    	  		if (obj.tableId == 'formTable' || obj.tableId == 'templateTable') {
     	  		
 	    	  		//get object properties
 	    	  		var rawData = obj.data;
 	    	  		var filteredData = obj.results;
+	    	  		var dataProperties = obj.properties;
 
 	    	  		//valid data
 	    	  		if (rawData && filteredData && rawData.length>0 && filteredData.length>=rawData.length) {
@@ -204,7 +210,13 @@
 		 						
 		 						//append edit field
 		 						filteredData[i].push('<edit-button href="' + $scope.editURL + '/' + rawData[i]['id'] + '">edit</edit-button>');
-		 						
+		 						//TODO: for templates get id column
+		 						console.log("filtered data: " + filteredData.length);
+		 						//set column as HTML
+		 						dataProperties[filteredData[i].length-1] = {
+		 							html: true
+		 						};
+
 		 					} //end for()
 	 					
 	 					

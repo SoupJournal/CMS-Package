@@ -16,6 +16,7 @@ class CreateFormTable extends Migration {
 		{
 			$table->increments('id');
 			$table->integer('application')->references('id')->on('application');
+			$table->integer('parent')->reference('id')->on('form')->nullable();
 			$table->string('key', 255)->unique();
 			$table->string('name', 255);
 			$table->string('properties')->nullable();

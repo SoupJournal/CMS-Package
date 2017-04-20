@@ -47,7 +47,7 @@
 	
 	
 		public function getInput($appId, $formId = null) {
-			
+		
 			//get validated form
 			$form = $this->getValidatedForm($appId, $formId);
 			
@@ -65,7 +65,7 @@
 				else {
 			
 					//get form properties
-					$fields = isset($form) ? $form->fields()->orderBy('order', 'DESC')->get() : null;
+					$fields = isset($form) ? $form->fields()->where('editable', true)->orderBy('order', 'DESC')->get() : null;
 					$fieldValues = isset($form) ? dataForForm($form->key) : null;
 			
 					//render view
@@ -80,11 +80,54 @@
 			} //end if (valid form)
 			
 			//insecure access
-			return Redirect::action('CMSController@getError')->with('errorCode', '404');
+			return Redirect::route('cms.error', ['errorCode' => '404']);
 			
 		} //end getInput()	
 	
 	
+	
+	
+		public function getTemplateInput($appId, $formId = null, $rowId = null) {
+			
+			//get validated form
+			$form = $this->getValidatedForm($appId, $formId);
+			
+			//valid form
+			if ($form) {
+			
+				//template input
+				if ($form->type == CMSData::$FORM_TYPE_TEMPLATE) {
+					
+					//create row filter
+					$filter = null;
+					if (intval($rowId)>=0) {
+						$filter = ['row' => $rowId];	
+					}
+					
+					//get form properties
+					$fields = isset($form) ? $form->fields()->where('editable', true)->orderBy('order', 'DESC')->get() : null;
+					$fieldValues = isset($form) && $filter ? dataForFormData($form->key, $filter) : null;
+			
+					//render view
+					return View::make('cms::admin.form.input')->with([
+						'form' => $form,
+						'fields' => $fields,
+						'fieldValues' => $fieldValues,
+						'filter' => $filter,
+						'formURL' => route('cms.form.input', ['appId' => $appId, 'formId' => $formId])
+					]);
+					
+				}
+			
+			} //end if (valid form)
+			
+			//insecure access
+			return Redirect::route('cms.error', ['errorCode' => '404']);
+			
+		} //end getTemplateInput()	
+		
+		
+			
 	
 	
 		public function postInput($appId, $formId = null) {
@@ -112,6 +155,35 @@
 								->get();
 				if ($fields) {
 
+
+					//TODO: validate form input
+					
+					
+					//indicate if new row should be added
+					$addRow = false;
+
+					//template input
+					$filter = null;
+					if ($form->type == CMSData::$FORM_TYPE_TEMPLATE) {
+						
+						//get input row
+						$filterRow = safeArrayValue('filter_row', $_POST, -1);
+						$rowId = intval($filterRow);
+						
+						//existing row
+						if ($rowId>=0) {
+							$filter = ['row' => $rowId];	
+						}
+						
+						//new row
+						else if ($rowId<0) {
+							$addRow = true;
+							$filter = ['row' => -1];
+						}
+						
+					}
+
+
 					//compile query
 					$connection = null;
 					$connectionName = null;
@@ -138,6 +210,20 @@
 						//get field value
 						$fieldValue = safeArrayValue($field->key, $_POST, null);
 						
+						//apply filter options
+						if ($filter) {
+						
+							//has row
+							if (array_key_exists('row', $filter)) {
+								$row = $filter['row'];
+							}	
+
+							//TODO: override with table value
+							
+							//TODO: override with field value 
+							
+						}
+						
 						//echo "con[" . $connectionName . "]table[" . $tableName . "]field[" . $fieldName . "]row[" . $row . "]<br>\n";
 						
 						//valid properties
@@ -162,9 +248,21 @@
 									$connection = DB::connection($connectionName);
 									if ($connection) {
 										
-										//update query
-										$connection = $connection->table($tableName)->where('id', '=', $row);
+										//add new row
+										if ($addRow) {
+											
+											//update query
+											$connection = $connection->table($tableName);
+											
+										}
+										//existing row
+										else {
+											
+											//update query
+											$connection = $connection->table($tableName)->where('id', '=', $row);
+										}
 										//DB::connection($connectionName)->enableQueryLog();
+										
 									}
 									
 								}
@@ -182,8 +280,16 @@
 								//valid connection
 								if ($connection) {
 
+									//add new row
+									if ($addRow) {
+										$result = $connection->insert($updateFields);
+									}
 									//update table
-									$result = $connection->update($updateFields);
+									else {
+										$result = $connection->update($updateFields);
+									}
+									
+									//check result
 									if (!$result) {
 										//TODO: handle update error
 									}
@@ -197,8 +303,21 @@
 								$connection = DB::connection($connectionName);
 								if ($connection) {
 									
-									//update query
-									$connection = $connection->table($tableName)->where('id', '=', $row);
+									
+									//add new row
+									if ($addRow) {
+										
+										//update query
+										$connection = $connection->table($tableName);
+										
+									}
+									//existing row
+									else {
+										
+										//update query
+										$connection = $connection->table($tableName)->where('id', '=', $row);
+									}
+									
 								}
 	
 								//clear query state
@@ -220,18 +339,18 @@
 					//run final query
 					if ($connection) {
 						
+						//add new row
+						if ($addRow) {
+							$result = $connection->insert($updateFields);
+						}
 						//update table
-						$connection->update($updateFields);
+						else {
+							$result = $connection->update($updateFields);
+						}
 						
 						//indicate form was updated (force value as 'update' call returns false if no changes where made)
 						$result = true;
-						
-						//update table
-						//$result = $connection->update($updateFields);
-						//if (!$result) {
-							//TODO: handle update error
-						//}
-						
+
 						//echo "QUERY TO RUN111: " . $connection->toSql() . " - fields: " . print_r($updateFields, true);
 								//dd(DB::connection($lastConnectionName)->getQueryLog());
 				//dd(DB::getQueryLog());
@@ -260,7 +379,7 @@
 			
 			
 			//insecure access
-			return Redirect::action('CMSController@getError')->with('errorCode', '404');
+			return Redirect::route('cms.error', ['errorCode' => '404']);
 			
 		} //end postInput()
 	
@@ -283,7 +402,7 @@
 			} //end if (valid app)
 			
 			//insecure access
-			return Redirect::action('CMSController@getError')->with('errorCode', '404');
+			return Redirect::route('cms.error', ['errorCode' => '404']);
 			
 		} //end getEdit()	
 	
@@ -657,7 +776,7 @@
 			
 			
 			//insecure access
-			return Redirect::action('CMSController@getError')->with('errorCode', '404');
+			return Redirect::route('cms.error', ['errorCode' => '404']);
 			
 		} //end postExport()
 		

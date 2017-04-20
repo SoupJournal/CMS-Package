@@ -5,6 +5,14 @@
 
 	function dataForForm($formKey, $arrayFormat = true) {
 		
+		return dataForFormData($formKey, null, $arrayFormat);
+		
+	} //end dataForForm()
+
+
+
+	function dataForFormData($formKey, $filterOptions = null, $arrayFormat = true) {
+		
 
 		//form data
 		$data = null;
@@ -58,15 +66,29 @@
 						$fieldName = $column->field;
 						$row = $column->row;
 						$key = $column->key;
-	//echo "con[" . $connectionName . "][" . $tableName . "][" . $fieldName . "][" . $row . "]<br>\n";	
+						
+						//apply filter options
+						if ($filterOptions) {
+						
+							//has row
+							if (array_key_exists('row', $filterOptions)) {
+								$row = $filterOptions['row'];
+							}	
+							
+							//TODO: override with table value
+							
+							//TODO: override with field value 
+							
+						}
+						
+//	echo "con[" . $connectionName . "][" . $tableName . "][" . $fieldName . "][" . $row . "]<br>\n";	
 		
 						//valid properties
-						if (strlen($connectionName)>0 && strlen($tableName)>0 && strlen($fieldName)>0 && $column->row!=null) {
+						if (strlen($connectionName)>0 && strlen($tableName)>0 && strlen($fieldName)>0 && $row!=null) {
 							
-		
 							//new table or connection
 							if (strcmp($tableName, $lastTableName)!=0 || strcmp($connectionName, $lastConnectionName)!=0 || $row!=$lastRow) {
-						
+				
 					
 								//previous query exists
 								if ($connection) {
@@ -117,7 +139,7 @@
 	
 								//valid connection
 								if ($connection) {
-	
+
 									//fetch results for old row
 									$result = $connection->select($selectFields)->first();
 									if ($result) {
@@ -182,7 +204,8 @@
 					if ($connection) {
 					
 						//fetch results for old row
-						$result = $connection->select($selectFields)->first(); 												if ($result) {
+						$result = $connection->select($selectFields)->first(); 												
+						if ($result) {
 							
 							//ensure data array exists
 							if (!$data) {
@@ -209,10 +232,10 @@
 		
 		} //end if (valid form key)
 		
-		
+
 		return $data;
 		
-	} //end dataForForm()
+	} //end dataForFormData()
 	
 	
 	
@@ -255,7 +278,7 @@
 				if (count($tables)==1) {
 					
 					//get fields
-					$fields = $form->fields()->orderBy('id', 'ASC')->orderBy('order', 'DESC')->lists('field');
+					$fields = $form->fields()->orderBy('order', 'DESC')->orderBy('id', 'ASC')->lists('field');
 					if ($fields && count($fields)>0) {
 						
 						//get properties

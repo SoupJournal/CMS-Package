@@ -42,11 +42,13 @@
 
 	//get form properties
 	$formName = safeObjectValue('name', $form, "");
+	$formId = safeObjectValue('id', $form, null);
 
 	//get AJAX URL's
-	$dataURL = action($controllerNamespace . 'FormController@getTemplates', ['appId' => $appId, 'formId' => (isset($form) ? $form->id : null)]);
-	$editURL = ""; //URL::to('cms/' . $appId . '/form/edit/');
-	$exportURL = action($controllerNamespace . 'FormController@postExport', ['appId' => $appId, 'formId' => (isset($form) ? $form->id : null)]);
+	$dataURL = action($controllerNamespace . 'FormController@getTemplates', ['appId' => $appId, 'formId' => $formId]);
+	$addURL = route('cms.form.input.id', ['appId' => $appId, 'formId' => $formId, 'rowId' => -1]); 
+	$editURL = route('cms.form.input.id', ['appId' => $appId, 'formId' => $formId, 'rowId' => '']);
+	$exportURL = action($controllerNamespace . 'FormController@postExport', ['appId' => $appId, 'formId' => $formId]);
 
 	//compile table parameters
 	$tableParameters = array(
@@ -91,6 +93,10 @@
 	    		<span ng-hide="showExport">Show Export Options</span>
 			</a>
 	
+				
+			{{-- add entry button --}}
+			<a href="{{ $addURL }}" class="btn btn-primary pull-right">Add Entry</a>
+	
 		</div>
 	
 		<div class="form-group">
@@ -116,14 +122,7 @@
 
 		</div>
 
-		
-		<div class="form-group">
-		
-			{{-- add entry button --}}
-			{{-- <a href="" class="btn btn-primary">Add Entry</a> --}}
 	
-
-		</div>
 		
 		{{-- display form errors --}}
 	    @if ($errors->has())

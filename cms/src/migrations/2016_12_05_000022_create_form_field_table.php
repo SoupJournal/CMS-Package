@@ -28,6 +28,8 @@ class CreateFormFieldTable extends Migration {
 			//$table->string('default_value', 255); ??
 			//$table->integer('type')->default(0);
 			$table->integer('order')->default(0);
+			$table->boolean('editable')->default(true);
+			$table->integer('visiblity')->default(0);
 			//$table->boolean('required')->default(0);
 			$table->integer('row')->nullable();
 			$table->string('properties', 2047)->nullable();

@@ -160,7 +160,7 @@
 
 		//table variables
 		$scope.tableId = null;
-		$scope.columnProperties = null;
+		$scope.columnProperties = [];
 
 		//data variables
 		$scope.dataURL = null;
@@ -269,6 +269,7 @@
 						keys: $scope.filteredKeys,
 						data: $scope.pageData,
 						results: $scope.filteredResults,
+						properties: $scope.columnProperties,
 						currentPage: $scope.currentPage,
 						totalPages: $scope.totalPages,
 						itemsPerPage: $scope.itemsPerPage
@@ -348,6 +349,14 @@
 			//table has properties
 			if ($scope.columnProperties) {
 
+				//parase index
+				columnIndex = parseInt(columnIndex);
+
+				//handle negative index (reference from last column)
+				if ($scope.filteredResults && columnIndex<0 && columnIndex>-$scope.filteredKeys.length) {
+					columnIndex += $scope.columnProperties.length;
+				}
+
 				//valid index (columnProperties may be an array or an object so don't compare against length)
 				if (columnIndex>=0) {
 
@@ -361,7 +370,13 @@
 							value = $scope.columnProperties[columnIndex][propertyName];
 							
 						}
-						
+						else if ($scope.columnProperties[columnIndex-$scope.filteredKeys.length]) {
+							
+							//retrieve column value
+							value = $scope.columnProperties[columnIndex-$scope.filteredKeys.length][propertyName];
+							
+						}
+
 					} //end if (valid propery name)
 					
 				} //end if (valid index)

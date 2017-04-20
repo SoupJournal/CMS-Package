@@ -22,7 +22,8 @@
 	Route::pattern('appId', '[0-9]+');
 	Route::pattern('safestr', $safeStringPattern);
 	Route::pattern('safestr2', $safeStringPattern);
-	Route::pattern('id', '[0-9]+');
+	Route::pattern('id', '[0-9\-]+');
+	Route::pattern('id2', '[0-9\-]+');
 	
 
 
@@ -93,6 +94,8 @@
 				//page actions
 				Route::get($path . '/input/{id}', array('as' => 'cms.form.input', 'uses' => 'FormController@getInput'));
 				Route::post($path . '/input/{id}', array('as' => 'cms.form.input', 'uses' => 'FormController@postInput'));
+				//TODO: check for add template row permission
+				Route::get($path . '/input/{id}/{id2}', array('as' => 'cms.form.input.id', 'uses' => 'FormController@getTemplateInput'));
 				
 				//service actions
 				Route::get($path . '/templates/{id}', array('as' => 'cms.form.templates', 'uses' => 'FormController@getTemplates'));

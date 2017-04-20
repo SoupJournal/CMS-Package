@@ -39,12 +39,17 @@
 	//ensure properties set
 	$form = isset($form) ? $form : null;
 	$fields = isset($fields) ? $fields : null;
-	$fieldValues = isset($form) ? $fieldValues : null;
+	$fieldValues = isset($fieldValues) ? $fieldValues : null;
+	$filter = isset($filter) ? $filter : null;
+	$formURL = isset($formURL) ? $formURL : "";
 
 	//get form properties
 	$formName = safeObjectValue('name', $form, "");
 //	$fields = isset($form) ? $form->fields()->orderBy('order', 'DESC')->get() : null;
 //	$fieldValues = isset($form) ? dataForForm($form->key) : null;
+
+	//get filter properties
+	$filterRow = safeArrayValue('row', $filter, '');
 	
 ?>
 
@@ -63,7 +68,7 @@
 		{{-- display fields --}}
 		@if (isset($fields) && count($fields)>0) 
 		
-			{{ Form::open(Array('role' => 'form', 'name' => 'inputForm')) }}
+			{{ Form::open(Array('url' => $formURL, 'role' => 'form', 'name' => 'inputForm')) }}
 			
 				<div class="form-group">
 				
@@ -101,6 +106,11 @@
 					</div>
 					
 				</div>
+			
+			
+				@if (isset($filter)) 
+					<input type="hidden" name="filter_row" value="{{ $filterRow }}">
+				@endif
 			
 			{{ Form::close() }}	
 			
