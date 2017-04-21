@@ -65,17 +65,9 @@
 			//validate login
 			if (Auth::guard(CMSAccess::$AUTH_GUARD)->attempt(Array ('username' => $username, 'password' => $password)))
 			{
-				//set current application
-				//$appID = Session::get(CMSAccess::$SESSION_KEY_APP_ID);
-				//if (!isset($appID)) {
-					
-					//find first user application
-					
-					
-				//}
-				
-				//fix for Laravel 5
-				//\Session::save();
+
+				//get user
+				$user = Auth::guard(CMSAccess::$AUTH_GUARD)->user();
 				
 				//find app id
 				$appId = null;
@@ -83,28 +75,38 @@
 				//get list of available applications
 				$applications = CMSAccess::userApplications();
 				if ($applications && count($applications)>0) {
-					$appId = $applications[0]->id;
+					
+					//check if valid default
+					foreach ($applications as $application) {
+						
+						//valid app
+						if ($application->id==$user->default_application) {
+							$appId = $user->default_application;
+							break;
+						}
+					}
+					
+					//no default set
+					if (is_null($appId)) {
+						$appId = $applications[0]->id;
+					}
+					
 				}
 				
 				//found application
 				if ($appId>=0) {
-//					echo "worked: " . Auth::guard(CMSAccess::$AUTH_GUARD)->check() . ":: - guard: " . CMSAccess::$AUTH_GUARD;
-//exit(0);
-					//NB. for index path passing appId as parameter is treated as GET parameter instead of named parameter
-//					return Redirect::secure(URL::action('CMSController@getIndex') . '/' . $appId);  
+
+					//show app home page
 					return Redirect::route('cms.home', array ('appId' => $appId));
 				}
 				//no application available
 				else {
-//					echo "worked22: " . Auth::guard(CMSAccess::$AUTH_GUARD)->check() . ":: - guard: " . CMSAccess::$AUTH_GUARD;
-//					exit(0);
+
 					return Redirect::route('cms.home'); 
-					//return Redirect::action('CMSController@getIndex');
+
 				}
 			}
 
-//echo "failed";
-//exit(0);
 			//error - redirect to login page with error message
 			return Redirect::back()
 				->withInput()

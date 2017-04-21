@@ -27,6 +27,7 @@ class CreateUserTable extends Migration {
 			
 			$table->boolean('email_verified');
 
+			$table->integer('default_application')->reference('id')->on('application')->nullable();
 			$table->integer('role')->default(0);			
 			$table->integer('status')->default(0);
 

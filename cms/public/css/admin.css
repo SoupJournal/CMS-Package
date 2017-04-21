@@ -11,6 +11,10 @@
 	margin: 0 auto;	
 }
 
+.inline {
+	display: inline;	
+}
+
 /***********************************/
 /**** 	 BACKGROUND COLOURS 	****/
 /***********************************/
@@ -45,6 +49,30 @@
 	padding-left: 5px;
 }
 
+.cms-input-checkbox {
+	width: 25px;
+	height: auto;	
+	zoom: 1.5;
+/*	transform: scale(2);
+	-webkit-transform: scale(2,2);*/
+}
+
+.cms-input-image {
+	display: block;
+	width: 100%;
+	margin-bottom: 8px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	border: 2px dashed grey;
+}
+
+.cms-input-image-preview {
+	display: block;
+	margin: 0 auto;
+	width: auto;
+	height: 200px;
+}
+
 
 /***********************************/
 /**** 			BUTTONS 		****/
@@ -58,10 +86,31 @@
 	background-color: white;
 }
 
-.cms-save-button:hover {
-	text-decoration: none;	
+
+.cms-form-button.btn-secondary {
+	background-color: transparent;
 }
 
+
+.cms-form-button:hover {
+	text-decoration: none;
+	background-color: #55AAFF;
+	color: #FEFEFE;
+}
+
+.cms-save-button:hover {
+	text-decoration: none;	
+	background-color: #55AAFF;
+	color: #FEFEFE;
+}
+
+.cms-button-margin-left {
+	margin-left: 10px;	
+}
+
+.cms-button-margin-right {
+	margin-right: 10px;	
+}
 
 /***********************************/
 /**** 			MENU	 		****/

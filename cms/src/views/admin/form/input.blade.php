@@ -77,20 +77,210 @@
 						//draw form fields
 						$fieldName = null;
 						$fieldKey = null;
+						$fieldType = null;
 						$fieldValue = null;
 						$fieldProperties = null;
 						foreach ($fields as $field) {
-	
+
 							//get field properties
 							$fieldName = safeObjectValue('name', $field, "");
 							$fieldKey = safeObjectValue('key', $field, "");
+							$fieldType = strtolower(safeObjectValue('type', $field, ""));
 							$fieldValue = safeArrayValue($fieldKey, $fieldValues, "");
-							//TODO: JSON decode fieldProperties
+							$fieldProperties = decodeJSON(safeObjectValue('properties', $field, null), true);
+							
+							//update field name
+							if (is_null($fieldName) || strlen($fieldName)<=0) {
+								$fieldName = ucwords($fieldKey);	
+							}
 					?>
 	
 							<div class="form-group">
-								{{ Form::label('name', $fieldName) }}
-								{{ Form::text($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control')) }}
+	
+								<?php
+	
+
+									
+									//indicate label position
+									$labelFirst = true;
+									$labelClass = "";
+									
+									//input HTML
+									$inputHTML = "";
+									
+									//draw field
+									switch ($fieldType) {
+										
+										case 'number':
+											$inputHTML = Form::number($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control'));
+										break;
+										
+										case 'textarea':
+											$inputHTML = Form::textarea($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control'));
+										break;
+										
+										case 'html':
+											$inputHTML = Form::textarea($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control'));
+										break;
+										
+										case 'json':
+											$inputHTML = Form::textarea($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control'));
+										break;
+										
+										case 'check':
+											$labelFirst = false;
+											$labelClass = "inline";
+											$inputHTML = Form::checkbox($fieldKey, true, $fieldValue, Array ('class' => 'form-control cms-input-checkbox inline'));
+										break;
+										
+										case 'select':
+										{
+											//get select options
+											$options = safeArrayValue('options', $fieldProperties, []);
+											
+											//check if current value exists in drop down
+											if (!array_key_exists($fieldValue, $options)) {
+												$options += [$fieldValue => $fieldValue];	
+											}
+											
+											//append field name as placeholder
+											$options = ['' => $fieldName] + $options;
+//											$placeholder = [
+//												'name' => $fieldName,
+//												'attributes' => ['disabled'=>'']
+//											];
+//											$options = ['' => $placeholder] + $options;
+
+											//draw select field
+											//$inputHTML = formSelect($fieldKey, $options, $fieldValue, ['class'=>'form-control']);
+											$inputHTML = Form::select($fieldKey, $options, $fieldValue, Array (/*'placeholder' => $fieldName,*/ 'class' => 'form-control'));
+										}
+										break;
+										
+										case 'reference':
+										{
+											//get reference properties
+											$connection = safeArrayValue('connection', $fieldProperties, null);
+											$table = safeArrayValue('table', $fieldProperties, null);
+											$field = safeArrayValue('field', $fieldProperties, null);
+											$displayFields = safeArrayValue('display_fields', $fieldProperties, null);
+
+											//valid reference
+											$validReference = false;
+											if ($connection && $table && $field && $displayFields && strlen($connection)>0 && strlen($table)>0 && strlen($field)>0 && count($displayFields)>0) {
+												
+												//create query
+												$results = DB::connection($connection)
+													->table($table)
+													->select($displayFields)
+													//->where($field, $fieldValue)
+													->get();
+
+												//found options
+												if ($results) {
+												
+													//check if current value found in table
+													$currentValueExists = false;
+												
+													//compile options
+													$options = [];
+													foreach ($results as $option) {
+
+														//compile label
+														$label = "";
+														$firstLabel = true;
+														foreach ($displayFields as $key) {
+															
+															//add space
+															if (!$firstLabel) $label .= ' ';
+															
+															//add label
+															$label .= safeArrayValue($key, $option, '');
+															
+															//indicate label added
+															$firstLabel = false;
+														}
+														
+														//create option
+														$id = safeArrayValue($field, $option, null);
+														if (!is_null($id)) {
+															$options += [$id => $label];	
+														}
+														
+														
+														//check if current value found in table
+														if (!$currentValueExists && strcmp($id, $fieldValue)==0) {
+															$currentValueExists = true;
+														}
+														
+													} //end for()
+												
+
+													//found options
+													if ($options && count($options)>0) {
+	
+														//add current option if it doesn't exist in 
+														if (!$currentValueExists) {
+															$options += [$fieldValue => $fieldValue . " << missing value >>"];
+														}
+	
+														//append field name as placeholder
+														$options = ['' => $fieldName] + $options;
+			
+														//draw select field
+														$inputHTML = Form::select($fieldKey, $options, $fieldValue, Array ( 'class' => 'form-control'));
+														//indicate reference is valid
+														$validReference = true;
+														
+													} //end if (found options)
+													
+												} //end if (found options)
+												
+											} //end if (valid reference)
+											
+											//invalid reference (default to text field)
+											if (!$validReference) {
+												$inputHTML = Form::text($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control'));
+											}
+												
+										}
+										break;
+										
+										case 'image':
+										
+											$inputHTML = "" .
+											"<div>\n" .
+												"<div class=\"cms-input-image\">\n" .
+													"<image class=\"cms-input-image-preview\" src=\"" . $fieldValue . "\">\n" .
+												"</div>\n" .
+												Form::text($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control')) .
+											"</div>\n";
+										
+										break;
+										
+										default:
+											$inputHTML = Form::text($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control'));
+										break;
+										
+									} //end switch (type)
+								
+								
+								
+									//draw label
+									if ($labelFirst) {
+										echo Form::label('name', $fieldName, Array('class' => $labelClass));
+									}
+									
+									//draw input
+									echo $inputHTML;
+									
+									//draw label
+									if (!$labelFirst) {
+										echo Form::label('name', $fieldName, Array('class' => $labelClass));
+									}
+									
+								?>
+
 							</div>
 	
 					<?php
@@ -100,10 +290,16 @@
 					?>
 					
 					
+					
 					{{-- save button --}}
 					<div class="form-group pull-right">
-						<save-form-button confirm-form="inputForm" confirm-message="Save changes? Changes will be applied to the live site."></save-button>
+						<save-form-button confirm-form="inputForm" confirm-message="Save changes? Changes will be applied to the live site."></save-form-button>
 					</div>
+					
+					{{-- cancel button --}}
+					@if (isset($backURL))
+						<a href="{{ $backURL }}" class="cms-form-button btn-secondary cms-button-margin-right pull-right">Cancel</a>
+					@endif
 					
 				</div>
 			

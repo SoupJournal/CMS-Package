@@ -66,8 +66,8 @@
 			
 					//get form properties
 					$fields = isset($form) ? $form->fields()->where('editable', true)->orderBy('order', 'DESC')->get() : null;
-					$fieldValues = isset($form) ? dataForForm($form->key) : null;
-			
+					$fieldValues = isset($form) ? dataForForm(/*$appId,*/ $form->key) : null;
+
 					//render view
 					return View::make('cms::admin.form.input')->with([
 						'form' => $form,
@@ -106,7 +106,7 @@
 					
 					//get form properties
 					$fields = isset($form) ? $form->fields()->where('editable', true)->orderBy('order', 'DESC')->get() : null;
-					$fieldValues = isset($form) && $filter ? dataForFormData($form->key, $filter) : null;
+					$fieldValues = isset($form) && $filter ? dataForFormData(/*$appId,*/ $form->key, $filter) : null;
 			
 					//render view
 					return View::make('cms::admin.form.input')->with([
@@ -114,7 +114,8 @@
 						'fields' => $fields,
 						'fieldValues' => $fieldValues,
 						'filter' => $filter,
-						'formURL' => route('cms.form.input', ['appId' => $appId, 'formId' => $formId])
+						'formURL' => route('cms.form.input', ['appId' => $appId, 'formId' => $formId]),
+						'backURL' => route('cms.form.input', ['appId' => $appId, 'formId' => $formId])
 					]);
 					
 				}
@@ -227,7 +228,7 @@
 						//echo "con[" . $connectionName . "]table[" . $tableName . "]field[" . $fieldName . "]row[" . $row . "]<br>\n";
 						
 						//valid properties
-						if (strlen($connectionName)>0 && strlen($tableName)>0 && strlen($fieldName)>0 && $row!=null) {
+						if (strlen($connectionName)>0 && strlen($tableName)>0 && strlen($fieldName)>0 && !is_null($row)) {
 							
 		
 							//new table or connection
@@ -289,10 +290,13 @@
 										$result = $connection->update($updateFields);
 									}
 									
+									//indicate form was updated (force value as 'update' call returns false if no changes where made)
+									$result = true;
+									
 									//check result
-									if (!$result) {
+									//if (!$result) {
 										//TODO: handle update error
-									}
+									//}
 
 								}
 								

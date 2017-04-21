@@ -54,6 +54,31 @@
 		
 	} //end safeObjectValue()
 	
+	
+	
+	
+	function decodeJSON($json, $decodeAsArray = false, $default = null) {
+		
+		$result = $default;
+		
+		//valid JSON string
+		if ($json && strlen($json)>0) {
+			
+			try {
+				
+				//decode json
+				$result = json_decode($json, $decodeAsArray);
+				
+			}
+			catch (Exception $ex) {
+				Log::warning("Error decoding JSON: " . $ex);	
+			}
+			
+		} //end if (valid string)
+		
+		return $result;
+		
+	} //end decodeJSON()
 
 
 ?>

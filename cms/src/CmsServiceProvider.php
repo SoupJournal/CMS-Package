@@ -82,6 +82,7 @@ class CmsServiceProvider extends ServiceProvider {
 		include __DIR__.'/helpers/JSHelper.php';
 		include __DIR__.'/helpers/SQLHelper.php';
 		include __DIR__.'/helpers/DataHelper.php';
+		include __DIR__.'/helpers/FormHelper.php';
 		include __DIR__.'/helpers/CMSHelper.php';
 		
 		
