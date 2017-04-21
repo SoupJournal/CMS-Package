@@ -88,6 +88,7 @@
 							$fieldType = strtolower(safeObjectValue('type', $field, ""));
 							$fieldValue = safeArrayValue($fieldKey, $fieldValues, "");
 							$fieldProperties = decodeJSON(safeObjectValue('properties', $field, null), true);
+							$fieldEditable = safeObjectValue('editable', $field, false);
 							
 							//update field name
 							if (is_null($fieldName) || strlen($fieldName)<=0) {
@@ -99,7 +100,8 @@
 	
 								<?php
 	
-
+									//disabled attribute
+									$disabledAttr = $fieldEditable ? [] : ['disabled' => ''];
 									
 									//indicate label position
 									$labelFirst = true;
@@ -112,25 +114,25 @@
 									switch ($fieldType) {
 										
 										case 'number':
-											$inputHTML = Form::number($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control'));
+											$inputHTML = Form::number($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control') + $disabledAttr);
 										break;
 										
 										case 'textarea':
-											$inputHTML = Form::textarea($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control'));
+											$inputHTML = Form::textarea($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control') + $disabledAttr);
 										break;
 										
 										case 'html':
-											$inputHTML = Form::textarea($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control'));
+											$inputHTML = Form::textarea($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control') + $disabledAttr);
 										break;
 										
 										case 'json':
-											$inputHTML = Form::textarea($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control'));
+											$inputHTML = Form::textarea($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control') + $disabledAttr);
 										break;
 										
 										case 'check':
 											$labelFirst = false;
 											$labelClass = "inline";
-											$inputHTML = Form::checkbox($fieldKey, true, $fieldValue, Array ('class' => 'form-control cms-input-checkbox inline'));
+											$inputHTML = Form::checkbox($fieldKey, true, $fieldValue, Array ('class' => 'form-control cms-input-checkbox inline') + $disabledAttr);
 										break;
 										
 										case 'select':
@@ -153,7 +155,7 @@
 
 											//draw select field
 											//$inputHTML = formSelect($fieldKey, $options, $fieldValue, ['class'=>'form-control']);
-											$inputHTML = Form::select($fieldKey, $options, $fieldValue, Array (/*'placeholder' => $fieldName,*/ 'class' => 'form-control'));
+											$inputHTML = Form::select($fieldKey, $options, $fieldValue, Array (/*'placeholder' => $fieldName,*/ 'class' => 'form-control') + $disabledAttr);
 										}
 										break;
 										
@@ -228,7 +230,7 @@
 														$options = ['' => $fieldName] + $options;
 			
 														//draw select field
-														$inputHTML = Form::select($fieldKey, $options, $fieldValue, Array ( 'class' => 'form-control'));
+														$inputHTML = Form::select($fieldKey, $options, $fieldValue, Array ( 'class' => 'form-control') + $disabledAttr);
 														//indicate reference is valid
 														$validReference = true;
 														
@@ -240,7 +242,7 @@
 											
 											//invalid reference (default to text field)
 											if (!$validReference) {
-												$inputHTML = Form::text($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control'));
+												$inputHTML = Form::text($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control') + $disabledAttr);
 											}
 												
 										}
@@ -253,13 +255,13 @@
 												"<div class=\"cms-input-image\">\n" .
 													"<image class=\"cms-input-image-preview\" src=\"" . $fieldValue . "\">\n" .
 												"</div>\n" .
-												Form::text($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control')) .
+												Form::text($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control') + $disabledAttr) .
 											"</div>\n";
 										
 										break;
 										
 										default:
-											$inputHTML = Form::text($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control'));
+											$inputHTML = Form::text($fieldKey, $fieldValue, Array ('placeholder' => $fieldName, 'class' => 'form-control') + $disabledAttr);
 										break;
 										
 									} //end switch (type)

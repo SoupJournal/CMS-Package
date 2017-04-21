@@ -65,7 +65,8 @@
 				else {
 			
 					//get form properties
-					$fields = isset($form) ? $form->fields()->where('editable', true)->orderBy('order', 'DESC')->get() : null;
+					$fields = isset($form) ? $form->fields()->orderBy('order', 'DESC')->get() : null;
+					//$fields = isset($form) ? $form->fields()->where('editable', true)->orderBy('order', 'DESC')->get() : null;
 					$fieldValues = isset($form) ? dataForForm(/*$appId,*/ $form->key) : null;
 
 					//render view
@@ -105,7 +106,8 @@
 					}
 					
 					//get form properties
-					$fields = isset($form) ? $form->fields()->where('editable', true)->orderBy('order', 'DESC')->get() : null;
+					$fields = isset($form) ? $form->fields()->orderBy('order', 'DESC')->get() : null;
+					//$fields = isset($form) ? $form->fields()->where('editable', true)->orderBy('order', 'DESC')->get() : null;
 					$fieldValues = isset($form) && $filter ? dataForFormData(/*$appId,*/ $form->key, $filter) : null;
 			
 					//render view
