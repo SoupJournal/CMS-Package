@@ -37,8 +37,8 @@
 <?php
 
 	//get AJAX URL's
-	$dataURL = action($controllerNamespace . 'SecurityController@getGroups', ['appId' => $appId, 'securityGroupId' => null]);
-	$editURL = action($controllerNamespace . 'SecurityController@getEdit', ['appId' => $appId, 'securityGroupId' => null]);
+	$dataURL = route('cms.security.groups', ['appKey' => $appKey]);
+	$editURL = route('cms.security.edit', ['appKey' => $appKey, 'securityGroupId' => null]);
 
 	//compile table parameters
 	$tableParameters = array(

@@ -39,8 +39,8 @@
 	//get AJAX URL's
 	//$tableURL = action("FormController@getTable");
 	//$fieldURL = action("FormController@getField");
-	$dataURL = action($controllerNamespace . 'FormController@getForms', ['appId' => $appId]);
-	$editURL = action($controllerNamespace . 'FormController@getEdit', ['appId' => $appId, 'formId' => null]);
+	$dataURL = action($controllerNamespace . 'FormController@getForms', ['appKey' => $appKey]);
+	$editURL = action($controllerNamespace . 'FormController@getEdit', ['appKey' => $appKey, 'formId' => null]);
 
 	//compile table parameters
 	$tableParameters = array(

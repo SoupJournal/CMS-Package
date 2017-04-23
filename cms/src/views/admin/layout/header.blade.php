@@ -10,7 +10,6 @@
 	$showCreateApp = CMSAccess::validPermissionFromList($userPermissions, CMSAccess::$PERMISSION_CREATE_APPLICATION);
 
 	//get controller paths
-	//$homePath = route('cms.home', ['appId' => (isset($appData) ? $appData->id : null)]);
 	$logoutPath = route('cms.logout');
 	$appPath = action($controllerNamespace . 'ApplicationController@getIndex');
 
@@ -22,10 +21,10 @@
 	if (isset($user)) {
 
 		//get list of users applications
-		$applications = CMSAccess::userApplications();
+		//$applications = CMSAccess::userApplications();
 
 		//get number of applications
-		$numberOfApplications = count($applications);
+		$numberOfApplications = isset($applications) ? count($applications) : 0;
 
 ?>
 
@@ -45,7 +44,7 @@
 		   		
 		   		
 		   		{{-- applications menu --}}
-		   		@if ($applications)
+		   		@if (isset($applications))
 		   		
 		   			{{-- multiple applications --}}
 		   			@if ($numberOfApplications>=1 || $showCreateApp)
@@ -59,7 +58,7 @@
 						      		@if ($appName && strlen($appName))
 						      			{{ $appName }}
 						      		@else
-						      			Applications
+						      			Applications 
 						      		@endif
 						        	<span class="caret"></span>
 						      	</a>
@@ -67,8 +66,8 @@
 						      	
 						      		{{-- list applications --}}
 						      		@foreach ($applications as $appData)
-						      			@if ($appData && isset($appData->name) && isset($appData->id) && strlen($appData->name))
-								          	<li><a href="{{ route('cms.home', ['appId' => (isset($appData) ? $appData->id : null)]) }}">{{ $appData->name }}</a></li>
+						      			@if ($appData && isset($appData->name) && isset($appData->key) && strlen($appData->name)>0 && strlen($appData->key)>0)
+								          	<li><a href="{{ route('cms.home', ['appKey' => $appData->key]) }}">{{ $appData->name }}</a></li>
 								        @endif
 						          	@endforeach
 						          	

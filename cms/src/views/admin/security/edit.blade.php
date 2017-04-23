@@ -37,7 +37,7 @@
 <?php
 
 	//get AJAX URL's
-	$dataURL = action($controllerNamespace . 'SecurityController@getUsers', ['appId' => $appId, 'securityGroupId' => isset($securityGroup) ? $securityGroup->id : null]);
+	$dataURL = route('cms.security.users', ['appKey' => $appKey, 'securityGroupId' => isset($securityGroup) ? $securityGroup->id : null]);
 
 	
 	//compile table parameters

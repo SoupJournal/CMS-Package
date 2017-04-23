@@ -13,11 +13,11 @@
 
 
 	//get controller paths
-	$homePath = route('cms.home', ['appId' => $appId]);
-	$settingsPath = action($controllerNamespace . 'SettingsController@getIndex', ['appId' => $appId]);
-	$formsPath = action($controllerNamespace . 'FormController@getIndex', ['appId' => $appId]);
-	//$inputPath = action($controllerNamespace . 'FormController@getInput', ['appId' => $appId]);
-	$securityPath = action($controllerNamespace . 'SecurityController@getIndex', ['appId' => $appId]);
+	$homePath = route('cms.home', ['appKey' => $appKey]);
+	$settingsPath = action($controllerNamespace . 'SettingsController@getIndex', ['appKey' => $appKey]);
+	$formsPath = action($controllerNamespace . 'FormController@getIndex', ['appKey' => $appKey]);
+	//$inputPath = action($controllerNamespace . 'FormController@getInput', ['appKey' => $appKey]);
+	$securityPath = action($controllerNamespace . 'SecurityController@getIndex', ['appKey' => $appKey]);
 	
 
 ?>
@@ -65,7 +65,7 @@
 							
 						?>
 
-							<li><a href="{{ action($controllerNamespace . 'FormController@getInput', ['appId' => $appId, 'formId' => $formId]) }}" class="form_link_{{ $formType }}">{{ $formName }}</a></li>
+							<li><a href="{{ action($controllerNamespace . 'FormController@getInput', ['appKey' => $appKey, 'formId' => $formId]) }}" class="form_link_{{ $formType }}">{{ $formName }}</a></li>
 
 						<?php
 						

@@ -2,22 +2,19 @@
 
 	namespace Soup\CMS\Middleware; 
 
-	use Soup\CMS\Middleware\BasePermissionMiddleware;
+
 	use Soup\CMS\Lib\CMSAccess;
 	use Soup\CMS\Models\CMSApp;
 
 	use Closure;
 	use Redirect;
 
-	class FormPermissionMiddleware extends BasePermissionMiddleware { 
+	abstract class BasePermissionMiddleware { 
 
 
-		public function __construct() {
-
-			//set required permissions
-			$this->permissions = [CMSAccess::$PERMISSION_EDIT_FORM];
-
-		} //end constructor()
+		//required permissions
+		protected $permissions = null;
+		
 
 	    /**
 	     * Handle an incoming request.
@@ -26,7 +23,7 @@
 	     * @param  \Closure  $next
 	     * @return mixed
 	     */
-	/*    public function handle($request, Closure $next)
+	    public function handle($request, Closure $next)
 	    {
 	    	//get route
 	    	$route = isset($request) ? $request->route() : null;
@@ -42,12 +39,21 @@
 				$app = CMSApp::where('key', $appKey)->first();
 				if ($app) {
 			
-					//ensure user has permission
-					if (!CMSAccess::validPermission(CMSAccess::$PERMISSION_EDIT_FORM, $app->id)) { 
+					//permissions required
+					if (isset($this->permissions) && count($this->permissions)>0) {
+			
+						foreach ($this->permissions as $permission) {
+			
+							//ensure user has permission
+							if (!CMSAccess::validPermission($permission, $app->id)) { 
+								
+								//no permission - redirect to overview
+								return Redirect::route('cms.home', array('appKey' => $appKey));
+							}
 						
-						//no security permission - redirect to overview
-						return Redirect::route('cms.home', array('appKey' => $appKey));
-					}
+						} //end for()
+						
+					} //end if (permissions required)
 					
 				}
 				
@@ -67,8 +73,8 @@
 	        return $next($request);
 	        
 	    } //end handle()
-	   */ 
+	    
 	
-	} //end class FormPermissionMiddleware
+	} //end class BasePermissionMiddleware
 	
 ?>

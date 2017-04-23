@@ -146,15 +146,15 @@
 		//==========================================================//	
 			
 			
-		protected function getValidatedApp($appId) {
+		protected function getValidatedApp($appKey) {
 			
 			$app = null;
 			
 			//valid application id
-			if ($appId>=0) {
+			if (!is_null($appKey) && strlen($appKey)>0) {
 
-				//check application id
-				$app = CMSApp::find($appId);
+				//check application key
+				$app = CMSApp::where('key', $appKey)->first();
 				
 			} //end if (valid app id)
 			

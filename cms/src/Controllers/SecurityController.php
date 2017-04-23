@@ -4,10 +4,12 @@
 
 	use Soup\CMS\Lib\BaseCMSController;
 	use Soup\CMS\Lib\CMSAccess;
+	use Soup\CMS\Models\CMSUser;
 	use Soup\CMS\Models\CMSSecurity;
 
 	use View;
 	use Redirect;
+	use Response;
 
 	class SecurityController extends BaseCMSController {
 		
@@ -34,7 +36,7 @@
 
 
 		
-		public function getIndex($appId = null) {
+		public function getIndex($appKey = null) {
 			
 			return View::make('cms::admin.security.list');
 			
@@ -43,7 +45,7 @@
 	
 	
 	
-		public function getEdit($appId = null, $securityGroupId = null) {
+		public function getEdit($appKey = null, $securityGroupId = null) {
 			
 			//get security group
 			$group = CMSSecurity::find($securityGroupId);
@@ -58,7 +60,7 @@
 	
 		
 		
-		public function postEdit($appId = null, $securityGroupId = null) {
+		public function postEdit($appKey = null, $securityGroupId = null) {
 			
 			//form errors
 			$errors = array();
@@ -121,20 +123,30 @@
 		
 			
 			
-		public function getGroups($appId = null) {
+		public function getGroups($appKey = null) {
 			
+			//valid key
+			if (!is_null($appKey) && strlen($appKey)>0) {
 			
-			//build query
-			$query = CMSSecurity::select(['id', 'name', 'permission'])
-					->where('application', '=', $appId)
-					->where('status', '=', 1);
-			
-			//get paginated results
-			$results = $this->paginateRequestQuery($query, $_GET);
-			
-			//return paginated query
-			return Response::json($results);
+				//get application
+
+				//build query
+				$query = CMSSecurity::select(['id', 'name', 'permission'])
+						->whereHas('application', function ($subQuery) use ($appKey) {
+							$subQuery->where('key', $appKey);	
+						})
+						->where('status', '=', 1);
+
+				//get paginated results
+				$results = $this->paginateRequestQuery($query, $_GET);
+				
+				//return paginated query
+				return Response::json($results);
 					
+			} //end if (valid key)
+			
+			//invalid request
+			return "";
 			
 		} //end getGroups()
 		
@@ -142,7 +154,7 @@
 		
 		
 		
-		public function getUsers($appId = null, $securityGroupId = null) {
+		public function getUsers($appKey = null, $securityGroupId = null) {
 			
 			
 			//build query

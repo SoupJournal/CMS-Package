@@ -3,6 +3,7 @@
 namespace Soup\CMS\Models;
 
 use Soup\CMS\Lib\Model\BaseModel;
+use Soup\CMS\Models\CMSApp;
 use Soup\CMS\Models\CMSSecurityPermission;
 
 
@@ -13,12 +14,19 @@ class CMSSecurity extends BaseModel {
 
 
 
+
+	//==========================================================//
+	//====				RELATIONSHIP METHODS				====//
+	//==========================================================//
+
+
+
 	/**
      * Get the application record associated with this security group.
      */
 	public function application() {
     
-        return $this->hasOne('CMSApp', 'id', 'application');
+        return $this->belongsTo(CMSApp::class, 'application', 'id');
         
     } //end application()
 

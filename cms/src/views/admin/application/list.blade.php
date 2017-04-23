@@ -37,7 +37,7 @@
 <?php
 
 	//get AJAX URL's
-	$dataURL = URL::action('ApplicationController@getApplications');
+	$dataURL = URL::route('cms.app.applications');
 
 	
 ?>

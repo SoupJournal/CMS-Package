@@ -45,10 +45,10 @@
 	$formId = safeObjectValue('id', $form, null);
 
 	//get AJAX URL's
-	$dataURL = action($controllerNamespace . 'FormController@getTemplates', ['appId' => $appId, 'formId' => $formId]);
-	$addURL = route('cms.form.input.id', ['appId' => $appId, 'formId' => $formId, 'rowId' => -1]); 
-	$editURL = route('cms.form.input.id', ['appId' => $appId, 'formId' => $formId, 'rowId' => '']);
-	$exportURL = action($controllerNamespace . 'FormController@postExport', ['appId' => $appId, 'formId' => $formId]);
+	$dataURL = route('cms.form.templates', ['appKey' => $appKey, 'formId' => $formId]);
+	$addURL = route('cms.form.input.id', ['appKey' => $appKey, 'formId' => $formId, 'rowId' => -1]); 
+	$editURL = route('cms.form.input.id', ['appKey' => $appKey, 'formId' => $formId, 'rowId' => '']);
+	$exportURL = route('cms.form.export', ['appKey' => $appKey, 'formId' => $formId]);
 
 	//compile table parameters
 	$tableParameters = array(

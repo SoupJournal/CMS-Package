@@ -24,18 +24,20 @@
 		
 		//define parameters
 		$appId = null;
+		$appKey = null;
 		$appName = null;
 		
 		//process route variables
 	    if ($currentRoute) {
-	    	$appId = $currentRoute->getParameter('appId');
+	    	$appKey = $currentRoute->getParameter('appKey');
 	    	
-	    	//valid app id
-	    	if ($appId>=0) {
+	    	//valid app key
+	    	if (!is_null($appKey) && strlen($appKey)>0) {
 	    		
 	    		//get application data
-	    		$appData = CMSApp::select('name')->where('id', '=', $appId)->first();
+	    		$appData = CMSApp::select('id', 'name')->where('key', $appKey)->first();
 	    		if ($appData) {
+	    			$appId = $appData->id;
 	    			$appName = $appData->name;
 	    		}
 	    		
@@ -59,8 +61,14 @@
 //echo "SET UUESSSER: ";
 // print_r(Auth::guard(CMSAccess::$AUTH_GUARD));
  
+ 		//make list of applications available
+		$view->with('applications', CMSAccess::userApplications());
+ 
     	//make app id available
     	$view->with('appId', $appId);
+    	
+    	//make app key available
+    	$view->with('appKey', $appKey);
     	
     	//make app name available
     	$view->with('appName', $appName);

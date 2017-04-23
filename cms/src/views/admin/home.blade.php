@@ -57,6 +57,14 @@
 		</div>
 		
 
+	@elseif (isset($applications) && count($applications)>0) 
+	
+		{{-- title --}}
+		<h2>No Application Selected</h2>
+
+		<h4>Please select an application from the list of available applications</h4>	
+	
+
 	{{-- no application specified --}}
 	@else
 

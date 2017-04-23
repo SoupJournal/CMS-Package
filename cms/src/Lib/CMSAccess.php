@@ -180,49 +180,57 @@
 		/**
 		 *	Checks is the user has access to the specified application
 		 *
-		 *  @param appId the application used for the check
+		 *  @param appKey the application key used for the check
 		 *	@param user optional parameter to specify the user used for the check
 		 *	@return true if the user has access to the application, false otherwise
 		 *
 		 **/
-		static function validApplication($appId, $user=null) {
+		static function validApplication($appKey, $user=null) {
 		
 			$valid = false;
 		
 		
 			//valid app ID
-			if (is_numeric($appId) && $appId>=0) {
+			if (!is_null($appKey) && strlen($appKey)>=0) {
 		
 				//retrieve user
 				if (!$user) {
 					$user = Auth::guard(CMSAccess::$AUTH_GUARD)->user();
 				}
 				
+				//retrieve application
+				$application = CMSApp::where('key', $appKey)->first();
+				if ($application) {
 				
-				//valid user
-				if (isset($user) && is_numeric($user->id) && $user->id>=0) {
-					
-					$result = CMSSecurityPermission::select('id')
-						->where('user', '=', $user->id)
-						->whereHas('group', function($query) use ($appId) {
-							
-							//user is part of application security group
-							$query->where('application', '=', $appId);
-							
-							//at least one permission is specified
-							$query->where(function($whereQuery) {
-								foreach (CMSAccess::$PERMISSIONS as $permission) {
-								 	$whereQuery->orWhere('permission', 'LIKE', '%"' . $permission . '"%');
-								}
-							});
-
-						})
-						->count();
+					//get application Id
+					$appId = $application->id;
+				
+					//valid user
+					if (isset($user) && is_numeric($user->id) && $user->id>=0) {
+						
+						$result = CMSSecurityPermission::select('id')
+							->where('user', '=', $user->id)
+							->whereHas('group', function($query) use ($appId) {
+								
+								//user is part of application security group
+								$query->where('application', '=', $appId);
+								
+								//at least one permission is specified
+								$query->where(function($whereQuery) {
+									foreach (CMSAccess::$PERMISSIONS as $permission) {
+									 	$whereQuery->orWhere('permission', 'LIKE', '%"' . $permission . '"%');
+									}
+								});
 	
-					//check user has permission
-					$valid = $result>0;
-					
-				} //end if (valid user)
+							})
+							->count();
+		
+						//check user has permission
+						$valid = $result>0;
+						
+					} //end if (valid user)
+				
+				} //end if (valid application)
 		
 			} //end if (valid application ID)
 		
@@ -258,7 +266,7 @@
 			//valid user
 			if (isset($user) && is_numeric($user->id) && $user->id>=0) {
 				
-				$apps = CMSApp::select(['id', 'name'])
+				$apps = CMSApp::select(['id', 'key', 'name'])
 					->whereHas('group', function($query) use ($user) {
 						
 						//check for matching user

@@ -3,12 +3,21 @@
 	namespace Soup\CMS\Middleware; 
 
 
+	use Soup\CMS\Middleware\BasePermissionMiddleware;
 	use Soup\CMS\Lib\CMSAccess;
 
 	use Closure;
 	use Redirect;
 
-	class SecurityPermissionMiddleware { 
+	class SecurityPermissionMiddleware extends BasePermissionMiddleware { 
+
+
+		public function __construct() {
+
+			//set required permissions
+			$this->permissions = [CMSAccess::$PERMISSION_EDIT_SECURITY];
+
+		} //end constructor()
 
 	    /**
 	     * Handle an incoming request.
@@ -17,7 +26,7 @@
 	     * @param  \Closure  $next
 	     * @return mixed
 	     */
-	    public function handle($request, Closure $next)
+/*	    public function handle($request, Closure $next)
 	    {
 	    	//get route
 	    	$route = isset($request) ? $request->route() : null;
@@ -45,7 +54,7 @@
 	        return $next($request);
 	        
 	    } //end handle()
-	
+*/	
 	
 	} //end class SecurityPermissionMiddleware
 	

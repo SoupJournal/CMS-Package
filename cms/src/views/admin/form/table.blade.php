@@ -1,5 +1,5 @@
-{{-- @extends('cms::layouts.database') --}}
 <?php
+	//@extends('cms::layouts.database')
 
 	//db connection specified
 	if (isset($dbConnection) && strlen($dbConnection)>0) {
@@ -21,7 +21,7 @@
 			   	if ($connection) {
 			   		
 			   		
-			   		
+			  		
 			   	//echo "connection:: " . $dbConnection . "- databaseName: " . $databaseName; // print_r($connection, true);
 
 			 
@@ -47,14 +47,14 @@
 						    		array_push($tableNames, $tableName);
 						    	}
 					   		}
-							catch(Exception $e){
+							catch(Exception $ex){
 								//invalid table - skip
-							   //echo "ERROR: " . $e->getMessage();
+							   //echo "ERROR: " . $ex->getMessage();
 							}
 							
 						} //end for()
 					   	
-					   	
+					    	
 					   	//TODO: handle user permissions on tables
 					   	
 					   	
@@ -84,7 +84,7 @@
 							{{-- end controller --}}
 		
 			<?php	   
-			
+
 					   	}
 				   		//no valid table names found
 						else {
@@ -111,8 +111,8 @@
 			}
 	   
 		}
-		catch(Exception $e){
-		   echo "ERROR: " . $e->getMessage();
+		catch(Exception $ex){
+		   echo "ERROR: " . $ex->getMessage();
 		}
 		
 	}

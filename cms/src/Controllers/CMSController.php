@@ -4,6 +4,7 @@
 
 	use Soup\CMS\Lib\BaseCMSController;
 	use Soup\CMS\Lib\CMSAccess;
+	use Soup\CMS\Models\CMSApp;
 	
 	use URL;
 	use View;
@@ -29,16 +30,8 @@
 		//====				AUTHENTICATION METHODS				====//
 		//==========================================================//	
 		
-//		
-//		public function index($appId = null) {
-//
-//			return View::make('cms::admin.home');
-//			
-//		} //end index()
 		
-		
-		
-		public function getIndex($appId = null) {
+		public function getIndex($appKey = null) {
 
 			return View::make('cms::admin.home');
 			
@@ -96,15 +89,19 @@
 				//found application
 				if ($appId>=0) {
 
-					//show app home page
-					return Redirect::route('cms.home', array ('appId' => $appId));
+					//get application
+					$application = CMSApp::find($appId);
+					if ($application) {
+
+						//show app home page
+						return Redirect::route('cms.home', array ('appKey' => $application->key));
+					
+					}
 				}
+				
 				//no application available
-				else {
+				return Redirect::route('cms.home'); 
 
-					return Redirect::route('cms.home'); 
-
-				}
 			}
 
 			//error - redirect to login page with error message

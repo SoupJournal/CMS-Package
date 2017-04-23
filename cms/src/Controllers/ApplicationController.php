@@ -3,7 +3,10 @@
 	namespace Soup\CMS\Controllers;
 
 	use Soup\CMS\Lib\BaseCMSController;
+	use Soup\CMS\Models\CMSApp;
 	
+	use View;
+	use Response;
 
 	class ApplicationController extends BaseCMSController {
 		
@@ -46,7 +49,7 @@
 			
 			
 			//build query
-			$query = CMSApp::select(['id', 'name'])->where('status', '=', 1);
+			$query = CMSApp::select(['id', 'key', 'name'])->where('status', '=', 1);
 			
 			//get paginated results
 			$results = $this->paginateRequestQuery($query, $_GET);
@@ -59,10 +62,10 @@
 			
 			
 			
-		public function postApplicationid($appID = null) {
-			
-			
-		} //end postApplicationid()
+//		public function postApplicationid($appID = null) {
+//			
+//			
+//		} //end postApplicationid()
 		
 		
 		

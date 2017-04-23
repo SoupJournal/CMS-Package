@@ -37,7 +37,7 @@
 		
 
 		
-		public function getIndex($appId = null) {
+		public function getIndex($appKey = null) {
 			
 			return View::make('cms::admin.form.list');
 			
@@ -46,10 +46,10 @@
 	
 	
 	
-		public function getInput($appId, $formId = null) {
+		public function getInput($appKey, $formId = null) {
 		
 			//get validated form
-			$form = $this->getValidatedForm($appId, $formId);
+			$form = $this->getValidatedForm($appKey, $formId);
 			
 			//valid form
 			if ($form) {
@@ -67,7 +67,7 @@
 					//get form properties
 					$fields = isset($form) ? $form->fields()->orderBy('order', 'DESC')->get() : null;
 					//$fields = isset($form) ? $form->fields()->where('editable', true)->orderBy('order', 'DESC')->get() : null;
-					$fieldValues = isset($form) ? dataForForm(/*$appId,*/ $form->key) : null;
+					$fieldValues = isset($form) ? dataForForm(/*$appKey,*/ $form->key) : null;
 
 					//render view
 					return View::make('cms::admin.form.input')->with([
@@ -88,10 +88,10 @@
 	
 	
 	
-		public function getTemplateInput($appId, $formId = null, $rowId = null) {
+		public function getTemplateInput($appKey, $formId = null, $rowId = null) {
 			
 			//get validated form
-			$form = $this->getValidatedForm($appId, $formId);
+			$form = $this->getValidatedForm($appKey, $formId);
 			
 			//valid form
 			if ($form) {
@@ -108,7 +108,7 @@
 					//get form properties
 					$fields = isset($form) ? $form->fields()->orderBy('order', 'DESC')->get() : null;
 					//$fields = isset($form) ? $form->fields()->where('editable', true)->orderBy('order', 'DESC')->get() : null;
-					$fieldValues = isset($form) && $filter ? dataForFormData(/*$appId,*/ $form->key, $filter) : null;
+					$fieldValues = isset($form) && $filter ? dataForFormData(/*$appKey,*/ $form->key, $filter) : null;
 			
 					//render view
 					return View::make('cms::admin.form.input')->with([
@@ -116,8 +116,8 @@
 						'fields' => $fields,
 						'fieldValues' => $fieldValues,
 						'filter' => $filter,
-						'formURL' => route('cms.form.input', ['appId' => $appId, 'formId' => $formId]),
-						'backURL' => route('cms.form.input', ['appId' => $appId, 'formId' => $formId])
+						'formURL' => route('cms.form.input', ['appKey' => $appKey, 'formId' => $formId]),
+						'backURL' => route('cms.form.input', ['appKey' => $appKey, 'formId' => $formId])
 					]);
 					
 				}
@@ -133,10 +133,10 @@
 			
 	
 	
-		public function postInput($appId, $formId = null) {
+		public function postInput($appKey, $formId = null) {
 		
 			//get validated form
-			$form = $this->getValidatedForm($appId, $formId);
+			$form = $this->getValidatedForm($appKey, $formId);
 			
 			//update result
 			$result = false;
@@ -373,7 +373,7 @@
 				if ($result) {
 					
 					return Redirect::route('cms.form.input', array(
-						'appId' => $appId,
+						'appKey' => $appKey,
 						'formId' => $formId,
 					))->with(
 						'message', 'Form saved!'
@@ -394,13 +394,13 @@
 	
 	
 	
-		public function getEdit($appId, $formId = null) {
+		public function getEdit($appKey, $formId = null) {
 			
 			//validate app
-			if ($this->getValidatedApp($appId)) {
+			if ($this->getValidatedApp($appKey)) {
 			
 				//get validated form
-				$form = $this->getValidatedForm($appId, $formId);
+				$form = $this->getValidatedForm($appKey, $formId);
 			
 				//render view (new form will be created if one doesn't exist)
 				return View::make('cms::admin.form.edit')->with('form', $form);
@@ -415,7 +415,7 @@
 	
 	
 	
-		public function postEdit($appId, $formId = null) {
+		public function postEdit($appKey, $formId = null) {
 			
 			
 			//form errors
@@ -424,11 +424,11 @@
 			//check application
 			$validApplication = true;
 			
-			//valid application id
-			if ($appId>=0) {
+			//valid application key
+			if (!is_null($appKey) && strlen($appKey)>0) {
 
 				//check application id
-				$app = CMSApp::find($appId);
+				$app = CMSApp::where('key', $appKey)->first();
 				if ($app) {
 	
 					//validate form
@@ -474,7 +474,7 @@
 							//new form
 							else {
 								$form = new CMSForm();
-								$form->application = $appId;
+								$form->application = $app->id;
 							}
 			
 							//valid form model
@@ -577,7 +577,7 @@
 									
 									
 									//redirect user
-									return Redirect::to('/cms/' . $appId . '/form')->with('message', 'Form saved!');
+									return Redirect::route('cms.form.index', ['appKey' => $appKey])->with('message', 'Form saved!');
 								}
 								//error saving
 								else {
@@ -623,7 +623,7 @@
 			if (!$validApplication) {
 				
 				//redirect to home page (filters will handle authentication)
-				return Redirect::action('CMSController@getLogin');
+				return Redirect::route('cms.home');
 				
 			}
 			
@@ -646,7 +646,7 @@
 		
 	
 	
-		public function getTable($appId = null, $dbConnection = null) {
+		public function getTable($appKey = null, $dbConnection = null) {
 			
 			return View::make('cms::admin.form.table')->with('dbConnection', $dbConnection);
 			
@@ -655,7 +655,7 @@
 	
 	
 	
-		public function getField($appId = null, $dbConnection = null, $dbTable = null) {
+		public function getField($appKey = null, $dbConnection = null, $dbTable = null) {
 			
 			$parameters = Array (
 				'dbConnection' => $dbConnection,
@@ -675,10 +675,10 @@
 		
 
 		
-		public function postExport($appId = null, $formId = null) {
+		public function postExport($appKey = null, $formId = null) {
 			
 			//get validated form
-			$form = $this->getValidatedForm($appId, $formId);
+			$form = $this->getValidatedForm($appKey, $formId);
 			if ($form) {
 				
 				//get range values
@@ -789,14 +789,16 @@
 
 
 	
-		public function getForms($appId = null) {
+		public function getForms($appKey = null) {
 			
-			//valid app id
-			if ($appId>=0) {
+			//valid app key
+			if (!is_null($appKey) && strlen($appKey)>0) {
 			
 				//build query
 				$query = CMSForm::select(['id', 'name', 'type'])
-						->where('application', '=', $appId)
+						->whereHas('application', function ($innerQuery) use ($appKey) {
+							$innerQuery->where('key', $appKey);
+						})
 						->where(function($whereQuery) {
 							$whereQuery->orWhere('status', '=', CMSData::$STATUS_DRAFT);
 							$whereQuery->orWhere('status', '=', CMSData::$STATUS_PUBLISHED);
@@ -818,17 +820,20 @@
 	
 	
 	
-		public function getFields($appId = null, $formId = null) {
+		public function getFields($appKey = null, $formId = null) {
 			
-			//valid app id
-			if ($appId>=0) {
+			//valid app key
+			if (!is_null($appKey) && strlen($appKey)>0) {
 			
 				//valid form id
 				if ($formId>=0) {
 			
 					//check if form is valid
-					$form = CMSForm::find($formId);
-					if ($form && $form->application==$appId) {
+					$form = CMSForm::find($formId)
+									->whereHas('application', function ($query) use ($appKey) {
+										$query->where('key', $appKey);
+									});
+					if ($form) {
 			
 						//build query
 						$query = CMSFormField::select(['id', 'key', 'connection', 'table', 'field', 'row'])
@@ -849,7 +854,7 @@
 				
 				} //end if (valid form id)
 			
-			} //end if (valid app id)
+			} //end if (valid app key)
 			
 			//no results
 			return "";
@@ -859,10 +864,10 @@
 			
 			
 			
-		public function getTemplates($appId = null, $formId = null) {
+		public function getTemplates($appKey = null, $formId = null) {
 			
 			//get validated form
-			$form = $this->getValidatedForm($appId, $formId);
+			$form = $this->getValidatedForm($appKey, $formId);
 			if ($form) {
 				
 				//get form query
@@ -964,22 +969,26 @@
 				
 			
 			
-		private function getValidatedForm($appId, $formId) {
+		private function getValidatedForm($appKey, $formId) {
 			
 			$form = null;
 			
-			//valid application id
-			if ($appId>=0) {
+			//valid application key
+			if (!is_null($appKey) && strlen($appKey)>0) {
 
 				//check application id
-				$app = CMSApp::find($appId);
-				if ($app) {
+				//$app = CMSApp::find($appId);
+				//if ($app) {
 					
 					//get form
 					//$form = CMSForm::find($formId);
-					$form = CMSForm::where('id', '=', $formId)->where('application', '=', $appId)->first();
+					$form = CMSForm::where('id', '=', $formId)
+						->whereHas('application', function ($query) use ($appKey) {
+							$query->where('key', $appKey);
+						})
+						->first();
 					
-				} //end if (valid app)
+				//} //end if (valid app)
 				
 				
 			} //end if (valid app id)
