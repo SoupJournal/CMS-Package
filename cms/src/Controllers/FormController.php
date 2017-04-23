@@ -67,7 +67,7 @@
 					//get form properties
 					$fields = isset($form) ? $form->fields()->orderBy('order', 'DESC')->get() : null;
 					//$fields = isset($form) ? $form->fields()->where('editable', true)->orderBy('order', 'DESC')->get() : null;
-					$fieldValues = isset($form) ? dataForForm(/*$appKey,*/ $form->key) : null;
+					$fieldValues = isset($form) ? dataForForm($appKey, $form->key) : null;
 
 					//render view
 					return View::make('cms::admin.form.input')->with([
@@ -108,7 +108,7 @@
 					//get form properties
 					$fields = isset($form) ? $form->fields()->orderBy('order', 'DESC')->get() : null;
 					//$fields = isset($form) ? $form->fields()->where('editable', true)->orderBy('order', 'DESC')->get() : null;
-					$fieldValues = isset($form) && $filter ? dataForFormData(/*$appKey,*/ $form->key, $filter) : null;
+					$fieldValues = isset($form) && $filter ? dataForForm($appKey, $form->key, $filter) : null;
 			
 					//render view
 					return View::make('cms::admin.form.input')->with([

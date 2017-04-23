@@ -45,8 +45,6 @@
 
 	//get form properties
 	$formName = safeObjectValue('name', $form, "");
-//	$fields = isset($form) ? $form->fields()->orderBy('order', 'DESC')->get() : null;
-//	$fieldValues = isset($form) ? dataForForm($form->key) : null;
 
 	//get filter properties
 	$filterRow = safeArrayValue('row', $filter, '');
@@ -101,7 +99,9 @@
 								<?php
 	
 									//disabled attribute
-									$disabledAttr = $fieldEditable ? [] : ['disabled' => ''];
+									$disabledAttr = $fieldEditable ? [] : ['readonly' => 'readonly'];
+									//$disabledAttr = $fieldEditable ? [] : ['disabled' => ''];
+									
 									
 									//indicate label position
 									$labelFirst = true;
@@ -132,7 +132,7 @@
 										case 'check':
 											$labelFirst = false;
 											$labelClass = "inline";
-											$inputHTML = Form::checkbox($fieldKey, true, $fieldValue, Array ('class' => 'form-control cms-input-checkbox inline') + $disabledAttr);
+											$inputHTML = Form::checkbox($fieldKey, "1", $fieldValue?true:false, Array ('class' => 'form-control cms-input-checkbox inline') + $disabledAttr);
 										break;
 										
 										case 'select':

@@ -3,15 +3,7 @@
 	use Soup\CMS\Models\CMSForm;
 
 
-	function dataForForm(/*$appKey,*/ $formKey, $arrayFormat = true) {
-		
-		return dataForFormData(/*$appKey,*/ $formKey, null, $arrayFormat);
-		
-	} //end dataForForm()
-
-
-
-	function dataForFormData(/*$appKey,*/ $formKey, $filterOptions = null, $arrayFormat = true) {
+	function dataForForm($appKey, $formKey, $filterOptions = null, $arrayFormat = true) {
 		
 
 		//form data
@@ -19,18 +11,18 @@
 		
 		
 		//valid app key
-		//if ($appKey && strlen($appKey)>0) {
+		if (!is_null($appKey) && strlen($appKey)>0) {
 			
 			//valid form key
 			if ($formKey && strlen($formKey)>0) {
 			
 				//find form
-				$form = CMSForm::where('key', $formKey)->first();
-//				$form = CMSForm::whereHas('application', function($query) {
-//						$query->where('key', $appKey);
-//					}) 
-//					->where('key', $formKey)
-//					->first(); 
+//				$form = CMSForm::where('key', $formKey)->first();
+				$form = CMSForm::whereHas('application', function($query) use ($appKey) {
+						$query->where('key', $appKey);
+					}) 
+					->where('key', $formKey)
+					->first(); 
 				
 				//valid form
 				if ($form) {
@@ -240,11 +232,11 @@
 			
 			} //end if (valid form key)
 		
-		//} //end if (valid app key)
+		} //end if (valid app key)
 
 		return $data;
 		
-	} //end dataForFormData()
+	} //end dataForForm()
 	
 	
 	
