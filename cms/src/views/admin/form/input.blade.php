@@ -197,18 +197,18 @@
 															if (!$firstLabel) $label .= ' ';
 															
 															//add label
-															$label .= safeArrayValue($key, $option, '');
+															$label .= safeValue($key, $option, '');
 															
 															//indicate label added
 															$firstLabel = false;
 														}
 														
 														//create option
-														$id = safeArrayValue($field, $option, null);
+														$id = safeValue($field, $option, null);
 														if (!is_null($id)) {
 															$options += [$id => $label];	
 														}
-														
+
 														
 														//check if current value found in table
 														if (!$currentValueExists && strcmp($id, $fieldValue)==0) {
@@ -216,7 +216,7 @@
 														}
 														
 													} //end for()
-												
+
 
 													//found options
 													if ($options && count($options)>0) {

@@ -209,6 +209,7 @@
 						$fieldName = $field->field;
 						$row = $field->row;
 						$key = $field->key;
+						$properties = $field->properties;
 						
 						//get field value
 						$fieldValue = safeArrayValue($field->key, $_POST, null);
@@ -330,6 +331,29 @@
 								$runQuery = false;
 								
 							}
+	
+	
+							//no value specified
+							if (is_null($fieldValue)) {
+	
+								//get field properties
+								if (!is_null($properties) && strlen($properties)>0) {
+									
+									//decode properties
+									$fieldProperties = decodeJSON($properties, true);	
+									if ($fieldProperties) {
+										
+										//TODO: handle required fields
+										
+										//TODO: handle field validation
+										
+										//get default value
+										$fieldValue = safeArrayValue('default', $fieldProperties, $fieldValue);
+										
+									}
+								}
+							
+							} //end if (null value)
 	
 							//add field to update query
 							$updateFields[$fieldName] = $fieldValue;

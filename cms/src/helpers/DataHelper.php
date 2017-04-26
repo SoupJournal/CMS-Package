@@ -1,6 +1,31 @@
 <?php
 
 	
+	function safeValue($key, $object, $default = null) {
+		
+		$result = $default;
+		
+		//valid object
+		if ($object) {
+			
+			//array object
+			if (is_array($object)) {
+				$result = safeArrayValue($key, $object, $default);
+			}
+			//object value
+			else {
+				$result = safeObjectValue($key, $object, $default);
+			}
+			
+		} //end if (valid object)
+		
+		return $result;
+		
+	} //end safeValue()
+	
+	
+	
+	
 	function safeArrayValue($key, $array, $default = null) {
 		
 		$result = $default;
