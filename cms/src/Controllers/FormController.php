@@ -73,7 +73,8 @@
 					return View::make('cms::admin.form.input')->with([
 						'form' => $form,
 						'fields' => $fields,
-						'fieldValues' => $fieldValues
+						'fieldValues' => $fieldValues,
+						'formURL' => route('cms.form.input', ['appKey' => $appKey, 'formId' => $formId])
 					]);
 						
 				}
