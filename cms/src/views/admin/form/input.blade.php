@@ -174,7 +174,7 @@
 												//create query
 												$results = DB::connection($connection)
 													->table($table)
-													->select($displayFields)
+													->select(array_merge($displayFields, [$field]))
 													//->where($field, $fieldValue)
 													->get();
 
