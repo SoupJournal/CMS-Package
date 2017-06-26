@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class BaseModel extends Model {
 	
 	
+	//set model connection 
+	protected $connection = 'SoupCMS';
+	
 	//set base connection
 	//protected $connection = 'cms';
 	
