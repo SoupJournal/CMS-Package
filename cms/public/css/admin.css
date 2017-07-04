@@ -92,11 +92,31 @@
 }
 
 
+.cms-form-button.btn-positive {
+	background-color: #4F9148;
+	color: white;
+}
+
+.cms-form-button.btn-negative {
+	background-color: #B4140A;
+	color: white;
+}
+
+
 .cms-form-button:hover {
 	text-decoration: none;
 	background-color: #55AAFF;
 	color: #FEFEFE;
 }
+
+.cms-form-button.btn-positive:hover {
+	background-color: #376732;
+}
+
+.cms-form-button.btn-negative:hover {
+	background-color: #640909;
+}
+
 
 .cms-save-button:hover {
 	text-decoration: none;	

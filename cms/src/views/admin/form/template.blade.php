@@ -48,14 +48,18 @@
 	$dataURL = route('cms.form.templates', ['appKey' => $appKey, 'formId' => $formId]);
 	$addURL = route('cms.form.input.id', ['appKey' => $appKey, 'formId' => $formId, 'rowId' => -1]); 
 	$editURL = route('cms.form.input.id', ['appKey' => $appKey, 'formId' => $formId, 'rowId' => '']);
+	$deleteURL = route('cms.form.input.delete', ['appKey' => $appKey, 'formId' => $formId, 'rowId' => '']);
 	$exportURL = route('cms.form.export', ['appKey' => $appKey, 'formId' => $formId]);
+//Route::delete($uri, $callback);
+
 
 	//compile table parameters
 	$tableParameters = array(
 		'title'=>'', 
 		'tableId' => 'templateTable',
 		'dataFunction'=>'initTemplateTable', 
-		'editURL' => $editURL,
+//		'editURL' => $editURL,
+//		'deleteURL' => $deleteURL,
 		'editField' => 'id',
 		'columnSyntax' => Array(true)
 	);
@@ -67,7 +71,7 @@
 
 
 	{{-- select database view --}}
-	<div ng-controller="FormController" ng-init="setDataURL('{{ $dataURL }}'); setEditURL('{{ $editURL }}'); showExport = {{ $showExport }};">
+	<div ng-controller="FormController" ng-init="setDataURL('{{ $dataURL }}'); setEditURL('{{ $editURL }}'); setDeleteURL('{{ $deleteURL }}'); showExport = {{ $showExport }};">
 	
 	
 		{{-- title --}}
@@ -101,6 +105,7 @@
 	
 		<div class="form-group">
 	
+			{{-- export form --}}
 			{{ Form::open(Array('role' => 'form', 'name' => 'exportForm', 'url' => $exportURL, 'method' => 'POST')) }}
 	
 				{{-- export options --}}
@@ -118,6 +123,17 @@
 				
 				</div>
 				
+			{{ Form::close() }}
+			
+			
+			{{-- delete form --}}
+			{{ Form::open(Array('role' => 'form', 'name' => 'deleteForm', 'url' => $deleteURL, 'method' => 'DELETE')) }}
+			
+				{{ Form::hidden('key', 'id') }}
+				
+				{{-- Form::hidden('rows[]', '#{ row }#' , array('ng-repeat' => "row in selectedFields")) --}}
+				<input name="rows[]" value="#{ row }#" ng-repeat="row in selectedFields">
+			
 			{{ Form::close() }}
 
 		</div>

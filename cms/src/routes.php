@@ -96,6 +96,7 @@
 				Route::post($path . '/input/{id}', array('as' => 'cms.form.input', 'uses' => 'FormController@postInput'));
 				//TODO: check for add template row permission
 				Route::get($path . '/input/{id}/{id2}', array('as' => 'cms.form.input.id', 'uses' => 'FormController@getTemplateInput'));
+				Route::delete($path . '/delete/{id}', array('as' => 'cms.form.input.delete', 'uses' => 'FormController@deleteTemplateInput'));
 				
 				//service actions
 				Route::get($path . '/templates/{id}', array('as' => 'cms.form.templates', 'uses' => 'FormController@getTemplates'));

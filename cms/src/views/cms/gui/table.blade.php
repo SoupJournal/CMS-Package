@@ -58,15 +58,15 @@
 					<tr> 
 						<th class="object-column" ng-if="showIndex">index</th>
 						<th class="object-column" ng-repeat="property in filteredKeys track by $index">
-							@{{ property }} 
+							#{ property }# 
 						</th>
 					</tr>
 				</thead>
 			
 				<tr class="object-row" ng-repeat="rowData in filteredResults"> 
-					<td class="object-column" ng-if="showIndex==true">@{{ $index + (itemsPerPage * currentPage) }}</td>
+					<td class="object-column" ng-if="showIndex==true">#{ $index + (itemsPerPage * currentPage) }#</td>
 					<td class="object-column" ng-repeat="value in rowData track by $index">
-						<span ng-if="!columnProperty($index, 'html')">@{{ value }}</span>
+						<span ng-if="!columnProperty($index, 'html')">#{ value }#</span>
 						<dynamic-compile ng-if="columnProperty($index, 'html')" ng-bind-html="getHTMLValue(value)"></dynamic-compile>
 					</td>
 				</tr>

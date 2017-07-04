@@ -24,17 +24,6 @@
 		//public static $SESSION_KEY_APP_NAME = 'application_name';
 		
 		
-		//CMS permissions
-		private static $PERMISSIONS = Array(
-			'create_application',
-			'edit_application',
-			'edit_security_group',
-			'edit_form',
-			'edit_page',
-			'data_entry',
-			'view_app',
-			'forms'
-		);
 			
 		//permission ID's
 		public static $PERMISSION_CREATE_APPLICATION 	= 0;
@@ -47,9 +36,33 @@
 		public static $PERMISSION_FORMS 				= 7;
 		
 		//form permissions
+		const PERMISSION_FORM_VIEW 		= 0;
+		const PERMISSION_FORM_EDIT 		= 1;
+		const PERMISSION_FORM_DELETE 	= 2;
+		
 		public static $PERMISSION_FORMS_INCLUDE			= 'include';
 		public static $PERMISSION_FORMS_EXCLUDE			= 'exclude';
 		
+		
+		
+		//CMS permissions
+		private static $PERMISSIONS = Array(
+			'create_application',
+			'edit_application',
+			'edit_security_group',
+			'edit_form',
+			'edit_page',
+			'data_entry',
+			'view_app',
+			'forms'
+		);
+		
+		//CMS form permissions
+		private static $FORM_PERMISSION = Array(
+			CMSAccess::PERMISSION_FORM_VIEW => 'form_view',
+			CMSAccess::PERMISSION_FORM_EDIT => 'form_edit',
+			CMSAccess::PERMISSION_FORM_DELETE => 'form_delete'
+		);
 		
 		
 		

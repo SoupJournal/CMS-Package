@@ -46,12 +46,15 @@
 	//	printProperties(angularModules);
 		
 		//replace code brackets so as not to conflict with Blade
-		var app = angular.module('cms-core', angularModules); /*,  
-		 function($interpolateProvider) {
-		    $interpolateProvider.startSymbol('[[');
-		    $interpolateProvider.endSymbol(']]');
-		});
-		*/
+		var app = angular.module('cms-core', angularModules,  
+		
+			//replace code brackets so as not to conflict with Blade
+			function($interpolateProvider) {
+				$interpolateProvider.startSymbol('#{');
+				$interpolateProvider.endSymbol('}#');
+			}
+			
+		);
 		
 	})();
 	//end anonymous function

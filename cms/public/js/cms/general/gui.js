@@ -491,6 +491,89 @@
 
 	
 	
+	//deleteButton directive - standard delete button 
+	module.directive('cmsButton', ['$rootScope', function($rootScope, $parse) {
+	    return {
+	    	scope: {
+	    		cmsButton: '@',
+	    		buttonData: '@',
+	    		confirmTitle: '@',
+	    		confirmMessage: '@'
+	    	},
+	    	restrict: 'A',
+	       // template: '<a href="{{ deleteURL }}" class="{{ class }}">delete</button>',
+	        link: function (scope, element, attrs) {
+	        	
+				//valid element
+	        	if (attrs) {
+
+					//default to non-submit button
+					if (!attrs.type || attrs.type.lowercase!='submit') {
+						element.prop('type', 'button');
+					}
+	        		
+	        	} //end if (valid attributes)
+	        	
+	        	//valid element
+	        	if (element) {
+	        		
+	        		//add default class
+	        		element.addClass('cms-form-button');
+	        		
+	        		
+	        		//add listeners
+	        		element.on('click', function(event) {
+						
+						//create data
+						var data = {
+							id: scope.cmsButton,
+							data: scope.buttonData,
+							element: element,
+							title: scope.confirmTitle,
+							message: scope.confirmMessage
+						};
+
+		        		//broadcast event
+		        		$rootScope.$broadcast('cms-button-click', data);
+		        		
+		        		
+		        		
+			        	//compile message
+			        	var message = (scope.confirmTitle && scope.confirmTitle.length>0) ? scope.confirmTitle + '\n\n' : '';
+			        	message += (scope.confirmMessage && scope.confirmMessage.length>0) ? scope.confirmMessage : '';
+			        		
+	            		//dialoag message specified
+	            		if (message && message.length>0) {
+	            	
+			            	//stop default handling
+			            	if (event) {
+			            		event.preventDefault();
+			            	}
+			            	
+			            	//show alert
+			                if (confirm(message)) {
+
+				        		//broadcast event
+				        		$rootScope.$broadcast('cms-button-confirm', data);
+
+			                }
+		                
+	            		} //end if (dialog message specified)
+		               	
+	        		});
+	        		
+	        		
+	        	} //end if (valid element)
+
+	        },
+	 	    replace: false
+	    }
+	}]); //end directive
+	
+
+
+	
+	
 	//editButton directive - standard edit button 
 	module.directive('editButton', function($parse) {
 	    return {
@@ -512,7 +595,7 @@
 	    }
 	}); //end directive
 	
-	
+
 	
 			
 	//saveButton directive - standard save button 

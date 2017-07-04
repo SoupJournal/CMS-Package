@@ -4,6 +4,7 @@
 
 	use Soup\CMS\Lib\BaseCMSController;
 	use Soup\CMS\Lib\CMSData;
+	use Soup\CMS\Lib\CMSAccess;
 	use Soup\CMS\Models\CMSApp;
 	use Soup\CMS\Models\CMSForm;
 	use Soup\CMS\Models\CMSFormField;
@@ -15,6 +16,12 @@
 
 	class FormController extends BaseCMSController {
 		
+		
+		//input actions
+		const ACTION_UPDATE = 0;
+		const ACTION_DELETE = 1;
+
+
 
 		public function __construct() {
 //				
@@ -131,282 +138,104 @@
 		} //end getTemplateInput()	
 		
 		
+		
+		
+		
+		public function deleteTemplateInput($appKey, $formId = null, $rowId = null) {
+		
+			//get validated form
+			$form = $this->getValidatedForm($appKey, $formId, CMSAccess::PERMISSION_FORM_DELETE);
 			
+			//valid form
+			if ($form) {
+
+			
+				//template input
+				if ($form->type == CMSData::$FORM_TYPE_TEMPLATE) {
+	
+					//get form properties
+					$key = safeArrayValue('key', $_POST, null);
+					$rows = safeArrayValue('rows', $_POST, null);
+
+					//valid properties
+					if ($rows && count($rows)>0) {
+	
+						//create filter
+						$filter = Array (
+							'key' => 'id',
+							'row' => $rows[0] //TODO: support array filters
+						);
+	
+						//delete rows
+						$result = $this->processInput($form, self::ACTION_DELETE, $filter);
+		
+							
+						//return to page
+						return Redirect::route('cms.form.input', array(
+							'appKey' => $appKey,
+							'formId' => $formId,
+						))->with(
+							'message', 'Item deleted!'
+						);
+					
+					} //end if (valid properties)
+					
+					//handle error
+					else {
+						$errors = "Invalid form properties";
+					}
+	
+				} //end if (template form)
+				
+				//handle error
+				else {
+					$errors = "Invalid form type";
+				}
+				
+				//error occurred
+				return Redirect::back()
+					->withInput()
+					->withErrors($errors);
+			
+			} //end if (valid form)
+			
+			//insecure access
+			return Redirect::route('cms.error', ['errorCode' => '404']);
+			
+		} //end deleteTemplateInput()	
+	
+	
 	
 	
 		public function postInput($appKey, $formId = null) {
 		
 			//get validated form
 			$form = $this->getValidatedForm($appKey, $formId);
-			
-			//update result
-			$result = false;
-			
-			//valid form
-			if ($form) {
-
-//DB::enableQueryLog();
-				//get form fields (in data order)
-//				$fields = CMSFormField::select(['id', 'key', 'connection', 'table', 'field', 'row'])
-//										->where('form', '=', $form->id)
-//										->orderBy('connection', 'table', 'row')
-//										->get();
-				
-				$fields = $form->fields()
-								->orderBy('connection')
-								->orderBy('table')
-								->orderBy('row')
-								->get();
-				if ($fields) {
-
-
-					//TODO: validate form input
-					
-					
-					//indicate if new row should be added
-					$addRow = false;
-
-					//template input
-					$filter = null;
-					if ($form->type == CMSData::$FORM_TYPE_TEMPLATE) {
-						
-						//get input row
-						$filterRow = safeArrayValue('filter_row', $_POST, -1);
-						$rowId = intval($filterRow);
-						
-						//existing row
-						if ($rowId>=0) {
-							$filter = ['row' => $rowId];	
-						}
-						
-						//new row
-						else if ($rowId<0) {
-							$addRow = true;
-							$filter = ['row' => -1];
-						}
-						
-					}
-
-
-					//compile query
-					$connection = null;
-					$connectionName = null;
-					$lastConnectionName = null;
-					$tableName = null;
-					$lastTableName = null;
-					$fieldName = null;
-					$row = null;
-					$lastRow = null;
-					$updateFields = [];
-					$runQuery = false;
-
-					//update post data
-					$fieldValue = null;
-					foreach ($fields as $field) {	
 		
-						//get field properties
-						$connectionName = $field->connection;
-						$tableName = $field->table;
-						$fieldName = $field->field;
-						$row = $field->row;
-						$key = $field->key;
-						$properties = $field->properties;
-						
-						//get field value
-						$fieldValue = safeArrayValue($field->key, $_POST, null);
-						
-						//apply filter options
-						if ($filter) {
-						
-							//has row
-							if (array_key_exists('row', $filter)) {
-								$row = $filter['row'];
-							}	
-
-							//TODO: override with table value
-							
-							//TODO: override with field value 
-							
-						}
-						
-						//echo "con[" . $connectionName . "]table[" . $tableName . "]field[" . $fieldName . "]row[" . $row . "]<br>\n";
-						
-						//valid properties
-						if (strlen($connectionName)>0 && strlen($tableName)>0 && strlen($fieldName)>0 && !is_null($row)) {
-							
+			//get input row
+			$filterRow = safeArrayValue('filter_row', $_POST, -1);
+			$rowId = intval($filterRow);
 		
-							//new table or connection
-							if (strcmp($tableName, $lastTableName)!=0 || strcmp($connectionName, $lastConnectionName)!=0 || $row!=$lastRow) {
-
-					
-								//previous query exists
-								if ($connection) {
-						
-									//run last query 
-									$runQuery = true;
-									
-								}
-								//no existing query
-								else {
+			//create filter
+			$filter = Array (
+				'key' => 'id',
+				'row' => $rowId
+			);
+		
+			//process input
+			$result = $this->processInput($form, self::ACTION_UPDATE, $filter);
+		
+			//valid result
+			if ($result) {
 				
-									//create initial query
-									$connection = DB::connection($connectionName);
-									if ($connection) {
-										
-										//add new row
-										if ($addRow) {
-											
-											//update query
-											$connection = $connection->table($tableName);
-											
-										}
-										//existing row
-										else {
-											
-											//update query
-											$connection = $connection->table($tableName)->where('id', '=', $row);
-										}
-										//DB::connection($connectionName)->enableQueryLog();
-										
-									}
-									
-								}
-								
-								//store new properties
-								$lastConnectionName = $connectionName;
-								$lastTableName = $tableName;
-								$lastRow = $row;
-						
-							} //end if (new table)
-	
-							
-							if ($runQuery) {
-
-								//valid connection
-								if ($connection) {
-
-									//add new row
-									if ($addRow) {
-										$result = $connection->insert($updateFields);
-									}
-									//update table
-									else {
-										$result = $connection->update($updateFields);
-									}
-									
-									//indicate form was updated (force value as 'update' call returns false if no changes where made)
-									$result = true;
-									
-									//check result
-									//if (!$result) {
-										//TODO: handle update error
-									//}
-
-								}
-								
-								//clear fields list
-								$updateFields = [];
-								
-								//recreate connection
-								$connection = DB::connection($connectionName);
-								if ($connection) {
-									
-									
-									//add new row
-									if ($addRow) {
-										
-										//update query
-										$connection = $connection->table($tableName);
-										
-									}
-									//existing row
-									else {
-										
-										//update query
-										$connection = $connection->table($tableName)->where('id', '=', $row);
-									}
-									
-								}
-	
-								//clear query state
-								$runQuery = false;
-								
-							}
-	
-	
-							//no value specified
-							if (is_null($fieldValue)) {
-	
-								//get field properties
-								if (!is_null($properties) && strlen($properties)>0) {
-									
-									//decode properties
-									$fieldProperties = decodeJSON($properties, true);	
-									if ($fieldProperties) {
-										
-										//TODO: handle required fields
-										
-										//TODO: handle field validation
-										
-										//get default value
-										$fieldValue = safeArrayValue('default', $fieldProperties, $fieldValue);
-										
-									}
-								}
-							
-							} //end if (null value)
-	
-							//add field to update query
-							$updateFields[$fieldName] = $fieldValue;
-							
-							
-						} //end if (valid properties)
-						
-						
-					} //end for()
+				return Redirect::route('cms.form.input', array(
+					'appKey' => $appKey,
+					'formId' => $formId,
+				))->with(
+					'message', 'Form saved!'
+				);
 				
-				
-
-					//run final query
-					if ($connection) {
-						
-						//add new row
-						if ($addRow) {
-							$result = $connection->insert($updateFields);
-						}
-						//update table
-						else {
-							$result = $connection->update($updateFields);
-						}
-						
-						//indicate form was updated (force value as 'update' call returns false if no changes where made)
-						$result = true;
-
-						//echo "QUERY TO RUN111: " . $connection->toSql() . " - fields: " . print_r($updateFields, true);
-								//dd(DB::connection($lastConnectionName)->getQueryLog());
-				//dd(DB::getQueryLog());
-					} //end if (valid connection)
-
-						
-
-				
-				
-				} //end if (found fields)
-
-
-				//valid result
-				if ($result) {
-					
-					return Redirect::route('cms.form.input', array(
-						'appKey' => $appKey,
-						'formId' => $formId,
-					))->with(
-						'message', 'Form saved!'
-					);
-					
-				}
-
-			} //end if (valid form)
+			}
 			
 			
 			//insecure access
@@ -986,6 +815,332 @@
 			
 			
 			
+		
+		
+			
+		//==========================================================//
+		//====					DATA METHODS					====//
+		//==========================================================//	
+			
+				
+			
+		private function processInput($form, $action = self::ACTION_UPDATE, $filter = null) {
+			
+			//update result
+			$result = false;
+			
+			
+			//valid form
+			if ($form) {
+
+//DB::enableQueryLog();
+				//get form fields (in data order)
+//				$fields = CMSFormField::select(['id', 'key', 'connection', 'table', 'field', 'row'])
+//										->where('form', '=', $form->id)
+//										->orderBy('connection', 'table', 'row')
+//										->get();
+				
+				$fields = $form->fields()
+								->orderBy('connection')
+								->orderBy('table')
+								->orderBy('row')
+								->get();
+				if ($fields) {
+
+
+					//TODO: validate form input
+					
+					
+					
+					
+
+					//template input
+//					$filter = null;
+//					if ($form->type == CMSData::$FORM_TYPE_TEMPLATE && $filter) {
+//						
+//						//get input row
+//						$filterKey = safeArrayValue('key', $filter, null);
+//						$filterRow = safeArrayValue('row', $filter, -1);
+//						$rowId = intval($filterRow);
+//						
+//						//existing row
+//						if ($rowId>=0) {
+//							$filter = ['row' => $rowId];	
+//						}
+//						
+//						//new row
+//						else if ($rowId<0) {
+//							//$rowExists = true;
+//							$filter = ['row' => -1];
+//						}
+//						
+//					}
+
+
+					//compile query
+					$connection = null;
+					$connectionName = null;
+					$lastConnectionName = null;
+					$tableName = null;
+					$lastTableName = null;
+					$fieldName = null;
+					$row = null;
+					$lastRow = null;
+					$updateFields = [];
+					$runQuery = false;
+
+					//update post data
+					$fieldValue = null;
+					foreach ($fields as $field) {	
+		
+						//get field properties
+						$connectionName = $field->connection;
+						$tableName = $field->table;
+						$fieldName = $field->field;
+						$row = $field->row;
+						$key = $field->key;
+						$properties = $field->properties;
+						
+						//get field value
+						$fieldValue = safeArrayValue($field->key, $_POST, null);
+						
+						//apply filter options
+						if ($filter) {
+						
+							//has row
+							if (array_key_exists('row', $filter)) {
+								$row = $filter['row'];
+							}	
+
+							//TODO: override with table value
+							
+							//TODO: override with field value 
+							
+						}
+						
+						//indicate if new row exists
+						$rowExists = isset($row);
+
+						//echo "con[" . $connectionName . "]table[" . $tableName . "]field[" . $fieldName . "]row[" . $row . "]<br>\n";
+						
+						//valid properties
+						if (strlen($connectionName)>0 && strlen($tableName)>0 && strlen($fieldName)>0 && !is_null($row)) {
+							
+		
+							//new table or connection
+							if (strcmp($tableName, $lastTableName)!=0 || strcmp($connectionName, $lastConnectionName)!=0 || $row!=$lastRow) {
+
+					
+								//previous query exists
+								if ($connection) {
+						
+									//run last query 
+									$runQuery = true;
+									
+								}
+								//no existing query
+								else {
+				
+									//create initial query
+									$connection = DB::connection($connectionName);
+									if ($connection) {
+
+										//add new row
+										if (!$rowExists) {
+											
+											//update query
+											$connection = $connection->table($tableName);
+											
+										}
+										//existing row
+										else {
+
+											//update query
+											$connection = $connection->table($tableName)->where('id', '=', $row);
+										}
+										//DB::connection($connectionName)->enableQueryLog();
+										
+									}
+									
+								}
+								
+								//store new properties
+								$lastConnectionName = $connectionName;
+								$lastTableName = $tableName;
+								$lastRow = $row;
+						
+							} //end if (new table)
+	
+							
+							if ($runQuery) {
+
+								//valid connection
+								if ($connection) {
+
+									//handle row action
+									switch ($action) {
+
+										//delete row
+										case self::ACTION_DELETE:
+										{
+											if ($rowExists) {
+												$result = $connection->delete();
+											}
+										}
+										break;
+										
+										
+										//update / add row
+										default:
+										{
+
+											//add new row
+											if (!$rowExists) {
+												$result = $connection->insert($updateFields);
+											}
+											//update table
+											else {
+												$result = $connection->update($updateFields);
+												
+												//indicate form was updated ('update' call returns false if no changes where made)
+												$result = true;
+											}
+										
+										}
+										break;
+									
+									} //end switch (action)
+									
+									
+									
+									//check result
+									//if (!$result) {
+										//TODO: handle update error
+									//}
+
+								}
+								
+								//clear fields list
+								$updateFields = [];
+								
+								//recreate connection
+								$connection = DB::connection($connectionName);
+								if ($connection) {
+									
+									
+									//add new row
+									if (!$rowExists) {
+										
+										//update query
+										$connection = $connection->table($tableName);
+										
+									}
+									//existing row
+									else {
+
+										//update query
+										$connection = $connection->table($tableName)->where('id', '=', $row);
+									}
+									
+								}
+	
+								//clear query state
+								$runQuery = false;
+								
+							}
+	
+	
+							//no value specified
+							if (is_null($fieldValue)) {
+	
+								//get field properties
+								if (!is_null($properties) && strlen($properties)>0) {
+									
+									//decode properties
+									$fieldProperties = decodeJSON($properties, true);	
+									if ($fieldProperties) {
+										
+										//TODO: handle required fields
+										
+										//TODO: handle field validation
+										
+										//get default value
+										$fieldValue = safeArrayValue('default', $fieldProperties, $fieldValue);
+										
+									}
+								}
+							
+							} //end if (null value)
+	
+							//add field to update query
+							$updateFields[$fieldName] = $fieldValue;
+							
+							
+						} //end if (valid properties)
+						
+						
+					} //end for()
+				
+				
+
+					//run final query
+					if ($connection) {
+						
+						//handle row action
+						switch ($action) {
+
+							//delete row
+							case self::ACTION_DELETE:
+							{
+								if ($rowExists) {
+									$result = $connection->delete();
+								}
+							}
+							break;
+							
+							
+							//update / add row
+							default:
+							{
+				
+								//add new row
+								if (!$rowExists) {
+									$result = $connection->insert($updateFields);
+								}
+								//update table
+								else {
+									$result = $connection->update($updateFields);
+									
+									//indicate form was updated ('update' call returns false if no changes where made)
+									$result = true;
+								}
+							
+							}
+							break;
+						
+						} //end switch (action)
+
+						//echo "QUERY TO RUN111: " . $connection->toSql() . " - fields: " . print_r($updateFields, true);
+								//dd(DB::connection($lastConnectionName)->getQueryLog());
+				//dd(DB::getQueryLog());
+					} //end if (valid connection)
+
+						
+
+				
+				
+				} //end if (found fields)
+
+
+			} //end if (valid form)
+			
+			
+			return $result;
+			
+		} //end processInput()
+			
+			
+			
 			
 		//==========================================================//
 		//====					SECURITY METHODS				====//
@@ -994,7 +1149,7 @@
 				
 			
 			
-		private function getValidatedForm($appKey, $formId) {
+		private function getValidatedForm($appKey, $formId, $permissions = -1) {
 			
 			$form = null;
 			
