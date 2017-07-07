@@ -153,7 +153,7 @@
 	
 	
 	//table controller
-	module.controller('TableController', [ '$http', '$scope', '$sce', function($http, $scope, $sce) {
+	module.controller('TableController', [ '$http', '$scope', '$rootScope', '$sce', function($http, $scope, $rootScope, $sce) {
 
 		//inherit from base controller 
 		angular.extend(this, new GUIController($scope));
@@ -199,84 +199,103 @@
 					+ (pageNumber>=0 ? 'page='+pageNumber + '&' : '') 
 					+ ($scope.itemsPerPage>0 ? 'limit=' + $scope.itemsPerPage : '');
 				
-				
-				//request JSON data
-				$http.get(url).success(function(response) {
-	
 
-					//store properties
-					$scope.pageData     = response.data;
-					$scope.totalPages   = parseInt(response.last_page);
-					$scope.currentPage  = parseInt(response.current_page);
-					//$scope.itemsPerPage = parseInt(response.items_per_page);
-	
-	
-	
-					//TODO: move to pagination directive
-					// Pagination Range
-					var pages = [];
-					
-					//check if maximum applied
-					var applyMaximum = $scope.maxNumberOfPageButtons > 0 && $scope.maxNumberOfPageButtons < response.total_pages;
-					
-					//add page number
-					var numberOfButtons = applyMaximum ? $scope.maxNumberOfPageButtons : response.total_pages;
-					
-					//determine page button offset
-					var buttonsOffset = applyMaximum ? parseInt($scope.maxNumberOfPageButtons * 0.5) : 0;
-					var lastPageButton = applyMaximum ? response.total_pages - $scope.maxNumberOfPageButtons : 0;
-					
-					//determine first page button number
-					var startButtonPage = $scope.currentPage - buttonsOffset;
-					if (startButtonPage<0) startButtonPage = 0;
-					if (startButtonPage>lastPageButton) startButtonPage = lastPageButton;
-					
+				//handle request completion
+				var successHandler = function(response) {
 
-					//add page buttons
-					for(var i=0; i<numberOfButtons; i++) {          
-						pages.push(startButtonPage + i);
-					}
-					$scope.range = pages; 
-					
-					
-					//filter/sort results
-					var filteredKeys = [];
-					var filteredResults = [];
-					var rowData = null;
-					if ($scope.pageData) {
+					//valid response
+					if (response) {
+
+						//store properties
+						$scope.pageData     = response.data;
+						$scope.totalPages   = parseInt(response.last_page);
+						$scope.currentPage  = parseInt(response.current_page);
+						//$scope.itemsPerPage = parseInt(response.items_per_page);
+		
+		
+		
+						//TODO: move to pagination directive
+						// Pagination Range
+						var pages = [];
 						
-						for (var i=0; i<$scope.pageData.length; ++i) {
+						//check if maximum applied
+						var applyMaximum = $scope.maxNumberOfPageButtons > 0 && $scope.maxNumberOfPageButtons < response.total_pages;
 						
-							if (i==0) {
-								filteredKeys = $scope.filterKeys($scope.pageData[i], true, $scope.includeKeys, $scope.excludeKeys);
-							}
+						//add page number
+						var numberOfButtons = applyMaximum ? $scope.maxNumberOfPageButtons : response.total_pages;
 						
-							rowData = $scope.filterKeys($scope.pageData[i], false, $scope.includeKeys, $scope.excludeKeys, $scope.valueFunction);
-							if (rowData) {
-								filteredResults.push(rowData);
-							}
+						//determine page button offset
+						var buttonsOffset = applyMaximum ? parseInt($scope.maxNumberOfPageButtons * 0.5) : 0;
+						var lastPageButton = applyMaximum ? response.total_pages - $scope.maxNumberOfPageButtons : 0;
+						
+						//determine first page button number
+						var startButtonPage = $scope.currentPage - buttonsOffset;
+						if (startButtonPage<0) startButtonPage = 0;
+						if (startButtonPage>lastPageButton) startButtonPage = lastPageButton;
+						
+	
+						//add page buttons
+						for(var i=0; i<numberOfButtons; i++) {          
+							pages.push(startButtonPage + i);
+						}
+						$scope.range = pages; 
+						
+						
+						//filter/sort results
+						var filteredKeys = [];
+						var filteredResults = [];
+						var rowData = null;
+						if ($scope.pageData) {
 							
-						} //end for()
+							for (var i=0; i<$scope.pageData.length; ++i) {
+							
+								if (i==0) {
+									filteredKeys = $scope.filterKeys($scope.pageData[i], true, $scope.includeKeys, $scope.excludeKeys);
+								}
+							
+								rowData = $scope.filterKeys($scope.pageData[i], false, $scope.includeKeys, $scope.excludeKeys, $scope.valueFunction);
+								if (rowData) {
+									filteredResults.push(rowData);
+								}
+								
+							} //end for()
+							
+						} //end if (found page data)
 						
-					} //end if (found page data)
-					
-					$scope.filteredKeys = filteredKeys;
-					$scope.filteredResults = filteredResults;
+						$scope.filteredKeys = filteredKeys;
+						$scope.filteredResults = filteredResults;
 
-					//trigger update
-					$scope.$emit('tableUpdated', { 
-						tableId: $scope.tableId,
-						keys: $scope.filteredKeys,
-						data: $scope.pageData,
-						results: $scope.filteredResults,
-						properties: $scope.columnProperties,
-						currentPage: $scope.currentPage,
-						totalPages: $scope.totalPages,
-						itemsPerPage: $scope.itemsPerPage
-					});
+						//trigger update
+						$scope.$emit('tableUpdated', { 
+							tableId: $scope.tableId,
+							keys: $scope.filteredKeys,
+							data: $scope.pageData,
+							results: $scope.filteredResults,
+							properties: $scope.columnProperties,
+							currentPage: $scope.currentPage,
+							totalPages: $scope.totalPages,
+							itemsPerPage: $scope.itemsPerPage
+						});
 
+					} //end if (valid response)
 				
-				});
+				}; //end success handler()
+				
+			
+				//request JSON data
+				var request = $http.get(url);
+				if (request) {
+					
+					//new Angular versions
+					if (request.success) {
+						request.success(successHandler);
+					}
+					//older API versions
+					else {
+						request.then(successHandler);
+					}
+				
+				} //end if (valid request)
 			
 			} //end if (valid data URL)
 		
@@ -508,7 +527,7 @@
 	        	if (attrs) {
 
 					//default to non-submit button
-					if (!attrs.type || attrs.type.lowercase!='submit') {
+					if ((!attrs.type || attrs.type.lowercase!='submit') && element.prop('type')!='submit') {
 						element.prop('type', 'button');
 					}
 	        		

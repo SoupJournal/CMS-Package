@@ -72,4 +72,51 @@
 			
 	} //end arrayToHTMLAttributes()
 	
+	
+	
+	
+	/*
+	function createTempFileDownloadResponse($fileName, $name = null, array $headers = array()) {
+    
+    	$response = null;
+    
+    	//valid file name
+    	if ($fileName && strlen($fileName)>0) {
+	    
+	    	//create file
+	        $file = new File((string) $fileName);
+	        $base = $name ?: basename($fileName);
+	        $content = file_get_contents($fileName);
+	 
+	        $response = Response::make($content);
+	 
+	 		//add content headers (if required)
+	        if (!isset($headers['Content-Type']))
+	        {
+	            $headers['Content-Type'] = $file->getMimeType();
+	        }
+	        if (!isset($headers['Content-Length']))
+	        {
+	            $headers['Content-Length'] = $file->getSize();
+	        }
+	        if (!isset($headers['Content-disposition']))
+	        {
+	            $headers['Content-disposition'] = 'attachment; filename=' . $base;
+	        }
+	 
+	 		//add custom headers
+	        foreach ($headers as $headerName => $headerValue)
+	        {
+	            $response->header($headerName, $headerValue);
+	        }
+	 
+	 		//delete temporaty file
+	        unlink($fileName);
+        
+    	} //end if (valid file name)
+    	
+	    return $response;
+    	
+    } //end createTempFileDownloadResponse()
+	*/
 ?>

@@ -42,7 +42,7 @@
 	//										->orderBy('connection', 'table', 'row')
 	//										->get();
 					
-				
+	
 					//valid fields
 					if ($fields && count($fields)>0) {
 						
@@ -65,7 +65,10 @@
 							$tableName = $column->table;
 							$fieldName = $column->field;
 							$row = $column->row;
+							$offset = null;
+							$limit = null;
 							$key = $column->key;
+							$multipleResults = false;
 							
 							//apply filter options
 							if ($filterOptions) {
@@ -73,8 +76,19 @@
 								//has row
 								if (array_key_exists('row', $filterOptions)) {
 									$row = $filterOptions['row'];
-								}	
+								}
 								
+								//has limit
+								if (array_key_exists('offset', $filterOptions)) {
+									$offset = $filterOptions['offset'];
+									$multipleResults = true;
+								}	
+								if (array_key_exists('limit', $filterOptions)) {
+									$limit = $filterOptions['limit'];
+									$multipleResults = true;
+								}
+								
+
 								//TODO: override with table value
 								
 								//TODO: override with field value 
@@ -84,7 +98,7 @@
 		//echo "FORM[" . $form->id . "] con[" . $connectionName . "][" . $tableName . "][" . $fieldName . "][" . $row . "]<br>\n";	
 			
 							//valid properties
-							if (strlen($connectionName)>0 && strlen($tableName)>0 && strlen($fieldName)>0 && $row!=null) {
+							if (strlen($connectionName)>0 && strlen($tableName)>0 && strlen($fieldName)>0) {// && $row!=null) {
 								
 								//new table or connection
 								if (strcmp($tableName, $lastTableName)!=0 || strcmp($connectionName, $lastConnectionName)!=0 || $row!=$lastRow) {
@@ -113,7 +127,16 @@
 												}
 												
 												//update query
-												$connection = $connection->table($tableName)->where('id', '=', $row);
+												$connection = $connection->table($tableName);
+												if (isset($row)) {
+													$connection->where('id', '=', $row);
+												}
+												if (isset($offset)) {
+													$connection->offset($offset);
+												}
+												if (isset($limit)) {
+													$connection->limit($limit);
+												}
 											}
 										
 										}
@@ -141,7 +164,12 @@
 									if ($connection) {
 	
 										//fetch results for old row
-										$result = $connection->select($selectFields)->first();
+										if ($multipleResults) {
+											$result = $connection->select($selectFields)->get();	
+										}									
+										else {
+											$result = $connection->select($selectFields)->first();
+										}
 										if ($result) {
 											
 											//ensure data array exists
@@ -179,7 +207,17 @@
 										}
 										
 										//update query
-										$connection = $connection->table($tableName)->where('id', '=', $row);
+										$connection = $connection->table($tableName);
+										if (isset($row)) {
+											$connection->where('id', '=', $row);
+										}
+										if (isset($offset)) {
+											$connection->offset($offset);
+										}
+										if (isset($limit)) {
+											$connection->limit($limit);
+										}
+										
 									}
 		
 									//clear query state
@@ -202,9 +240,14 @@
 	
 						//run final query
 						if ($connection) {
-						
+
 							//fetch results for old row
-							$result = $connection->select($selectFields)->first(); 												
+							if ($multipleResults) {
+								$result = $connection->select($selectFields)->get();
+							}										
+							else {
+								$result = $connection->select($selectFields)->first();
+							}												
 							if ($result) {
 								
 								//ensure data array exists

@@ -35,7 +35,7 @@
 		//==========================================================//	
 		
 		
-		protected function paginateRequestQuery($query, $params) { //, $objectData = null) {
+		protected function paginateRequestQuery($query, $params) {
 			
 
 			//create response

@@ -101,6 +101,8 @@
 				//service actions
 				Route::get($path . '/templates/{id}', array('as' => 'cms.form.templates', 'uses' => 'FormController@getTemplates'));
 				Route::post($path . '/export/{id}', array('as' => 'cms.form.export', 'uses' => 'FormController@postExport'));
+				Route::post($path . '/trigger/{id}', array('as' => 'cms.form.trigger', 'uses' => 'FormController@postTrigger'));
+				
 			});
 			
 			//Form permission required
@@ -156,6 +158,10 @@
 		Route::get($basePath . '/{appKey}' , ['as' => 'cms.home', 'middleware' => ['HTTPS', 'CMSAuth', 'CMSApp'], 'uses' => 'CMSController@getIndex']);
 
 
+
+//		Route::group(array('middleware' => ['HTTPS', 'CMSAuth', 'CMSApp']), function() use (&$basePath) {
+//				Route::post($basePath . '/{appKey}/form' . '/trigger/{id}', array('as' => 'cms.form.trigger', 'uses' => 'FormController@postTrigger'));
+//		});
 	
 	}); //end namespace group
 	

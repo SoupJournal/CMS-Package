@@ -8,6 +8,7 @@
 	use Soup\CMS\Models\CMSApp;
 	use Soup\CMS\Models\CMSForm;
 	use Soup\CMS\Models\CMSFormField;
+	use Soup\CMS\Models\CMSTrigger;
 
 	use View;
 	use Redirect;
@@ -63,9 +64,19 @@
 			
 				//template input
 				if ($form->type == CMSData::$FORM_TYPE_TEMPLATE) {
+		
+					//get form triggers
+					$triggers = CMSTrigger::where('trigger_form', $form->id)
+								->where('status', CMSData::STATUS_PUBLISHED)
+								->get();
+			
 					
 					//render view
-					return View::make('cms::admin.form.template')->with('form', $form);
+					return View::make('cms::admin.form.template')->with([
+						//'appKey' => $appKey,
+						'form' => $form,
+						'triggers' => $triggers
+					]);
 					
 				}
 				//page input
@@ -118,12 +129,17 @@
 					//$fields = isset($form) ? $form->fields()->where('editable', true)->orderBy('order', 'DESC')->get() : null;
 					$fieldValues = isset($form) && $filter ? dataForForm($appKey, $form->key, $filter) : null;
 			
+					//get form triggers
+//					$triggers = CMSTrigger::where('trigger_form', $form->id)->get();
+			
+
 					//render view
 					return View::make('cms::admin.form.input')->with([
 						'form' => $form,
 						'fields' => $fields,
 						'fieldValues' => $fieldValues,
 						'filter' => $filter,
+						//'triggers' => $triggers,
 						'formURL' => route('cms.form.input', ['appKey' => $appKey, 'formId' => $formId]),
 						'backURL' => route('cms.form.input', ['appKey' => $appKey, 'formId' => $formId])
 					]);
@@ -528,6 +544,210 @@
 		//==========================================================//	
 		
 
+
+		public function postTrigger($appKey = null, $triggerId = null) {
+		//dd("got trigger");
+
+			//valid trigger id
+			if (isset($triggerId)) {
+		
+				//get trigger
+				$trigger = CMSTrigger::find($triggerId);
+				if ($trigger) {
+			
+					//get validated forms
+					$triggerForm = $this->getValidatedForm($appKey, $trigger->trigger_form);
+					$dataForm = $this->getValidatedForm($appKey, $trigger->data_form);
+					if ($triggerForm && $dataForm) {
+
+					
+						//get trigger properties
+						$triggerProperties = decodeJSON($trigger->properties);
+
+					
+						//form validation
+						$valid = true;
+					
+						//template form
+						$fieldValues = null;
+						if ($dataForm->type == CMSData::$FORM_TYPE_TEMPLATE) {
+		
+							//get range values
+							$start = safeArrayValue('start', $_POST, -1);
+							$end = safeArrayValue('end', $_POST, -1);
+							$limit = $end - $start;
+
+							//form validation
+							$valid = true;
+							$errorMessage = null;
+							
+							//valid range
+							if (!($start>=0)) {
+								$errorMessage = "Please specify a valid start range";
+								$valid = false;
+							}
+							if ($valid && !$end>0) {
+								$errorMessage = "Please specify a valid end range";
+								$valid = false;
+							}
+							else if ($valid && $end<$start) {
+								$errorMessage = "Please specify an end range greater than the start range";
+								$valid = false;
+							}
+							//invalid limit
+							else if (!$limit>0) {
+								$errorMessage = "No rows specified";
+								$valid = false;
+							}
+								
+
+						
+
+						
+							//create row filter
+//							$filter = null;
+							$filter = [
+								'offset' => $start,
+								'limit' => $limit
+							];
+//							if ($dataForm->type == CMSData::$FORM_TYPE_TEMPLATE && intval($rowId)>=0) {
+//								$filter = ['row' => $rowId];	
+//							}
+							
+							//get form properties
+							//$fields = $dataForm->fields()->orderBy('order', 'DESC')->get();
+							
+							//get form values
+							$fieldValues = dataForForm($appKey, $dataForm->key, $filter, false);
+						
+						}
+					
+			
+						
+						//valid form
+						if ($valid) {
+			
+						
+							//handle trigger
+							switch ($trigger->type) {
+								
+								case CMSData::TRIGGER_TYPE_INTERNAL:
+								{
+									//get properties
+									$class = safeObjectValue('class', $triggerProperties, null);
+									
+									//valid class
+									if ($class && strlen($class)>0) {
+										
+										try {
+											
+											//valid implementation
+											if (class_implements($class)) {
+											
+												//create instance
+												$instance = new $class();
+												if ($instance) {
+	
+													//run trigger
+													$response = $instance->handleTrigger($fieldValues, null);	
+	
+													return Redirect::back()
+														->withInput()
+														->with(
+															'message', ($response && is_string($response) ? $response : "")
+														);
+	
+												} //end if (created instance)
+											
+											} //end if (valid implementation)
+											
+										}
+										catch (Exception $ex) {
+											//TODO: log error
+										}
+										
+									} //end if (valid class)
+	
+								}
+								break;
+								
+								case CMSData::TRIGGER_TYPE_URL:
+								{
+									//get properties
+									$url = safeObjectValue('url', $triggerProperties, null);
+									//$params = safeObjectValue('params', $triggerProperties, null);
+									$request = safeObjectValue('request', $triggerProperties, null);
+										
+									//compile parameters
+									
+									//compile request data values
+									if ($request) {
+											
+										//handle post data
+										$post = safeObjectValue('post', $request, null);
+										if ($post) {
+											
+											
+										} //end if (found post data)
+										
+									} 
+									
+								}
+								break;	
+								
+							} //end switch (email type)
+							
+							//trigger not handled
+							return Redirect::back()
+								->withInput()
+								->withErrors("Failed to handle trigger");
+				
+						} //end if (valid form)
+				
+						//invalid form
+						else {
+							
+							//error occurred
+							return Redirect::back()
+								->withInput()
+								->withErrors($errorMessage);	
+								
+						}
+				/*
+						//send email
+						$emailJob = new SendEmailJob([
+							"recipient" => $user->email, 
+							"sender" => [
+								'email' => self::EMAIL_SENDER_VERIFY, 
+								'name' => 'belif'
+							],
+							"subject" => self::EMAIL_SUBJECT_VERIFY,
+							"view" => "belif::email.verify",
+							"view_properties" => [
+								'name' => $user->name,
+								'address1' => $user->address_1,
+								'address2' => $user->address_2,
+								'address3' => $address3,
+								'pageData' => $pageData,
+								'verifyLink' => route('belif.share', ['code' => $user->verify_code]),
+								'unsubscribeLink' => route('belif.unsubscribe', ['code' => $user->verify_code])
+							]
+						]);
+						$this->dispatch($emailJob);
+				*/
+				
+					} //end if (valid form)
+			
+				} //end if (valid email)
+			
+			} //end if (valid email id)
+			
+			//insecure access
+			return Redirect::route('cms.error', ['errorCode' => '404']);
+			
+		} //end postTrigger()
+		
+
 		
 		public function postExport($appKey = null, $formId = null) {
 			
@@ -538,6 +758,7 @@
 				//get range values
 				$start = safeArrayValue('start', $_POST, -1);
 				$end = safeArrayValue('end', $_POST, -1);
+				$limit = $end - $start;
 				
 				//form validation
 				$valid = true;
@@ -556,6 +777,11 @@
 					$errorMessage = "Please specify an end range greater than the start range";
 					$valid = false;
 				}
+				//invalid limit
+				else if (!$limit>0) {
+					$errorMessage = "No rows specified for export";
+					$valid = false;
+				}
 				
 				
 				//valid form
@@ -568,8 +794,73 @@
 						//process query results as array
 						//$query->setFetchMode(PDO::FETCH_ASSOC);
 						
+						//content file name
+						$formName = ($form->name && strlen($form->name)>0 ? $form->name . '-' : '');
+						$filename = $formName . date('Y-m-d_His') . '.csv';
+
+						//set query limit
+						$query = $query->offset($start)->limit($limit);
+						
+						
+						//create stream callback
+						$callback = function() use ($query) {
+						
+							//create handle for CSV conversion
+							//$handle = fopen('php://memory', 'w');
+							$handle = fopen('php://output', 'w');
+						
+							//indicate if column headers added
+							$addedHeader = false;
+						
+							//get results
+							$query->chunk(500, function($results) use ($handle, $addedHeader) {
+		
+								//add data
+								foreach ($results as $result) {
+									
+									//add column headers
+									if (!$addedHeader) {
+										
+										//get object properties
+										$props = get_object_vars($result);
+										if ($props) {
+											fputcsv($handle, array_keys($props));
+										}
+										$addedHeader = true;	
+									}
+									
+									//add columns
+									//foreach ($result as $key => $value) {
+										fputcsv($handle, get_object_vars($result)); 
+									//}
+								}
+								
+							});
+							
+							//close stream
+							fclose($handle);
+						
+						};
+						
+						//read handle contents
+						//fseek($handle, 0);
+  						//$csv = stream_get_contents($handle);
+  							
+					
+						//create content headers
+						$headers = [
+					        'Content-type'        => 'text/csv',
+					        'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+					    ];
+					    //return \Response::make($csv, 200, $headers);
+					    return \Response::stream($callback, 200, $headers);
+						
+						
+						/*
+						
 						//determine limit
 						$limit = $end - $start;
+						
 						
 						//create pagination data
 						$pageData = Array (
@@ -622,6 +913,8 @@
 							$errorMessage = "Sorry, no data was found to export";
 						}
 						
+						*/
+						
 					} //end if (created query)
 					
 				} //end if (valid form)
@@ -654,8 +947,8 @@
 							$innerQuery->where('key', $appKey);
 						})
 						->where(function($whereQuery) {
-							$whereQuery->orWhere('status', '=', CMSData::$STATUS_DRAFT);
-							$whereQuery->orWhere('status', '=', CMSData::$STATUS_PUBLISHED);
+							$whereQuery->orWhere('status', '=', CMSData::STATUS_DRAFT);
+							$whereQuery->orWhere('status', '=', CMSData::STATUS_PUBLISHED);
 						});
 				
 				//get paginated results
@@ -793,8 +1086,8 @@
 					$query = CMSForm::select(['id', 'name', 'type'])
 							->where('application', '=', $appId)
 							->where(function($whereQuery) {
-								$whereQuery->orWhere('status', '=', CMSData::$STATUS_DRAFT);
-								$whereQuery->orWhere('status', '=', CMSData::$STATUS_PUBLISHED);
+								$whereQuery->orWhere('status', '=', CMSData::STATUS_DRAFT);
+								$whereQuery->orWhere('status', '=', CMSData::STATUS_PUBLISHED);
 							});
 					
 					//get paginated results
@@ -919,7 +1212,7 @@
 						}
 						
 						//indicate if new row exists
-						$rowExists = isset($row);
+						$rowExists = isset($row) && $row>=0;
 
 						//echo "con[" . $connectionName . "]table[" . $tableName . "]field[" . $fieldName . "]row[" . $row . "]<br>\n";
 						
@@ -1140,6 +1433,106 @@
 		} //end processInput()
 			
 			
+			
+		private function processTriggerProperties($properties) {
+			
+			$result = [];
+			
+			//has properties
+			if ($properties) {
+				
+				//value
+				if (is_string($properties) || is_numeric($properties)) {
+					$result = $properties;
+				}
+				
+				//array
+				else if (is_array($properties)) {
+					
+					//process array components
+					foreach ($properties as $property) {
+							
+						//process child object
+						array_push($result, $this->processTriggerProperties($property));
+							
+					} //end for()
+					
+				}
+				
+				//object
+				else {
+					
+					//get properties
+					$objectEncrypt = safeObjectValue('encryption', $properties, null);
+					$objectProperties = safeObjectValue('properties', $properties, null);
+					
+					//has properties
+					if ($objectProperties && is_array($objectProperties)) {
+						
+						//compile final value
+						$propertyValue = "";
+						foreach ($objectProperties as $value) {
+							
+							//literal
+							if (is_string($value) || is_numeric($value)) {
+								$propertyValue += $value;
+							}
+							//dynamic
+							else {
+								
+								//process value 
+								$type = safeObjectValue('type', $value, null);
+								switch ($type) {
+									
+									case CMSData::VALUE_TIME:
+									{
+										//get time format
+										$format = safeObjectValue('format', $value, null);
+										$time = "";
+										
+										//append value
+										$propertyValue += $time;
+									}
+									break;
+									
+								} //end switch (value type)
+								
+							}
+							
+						} //end for()
+						
+					} //end if (has properties)
+					
+					//handle encryption
+					if ($encryption && strlen($encryption)>0) {
+						
+						//encrypt result
+						
+					} //end if (has encryption)
+					
+					/*
+					//has child properties
+					$children = safeObjectValue('children', $properties, null);
+					if ($children && is_array($children)) {
+					
+						//process child objects
+						$childData = [];
+						foreach ($children as $child) {
+							array_push($childData, $this->processTriggerProperties($property));
+						}
+						
+						//store children
+						array_push($result, $childData);
+						
+					} //has child properties
+					*/
+				}
+				
+			} //end if (has properties)
+			
+			return ($properties);
+			
+		} //end processTriggerProperties()
 			
 			
 		//==========================================================//
