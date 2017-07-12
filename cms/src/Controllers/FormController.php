@@ -233,10 +233,13 @@
 			$rowId = intval($filterRow);
 		
 			//create filter
-			$filter = Array (
-				'key' => 'id',
-				'row' => $rowId
-			);
+			$filter = null;
+			if ($form && $form->type == CMSData::$FORM_TYPE_TEMPLATE) {
+				$filter = Array (
+					'key' => 'id',
+					'row' => $rowId
+				);
+			}
 		
 			//process input
 			$result = $this->processInput($form, self::ACTION_UPDATE, $filter);
@@ -1395,7 +1398,7 @@
 							//update / add row
 							default:
 							{
-				
+
 								//add new row
 								if (!$rowExists) {
 									$result = $connection->insert($updateFields);
