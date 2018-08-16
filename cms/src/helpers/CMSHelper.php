@@ -46,6 +46,11 @@
 					//valid fields
 					if ($fields && count($fields)>0) {
 						
+						//get default connection
+						$defaultConnection = config('cms.connection.all');
+						//if (array_key_exists('cms.connection.all')) {
+						//	config('cms.connection.all'); 
+						//}
 						
 						//compile query
 						$connection = null;
@@ -60,8 +65,20 @@
 						$runQuery = false;
 						foreach ($fields as $column) {
 							
-							//get field properties
+							//get connection
 							$connectionName = $column->connection;
+							$linkedConnection = config('cms.connection.connections.' . $appKey);
+							//override with custom connection
+							if ($linkedConnection != null && strlen($linkedConnection) > 0) {
+								$connectionName = $linkedConnection;
+							}
+							//override with default connection
+							else if ($defaultConnection != null && strlen($defaultConnection) > 0) {
+								$connectionName = $defaultConnection;
+							}
+							
+
+							//get field properties
 							$tableName = $column->table;
 							$fieldName = $column->field;
 							$row = $column->row;

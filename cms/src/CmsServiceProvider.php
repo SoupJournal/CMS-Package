@@ -43,13 +43,15 @@ class CmsServiceProvider extends ServiceProvider {
 		$this->publishes([
 		     __DIR__.'/config/auth.php' => config_path('cms/auth.php'),
 		     __DIR__.'/config/config.php' => config_path('cms/config.php'),
+		     __DIR__.'/config/connection.php' => config_path('cms/connection.php'),
 		]);
 		
 		
 		//merge with user modified config
 		$this->mergeConfigFrom(
     	    __DIR__.'/config/auth.php', 'cms/auth',
-    	    __DIR__.'/config/config.php', 'cms/config'
+    	    __DIR__.'/config/config.php', 'cms/config',
+    	    __DIR__.'/config/connection.php', 'cms/connection'
 	    );
 		
 		

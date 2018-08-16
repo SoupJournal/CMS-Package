@@ -38,6 +38,7 @@
 				   		
 				   		//compile table query name
 				   		$tableDBName = "Tables_in_" . strtolower($databaseName);
+				   		//$tableDBName = "Tables_in_" . $databaseName;
 				   		$tableName = null;
 					   	foreach($tables as $table) {
 					   		
