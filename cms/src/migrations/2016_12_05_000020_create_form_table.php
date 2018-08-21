@@ -12,20 +12,21 @@ class CreateFormTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('form', function(Blueprint $table)
-		{
-			$table->increments('id');
-			$table->integer('application')->references('id')->on('application');
-			$table->integer('parent')->reference('id')->on('form')->nullable()->default(null);
-			$table->string('key', 255)->unique();
-			$table->string('name', 255);
-			$table->string('properties')->nullable();
-			$table->string('permissions')->nullable();
-			$table->integer('type')->default(0);
-			$table->integer('status')->default(0);
+        if (!Schema::hasTable('form')) {
+            Schema::create('form', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('application')->references('id')->on('application');
+                $table->integer('parent')->reference('id')->on('form')->nullable()->default(null);
+                $table->string('key', 255)->unique();
+                $table->string('name', 255);
+                $table->string('properties')->nullable();
+                $table->string('permissions')->nullable();
+                $table->integer('type')->default(0);
+                $table->integer('status')->default(0);
 
-			$table->timestamps();
-		});
+                $table->timestamps();
+            });
+        }
 	}
 
 	/**

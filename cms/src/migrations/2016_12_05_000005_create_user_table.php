@@ -12,31 +12,32 @@ class CreateUserTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('user', function(Blueprint $table)
-		{
-			$table->increments('id');
-			$table->string('username', 255);
-			$table->string('password', 255);
-			$table->string('email', 255)->nullable()->unique();
-			$table->string('first_name', 255);
-			$table->string('last_name', 255);
-			$table->string('facebook_id', 255)->nullable();
-			$table->string('gender', 100)->nullable();
-			$table->string('country', 255)->nullable();
-			$table->string('ip_address', 15)->nullable();
-			
-			$table->boolean('email_verified');
+        if (!Schema::hasTable('user')) {
+            Schema::create('user', function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('username', 255);
+                $table->string('password', 255);
+                $table->string('email', 255)->nullable()->unique();
+                $table->string('first_name', 255);
+                $table->string('last_name', 255);
+                $table->string('facebook_id', 255)->nullable();
+                $table->string('gender', 100)->nullable();
+                $table->string('country', 255)->nullable();
+                $table->string('ip_address', 15)->nullable();
 
-			$table->integer('default_application')->reference('id')->on('application')->nullable();
-			$table->integer('role')->default(0);			
-			$table->integer('status')->default(0);
+                $table->boolean('email_verified');
 
-			$table->string('remember_token')->nullable();
+                $table->integer('default_application')->reference('id')->on('application')->nullable();
+                $table->integer('role')->default(0);
+                $table->integer('status')->default(0);
 
-			$table->timestamp('last_login')->default(DB::raw('CURRENT_TIMESTAMP'));
+                $table->string('remember_token')->nullable();
 
-			$table->timestamps();
-		});
+                $table->timestamp('last_login')->default(DB::raw('CURRENT_TIMESTAMP'));
+
+                $table->timestamps();
+            });
+        }
 	}
 
 	/**

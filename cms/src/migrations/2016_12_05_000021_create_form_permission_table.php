@@ -12,14 +12,15 @@ class CreateFormPermissionTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('form_permission', function(Blueprint $table)
-		{
-			$table->increments('id');
-			$table->integer('form')->references('id')->on('form');
-			$table->integer('security_group')->references('id')->on('security_group');
+        if (!Schema::hasTable('form_permission')) {
+            Schema::create('form_permission', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('form')->references('id')->on('form');
+                $table->integer('security_group')->references('id')->on('security_group');
 
-			$table->timestamps();
-		});
+                $table->timestamps();
+            });
+        }
 	}
 
 	/**

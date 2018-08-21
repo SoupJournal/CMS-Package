@@ -12,16 +12,17 @@ class CreateApplicationTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('application', function(Blueprint $table)
-		{
-			$table->increments('id');
-			$table->string('key', 255)->unique();	
-			$table->string('name', 255);		
-			$table->integer('theme')->default(0);
-			$table->integer('status')->default(0);
+        if (!Schema::hasTable('application')) {
+            Schema::create('application', function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('key', 255)->unique();
+                $table->string('name', 255);
+                $table->integer('theme')->default(0);
+                $table->integer('status')->default(0);
 
-			$table->timestamps();
-		});
+                $table->timestamps();
+            });
+        }
 	}
 
 	/**

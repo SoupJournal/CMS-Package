@@ -12,15 +12,16 @@ class CreateSecurityGroupPermissionTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('security_group_permission', function(Blueprint $table)
-		{
-			$table->increments('id');
-			$table->integer('security_group')->references('id')->on('security_group');
-			$table->integer('user')->references('id')->on('user');
-			$table->integer('permission')->default(0);
+        if (!Schema::hasTable('security_group_permission')) {
+            Schema::create('security_group_permission', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('security_group')->references('id')->on('security_group');
+                $table->integer('user')->references('id')->on('user');
+                $table->integer('permission')->default(0);
 
-			$table->timestamps();
-		});
+                $table->timestamps();
+            });
+        }
 	}
 
 	/**

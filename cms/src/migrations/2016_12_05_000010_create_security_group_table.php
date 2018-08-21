@@ -12,16 +12,17 @@ class CreateSecurityGroupTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('security_group', function(Blueprint $table)
-		{
-			$table->increments('id');
-			$table->integer('application')->references('id')->on('application');
-			$table->string('name', 255);
-			$table->string('permission', 2047);
-			$table->integer('status')->default(0);
+        if (!Schema::hasTable('security_group')) {
+            Schema::create('security_group', function (Blueprint $table) {
+                $table->increments('id');
+                $table->integer('application')->references('id')->on('application');
+                $table->string('name', 255);
+                $table->string('permission', 2047);
+                $table->integer('status')->default(0);
 
-			$table->timestamps();
-		});
+                $table->timestamps();
+            });
+        }
 	}
 
 	/**
